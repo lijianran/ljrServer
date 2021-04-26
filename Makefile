@@ -114,6 +114,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named test_config
+
+# Build rule for target.
+test_config: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 test_config
+.PHONY : test_config
+
+# fast build rule for target.
+test_config/fast:
+	$(MAKE) -f CMakeFiles/test_config.dir/build.make CMakeFiles/test_config.dir/build
+.PHONY : test_config/fast
+
+#=============================================================================
 # Target rules for targets named test
 
 # Build rule for target.
@@ -138,6 +151,33 @@ ljrServer: cmake_check_build_system
 ljrServer/fast:
 	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/build
 .PHONY : ljrServer/fast
+
+ljrServer/config.o: ljrServer/config.cpp.o
+
+.PHONY : ljrServer/config.o
+
+# target to build an object file
+ljrServer/config.cpp.o:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/config.cpp.o
+.PHONY : ljrServer/config.cpp.o
+
+ljrServer/config.i: ljrServer/config.cpp.i
+
+.PHONY : ljrServer/config.i
+
+# target to preprocess a source file
+ljrServer/config.cpp.i:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/config.cpp.i
+.PHONY : ljrServer/config.cpp.i
+
+ljrServer/config.s: ljrServer/config.cpp.s
+
+.PHONY : ljrServer/config.s
+
+# target to generate assembly for a file
+ljrServer/config.cpp.s:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/config.cpp.s
+.PHONY : ljrServer/config.cpp.s
 
 ljrServer/log.o: ljrServer/log.cpp.o
 
@@ -166,6 +206,33 @@ ljrServer/log.cpp.s:
 	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/log.cpp.s
 .PHONY : ljrServer/log.cpp.s
 
+ljrServer/util.o: ljrServer/util.cpp.o
+
+.PHONY : ljrServer/util.o
+
+# target to build an object file
+ljrServer/util.cpp.o:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/util.cpp.o
+.PHONY : ljrServer/util.cpp.o
+
+ljrServer/util.i: ljrServer/util.cpp.i
+
+.PHONY : ljrServer/util.i
+
+# target to preprocess a source file
+ljrServer/util.cpp.i:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/util.cpp.i
+.PHONY : ljrServer/util.cpp.i
+
+ljrServer/util.s: ljrServer/util.cpp.s
+
+.PHONY : ljrServer/util.s
+
+# target to generate assembly for a file
+ljrServer/util.cpp.s:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/util.cpp.s
+.PHONY : ljrServer/util.cpp.s
+
 tests/test.o: tests/test.cpp.o
 
 .PHONY : tests/test.o
@@ -193,6 +260,33 @@ tests/test.cpp.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/tests/test.cpp.s
 .PHONY : tests/test.cpp.s
 
+tests/test_config.o: tests/test_config.cpp.o
+
+.PHONY : tests/test_config.o
+
+# target to build an object file
+tests/test_config.cpp.o:
+	$(MAKE) -f CMakeFiles/test_config.dir/build.make CMakeFiles/test_config.dir/tests/test_config.cpp.o
+.PHONY : tests/test_config.cpp.o
+
+tests/test_config.i: tests/test_config.cpp.i
+
+.PHONY : tests/test_config.i
+
+# target to preprocess a source file
+tests/test_config.cpp.i:
+	$(MAKE) -f CMakeFiles/test_config.dir/build.make CMakeFiles/test_config.dir/tests/test_config.cpp.i
+.PHONY : tests/test_config.cpp.i
+
+tests/test_config.s: tests/test_config.cpp.s
+
+.PHONY : tests/test_config.s
+
+# target to generate assembly for a file
+tests/test_config.cpp.s:
+	$(MAKE) -f CMakeFiles/test_config.dir/build.make CMakeFiles/test_config.dir/tests/test_config.cpp.s
+.PHONY : tests/test_config.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -200,15 +294,25 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... rebuild_cache"
+	@echo "... test_config"
 	@echo "... edit_cache"
 	@echo "... test"
 	@echo "... ljrServer"
+	@echo "... ljrServer/config.o"
+	@echo "... ljrServer/config.i"
+	@echo "... ljrServer/config.s"
 	@echo "... ljrServer/log.o"
 	@echo "... ljrServer/log.i"
 	@echo "... ljrServer/log.s"
+	@echo "... ljrServer/util.o"
+	@echo "... ljrServer/util.i"
+	@echo "... ljrServer/util.s"
 	@echo "... tests/test.o"
 	@echo "... tests/test.i"
 	@echo "... tests/test.s"
+	@echo "... tests/test_config.o"
+	@echo "... tests/test_config.i"
+	@echo "... tests/test_config.s"
 .PHONY : help
 
 

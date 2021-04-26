@@ -1,6 +1,6 @@
 
-#ifndef _LJRSERVER_LOG_H_
-#define _LJRSERVER_LOG_H_
+#ifndef __LJRSERVER_LOG_H__
+#define __LJRSERVER_LOG_H__
 
 #include <string>
 #include <memory>
@@ -8,45 +8,39 @@
 #include <sstream>
 #include <fstream>
 #include <vector>
+#include <stdarg.h>
+#include <map>
+#include "util.h"
+#include "singleton.h"
+
+// 流式输出
+#define LJRSERVER_LOG_LEVEL(logger, level) \
+    if (logger->getLevel() <= level)       \
+    ljrserver::LogEventWrap(ljrserver::LogEvent::ptr(new ljrserver::LogEvent(logger, level, __FILE__, __LINE__, 0, ljrserver::GetThreadId(), ljrserver::GetFiberId(), time(0)))).getSS()
+
+#define LJRSERVER_LOG_DEBUG(logger) LJRSERVER_LOG_LEVEL(logger, ljrserver::LogLevel::DEBUG)
+#define LJRSERVER_LOG_INFO(logger) LJRSERVER_LOG_LEVEL(logger, ljrserver::LogLevel::INFO)
+#define LJRSERVER_LOG_WARN(logger) LJRSERVER_LOG_LEVEL(logger, ljrserver::LogLevel::WARN)
+#define LJRSERVER_LOG_ERROR(logger) LJRSERVER_LOG_LEVEL(logger, ljrserver::LogLevel::ERROR)
+#define LJRSERVER_LOG_FATAL(logger) LJRSERVER_LOG_LEVEL(logger, ljrserver::LogLevel::FATAL)
+
+// 格式化输出
+#define LJRSERVER_LOG_FORMAT_LEVEL(logger, level, fmt, ...) \
+    if (logger->getLevel() <= level)                        \
+    ljrserver::LogEventWrap(ljrserver::LogEvent::ptr(new ljrserver::LogEvent(logger, level, __FILE__, __LINE__, 0, ljrserver::GetThreadId(), ljrserver::GetFiberId(), time(0)))).getEvent()->format(fmt, __VA_ARGS__)
+
+#define LJRSERVER_LOG_FORMAT_DEBUG(logger, fmt, ...) LJRSERVER_LOG_FORMAT_LEVEL(logger, ljrserver::LogLevel::DEBUG, fmt, __VA_ARGS__)
+#define LJRSERVER_LOG_FORMAT_INFO(logger, fmt, ...) LJRSERVER_LOG_FORMAT_LEVEL(logger, ljrserver::LogLevel::INFO, fmt, __VA_ARGS__)
+#define LJRSERVER_LOG_FORMAT_WARN(logger, fmt, ...) LJRSERVER_LOG_FORMAT_LEVEL(logger, ljrserver::LogLevel::WARN, fmt, __VA_ARGS__)
+#define LJRSERVER_LOG_FORMAT_ERROR(logger, fmt, ...) LJRSERVER_LOG_FORMAT_LEVEL(logger, ljrserver::LogLevel::ERROR, fmt, __VA_ARGS__)
+#define LJRSERVER_LOG_FORMAT_FATAL(logger, fmt, ...) LJRSERVER_LOG_FORMAT_LEVEL(logger, ljrserver::LogLevel::FATAL, fmt, __VA_ARGS__)
+
+// root日志
+#define LJRSERVER_LOG_ROOT() ljrserver::LoggerMgr::GetInstance()->getRoot()
 
 namespace ljrserver
 {
     class Logger;
-
-    // 日志事件
-    class LogEvent
-    {
-    public:
-        typedef std::shared_ptr<LogEvent> ptr;
-
-        LogEvent(const char *file, int32_t line, uint32_t elapse, uint32_t thread_id,
-                 uint32_t fiber_id, uint64_t time);
-
-        const char *getFile() const { return m_file; }
-        int32_t getLine() const { return m_line; }
-        uint32_t getElapse() const { return m_elapse; }
-        uint32_t getThreadId() const { return m_threadId; }
-        uint32_t getFiberId() const { return m_fiberID; }
-        uint64_t getTime() const { return m_time; }
-        std::string getContent() const { return m_ss.str(); }
-        std::stringstream &getSS() { return m_ss; }
-
-    private:
-        // 文件名
-        const char *m_file = nullptr;
-        // 行号
-        int32_t m_line = 0;
-        // 程序启动开始到现在的毫秒数
-        uint32_t m_elapse = 0;
-        // 线程id
-        uint32_t m_threadId = 0;
-        // 协程id
-        uint32_t m_fiberID = 0;
-        // 时间戳
-        uint64_t m_time = 0;
-        // 事件内容
-        std::stringstream m_ss;
-    };
 
     // 日志级别
     class LogLevel
@@ -63,6 +57,67 @@ namespace ljrserver
         };
 
         static const char *toString(LogLevel::Level level);
+    };
+
+    // 日志事件
+    class LogEvent
+    {
+    public:
+        typedef std::shared_ptr<LogEvent> ptr;
+
+        LogEvent(std::shared_ptr<Logger> logger, LogLevel::Level level,
+                 const char *file, int32_t line, uint32_t elapse,
+                 uint32_t thread_id, uint32_t fiber_id, uint64_t time);
+
+        const char *getFile() const { return m_file; }
+        int32_t getLine() const { return m_line; }
+        uint32_t getElapse() const { return m_elapse; }
+        uint32_t getThreadId() const { return m_threadId; }
+        uint32_t getFiberId() const { return m_fiberID; }
+        uint64_t getTime() const { return m_time; }
+        std::string getContent() const { return m_ss.str(); }
+        std::shared_ptr<Logger> getLogger() const { return m_logger; }
+        LogLevel::Level getLevel() const { return m_level; }
+
+        std::stringstream &getSS() { return m_ss; }
+
+        void format(const char *fmt, ...);
+        void format(const char *fmt, va_list al);
+
+    private:
+        // 文件名
+        const char *m_file = nullptr;
+        // 行号
+        int32_t m_line = 0;
+        // 程序启动开始到现在的毫秒数
+        uint32_t m_elapse = 0;
+        // 线程id
+        uint32_t m_threadId = 0;
+        // 协程id
+        uint32_t m_fiberID = 0;
+        // 时间戳
+        uint64_t m_time = 0;
+        // 事件内容
+        std::stringstream m_ss;
+        // 日志器
+        std::shared_ptr<Logger> m_logger;
+        // 日志级别
+        LogLevel::Level m_level;
+    };
+
+    // 日志事件包装器
+    class LogEventWrap
+    {
+    public:
+        LogEventWrap(LogEvent::ptr event);
+        ~LogEventWrap();
+
+        std::stringstream &getSS();
+
+        LogEvent::ptr getEvent() const;
+
+    private:
+        LogEvent::ptr m_event;
     };
 
     // 日志格式器
@@ -104,8 +159,11 @@ namespace ljrserver
 
         virtual void log(std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event) = 0;
 
-        void setFormatter(LogFormatter::ptr formatter) { m_formatter = formatter; }
         LogFormatter::ptr getFormatter() const { return m_formatter; }
+        void setFormatter(LogFormatter::ptr formatter) { m_formatter = formatter; }
+
+        LogLevel::Level getLevel() const { return m_level; }
+        void setLevel(LogLevel::Level level) { m_level = level; }
 
     protected:
         // 忘记初始化level
@@ -175,6 +233,25 @@ namespace ljrserver
         std::string m_filename;
         std::ofstream m_filestream;
     };
+
+    // 日志管理器
+    class LoggerManager
+    {
+    public:
+        LoggerManager();
+        Logger::ptr getLogger(const std::string &name);
+
+        void init();
+
+        Logger::ptr getRoot() const { return m_root; }
+
+    private:
+        std::map<std::string, Logger::ptr> m_loggers;
+        Logger::ptr m_root;
+    };
+
+    typedef ljrserver::Singleton<LoggerManager> LoggerMgr;
+
 }
 
 #endif

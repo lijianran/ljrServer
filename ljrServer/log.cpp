@@ -1,6 +1,5 @@
 
 #include "log.h"
-#include <map>
 #include <iostream>
 #include <functional>
 #include <time.h>
@@ -8,7 +7,7 @@
 namespace ljrserver
 {
     /*
-    FormatItem
+    FormatItem 类
     // %m -- 消息体
     // %p -- level
     // %r -- 启动后时间
@@ -160,10 +159,53 @@ namespace ljrserver
     /***************
     LogEvent
     ***************/
-    LogEvent::LogEvent(const char *file, int32_t line, uint32_t elapse,
+    LogEvent::LogEvent(std::shared_ptr<Logger> logger, LogLevel::Level level,
+                       const char *file, int32_t line, uint32_t elapse,
                        uint32_t thread_id, uint32_t fiber_id, uint64_t time)
-        : m_file(file), m_line(line), m_elapse(elapse), m_threadId(thread_id), m_fiberID(fiber_id), m_time(time)
+        : m_file(file), m_line(line), m_elapse(elapse), m_threadId(thread_id),
+          m_fiberID(fiber_id), m_time(time), m_logger(logger), m_level(level)
     {
+    }
+
+    void LogEvent::format(const char *fmt, ...)
+    {
+        va_list al;
+        va_start(al, fmt);
+        format(fmt, al);
+        va_end(al);
+    }
+
+    void LogEvent::format(const char *fmt, va_list al)
+    {
+        char *buffer = nullptr;
+        int len = vasprintf(&buffer, fmt, al);
+        if (len != -1)
+        {
+            m_ss << std::string(buffer, len);
+            free(buffer);
+        }
+    }
+
+    /***************
+    LogEventWrap
+    ***************/
+    LogEventWrap::LogEventWrap(LogEvent::ptr event) : m_event(event)
+    {
+    }
+
+    LogEventWrap::~LogEventWrap()
+    {
+        m_event->getLogger()->log(m_event->getLevel(), m_event);
+    }
+
+    std::stringstream &LogEventWrap::getSS()
+    {
+        return m_event->getSS();
+    }
+
+    LogEvent::ptr LogEventWrap::getEvent() const
+    {
+        return m_event;
     }
 
     /***************
@@ -197,9 +239,8 @@ namespace ljrserver
     ***************/
     Logger::Logger(const std::string &name) : m_name(name), m_level(LogLevel::DEBUG)
     {
-        // std::cout << "logger 构造" << std::endl;
+        // 默认格式
         m_formatter.reset(new LogFormatter("%d{%Y.%m.%d %H:%M:%S}%T%t%T%F%T[%p]%T[%c]%T%f:%l%T%m%n"));
-        // std::cout << "logger 构造完成" << std::endl;
     }
 
     void Logger::addAppender(LogAppender::ptr appender)
@@ -207,6 +248,7 @@ namespace ljrserver
         // 少了!
         if (!appender->getFormatter())
         {
+            // 如果appender没有定义格式，将logger的默认格式传给appender
             appender->setFormatter(m_formatter);
         }
 
@@ -278,13 +320,17 @@ namespace ljrserver
     ***************/
     FileLogAppender::FileLogAppender(const std::string &filename) : m_filename(filename)
     {
+        reopen();
     }
 
     void FileLogAppender::log(Logger::ptr logger, LogLevel::Level level, LogEvent::ptr event)
     {
         if (level >= m_level)
         {
-            m_filestream << m_formatter->format(logger, level, event);
+            // bool test = !!m_filestream;
+            // std::cout << test;
+            std::string str = m_formatter->format(logger, level, event);
+            m_filestream << str;
         }
     }
 
@@ -429,13 +475,12 @@ namespace ljrserver
             XX(r, ElapseFormatItem),   // 累计毫秒数
             XX(c, NameFormatItem),     // 日志名称
             XX(t, ThreadIdFormatItem), // 线程id
-            XX(F, FiberIdFormatItem), // 协程id
+            XX(F, FiberIdFormatItem),  // 协程id
             XX(n, NewLineFormatItem),  // 回车换行
             XX(d, DateTimeFormatItem), // 日期
             XX(f, FileNameFormatItem), // 文件名称
             XX(l, LineFormatItem),     // 行号
             XX(T, TabFormatItem),      // tab
-
 #undef XX
         };
 
@@ -460,5 +505,21 @@ namespace ljrserver
 
             // std::cout << "(" << std::get<0>(i) << ") - (" << std::get<1>(i) << ") - (" << std::get<2>(i) << ")" << std::endl;
         }
+    }
+
+    LoggerManager::LoggerManager()
+    {
+        m_root.reset(new Logger);
+        m_root->addAppender(LogAppender::ptr(new StdoutLogAppender));
+    }
+
+    Logger::ptr LoggerManager::getLogger(const std::string &name)
+    {
+        auto it = m_loggers.find(name);
+        return it == m_loggers.end() ? m_root : it->second;
+    }
+
+    void LoggerManager::init()
+    {
     }
 }
