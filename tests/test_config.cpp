@@ -102,7 +102,7 @@ void test_config()
     XX_M(g_str_int_umap_value_config, str_int_umap, before);
 
     YAML::Node root = YAML::LoadFile("bin/conf/test.yml");
-    ljrserver::Config::LoadFromYmal(root);
+    ljrserver::Config::LoadFromYaml(root);
 
     LJRSERVER_LOG_INFO(LJRSERVER_LOG_ROOT()) << "after: " << g_int_value_config->getValue();
     LJRSERVER_LOG_INFO(LJRSERVER_LOG_ROOT()) << "after: " << g_float_value_config->toString();
@@ -207,7 +207,7 @@ void test_class()
         LJRSERVER_LOG_INFO(LJRSERVER_LOG_ROOT()) << prefix << ": size = " << m.size();                     \
     }
 
-    g_person->addListener(10, [](const Person &old_value, const Person &new_value) {
+    g_person->addListener([](const Person &old_value, const Person &new_value) {
         LJRSERVER_LOG_INFO(LJRSERVER_LOG_ROOT()) << "old_value: " << old_value.toString()
                                                  << "new_value: " << new_value.toString();
     });
@@ -217,7 +217,7 @@ void test_class()
     LJRSERVER_LOG_INFO(LJRSERVER_LOG_ROOT()) << "before: " << g_person_vec_map->toString();
 
     YAML::Node root = YAML::LoadFile("bin/conf/test.yml");
-    ljrserver::Config::LoadFromYmal(root);
+    ljrserver::Config::LoadFromYaml(root);
 
     LJRSERVER_LOG_INFO(LJRSERVER_LOG_ROOT()) << "after: " << g_person->getValue().toString() << " - " << g_person->toString();
 
@@ -235,7 +235,7 @@ void test_log()
     std::cout << ljrserver::LoggerMgr::GetInstance()->toYamlString() << std::endl;
 
     YAML::Node root = YAML::LoadFile("bin/conf/log.yml");
-    ljrserver::Config::LoadFromYmal(root);
+    ljrserver::Config::LoadFromYaml(root);
 
     std::cout << "============" << std::endl;
 
@@ -258,7 +258,14 @@ int main(int argc, char const *argv[])
 
     // test_class();
 
-    test_log();
+    // test_log();
+
+    ljrserver::Config::Visit([](ljrserver::ConfigVarBase::ptr var) {
+        LJRSERVER_LOG_INFO(LJRSERVER_LOG_ROOT()) << "name = " << var->getName()
+                                                 << " description = " << var->getDescription()
+                                                 << " typename = " << var->getTypeName()
+                                                 << " value = " << var->toString();
+    });
 
     return 0;
 }

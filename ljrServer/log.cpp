@@ -215,6 +215,8 @@ namespace ljrserver
     ***************/
     void LogAppender::setFormatter(LogFormatter::ptr formatter)
     {
+        MutexType::Lock lock(m_mutex);
+
         m_formatter = formatter;
         if (m_formatter)
         {
@@ -224,6 +226,13 @@ namespace ljrserver
         {
             m_hasFormatter = false;
         }
+    }
+
+    LogFormatter::ptr LogAppender::getFormatter()
+    {
+        MutexType::Lock lock(m_mutex);
+
+        return m_formatter;
     }
 
     /***************
@@ -285,6 +294,8 @@ namespace ljrserver
 
     std::string Logger::toYamlString()
     {
+        MutexType::Lock lock(m_mutex);
+
         YAML::Node node;
         node["name"] = m_name;
         if (m_level != LogLevel::UNKNOW)
@@ -308,15 +319,21 @@ namespace ljrserver
 
     LogFormatter::ptr Logger::getFormatter()
     {
+        MutexType::Lock lock(m_mutex);
+
         return m_formatter;
     }
 
     void Logger::setFormatter(LogFormatter::ptr val)
     {
+        MutexType::Lock lock(m_mutex);
+
         m_formatter = val;
 
         for (auto &i : m_appenders)
         {
+            MutexType::Lock ll(i->m_mutex);
+
             if (!i->m_hasFormatter)
             {
                 i->m_formatter = m_formatter;
@@ -340,9 +357,13 @@ namespace ljrserver
 
     void Logger::addAppender(LogAppender::ptr appender)
     {
+        MutexType::Lock lock(m_mutex);
+
         // 少了!
         if (!appender->getFormatter())
         {
+            MutexType::Lock ll(appender->m_mutex);
+
             // 如果appender没有定义格式，将logger的默认格式传给appender
             appender->m_formatter = m_formatter;
             // appender->setFormatter(m_formatter);
@@ -353,6 +374,8 @@ namespace ljrserver
 
     void Logger::delAppender(LogAppender::ptr appender)
     {
+        MutexType::Lock lock(m_mutex);
+
         for (auto it = m_appenders.begin(); it != m_appenders.end(); ++it)
         {
             if (*it == appender)
@@ -365,6 +388,8 @@ namespace ljrserver
 
     void Logger::clearAppenders()
     {
+        MutexType::Lock lock(m_mutex);
+
         m_appenders.clear();
     }
 
@@ -373,6 +398,8 @@ namespace ljrserver
         if (level >= m_level)
         {
             auto self = shared_from_this();
+            MutexType::Lock lock(m_mutex);
+
             if (!m_appenders.empty())
             {
                 for (auto &i : m_appenders)
@@ -419,12 +446,16 @@ namespace ljrserver
     {
         if (level >= m_level)
         {
+            MutexType::Lock lock(m_mutex);
+
             std::cout << m_formatter->format(logger, level, event);
         }
     }
 
     std::string StdoutLogAppender::toYamlString()
     {
+        MutexType::Lock lock(m_mutex);
+
         YAML::Node node;
         node["type"] = "StdoutLogAppender";
         if (m_level != LogLevel::UNKNOW)
@@ -454,15 +485,23 @@ namespace ljrserver
     {
         if (level >= m_level)
         {
-            // bool test = !!m_filestream;
-            // std::cout << test;
-            std::string str = m_formatter->format(logger, level, event);
-            m_filestream << str;
+            uint64_t now = time(0);
+            if (now != m_lastTime)
+            {
+                reopen();
+                m_lastTime = now;
+            }
+            
+            MutexType::Lock lock(m_mutex);
+
+            m_filestream << m_formatter->format(logger, level, event);
         }
     }
 
     std::string FileLogAppender::toYamlString()
     {
+        MutexType::Lock lock(m_mutex);
+
         YAML::Node node;
         node["type"] = "FileLogAppender";
         node["file"] = m_filename;
@@ -483,6 +522,8 @@ namespace ljrserver
 
     bool FileLogAppender::reopen()
     {
+        MutexType::Lock lock(m_mutex);
+
         if (m_filestream)
         {
             m_filestream.close();
@@ -655,6 +696,9 @@ namespace ljrserver
         }
     }
 
+    /***************
+    LoggerManager
+    ***************/
     LoggerManager::LoggerManager()
     {
         m_root.reset(new Logger);
@@ -667,6 +711,8 @@ namespace ljrserver
 
     Logger::ptr LoggerManager::getLogger(const std::string &name)
     {
+        MutexType::Lock lock(m_mutex);
+
         auto it = m_loggers.find(name);
         if (it != m_loggers.end())
         {
@@ -683,6 +729,8 @@ namespace ljrserver
 
     std::string LoggerManager::toYamlString()
     {
+        MutexType::Lock lock(m_mutex);
+
         YAML::Node node;
         for (auto &i : m_loggers)
         {
@@ -865,7 +913,7 @@ namespace ljrserver
     {
         LogIniter()
         {
-            g_log_defines->addListener(0xF1E231, [](const std::set<LogDefine> &old_value,
+            g_log_defines->addListener([](const std::set<LogDefine> &old_value,
                                                     const std::set<LogDefine> &new_value) {
                 LJRSERVER_LOG_INFO(LJRSERVER_LOG_ROOT()) << "on_logger_conf_changed";
                 for (auto &i : new_value)

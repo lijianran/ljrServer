@@ -127,6 +127,19 @@ test_config/fast:
 .PHONY : test_config/fast
 
 #=============================================================================
+# Target rules for targets named test_thread
+
+# Build rule for target.
+test_thread: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 test_thread
+.PHONY : test_thread
+
+# fast build rule for target.
+test_thread/fast:
+	$(MAKE) -f CMakeFiles/test_thread.dir/build.make CMakeFiles/test_thread.dir/build
+.PHONY : test_thread/fast
+
+#=============================================================================
 # Target rules for targets named test
 
 # Build rule for target.
@@ -205,6 +218,33 @@ ljrServer/log.s: ljrServer/log.cpp.s
 ljrServer/log.cpp.s:
 	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/log.cpp.s
 .PHONY : ljrServer/log.cpp.s
+
+ljrServer/thread.o: ljrServer/thread.cpp.o
+
+.PHONY : ljrServer/thread.o
+
+# target to build an object file
+ljrServer/thread.cpp.o:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/thread.cpp.o
+.PHONY : ljrServer/thread.cpp.o
+
+ljrServer/thread.i: ljrServer/thread.cpp.i
+
+.PHONY : ljrServer/thread.i
+
+# target to preprocess a source file
+ljrServer/thread.cpp.i:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/thread.cpp.i
+.PHONY : ljrServer/thread.cpp.i
+
+ljrServer/thread.s: ljrServer/thread.cpp.s
+
+.PHONY : ljrServer/thread.s
+
+# target to generate assembly for a file
+ljrServer/thread.cpp.s:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/thread.cpp.s
+.PHONY : ljrServer/thread.cpp.s
 
 ljrServer/util.o: ljrServer/util.cpp.o
 
@@ -287,6 +327,33 @@ tests/test_config.cpp.s:
 	$(MAKE) -f CMakeFiles/test_config.dir/build.make CMakeFiles/test_config.dir/tests/test_config.cpp.s
 .PHONY : tests/test_config.cpp.s
 
+tests/test_thread.o: tests/test_thread.cpp.o
+
+.PHONY : tests/test_thread.o
+
+# target to build an object file
+tests/test_thread.cpp.o:
+	$(MAKE) -f CMakeFiles/test_thread.dir/build.make CMakeFiles/test_thread.dir/tests/test_thread.cpp.o
+.PHONY : tests/test_thread.cpp.o
+
+tests/test_thread.i: tests/test_thread.cpp.i
+
+.PHONY : tests/test_thread.i
+
+# target to preprocess a source file
+tests/test_thread.cpp.i:
+	$(MAKE) -f CMakeFiles/test_thread.dir/build.make CMakeFiles/test_thread.dir/tests/test_thread.cpp.i
+.PHONY : tests/test_thread.cpp.i
+
+tests/test_thread.s: tests/test_thread.cpp.s
+
+.PHONY : tests/test_thread.s
+
+# target to generate assembly for a file
+tests/test_thread.cpp.s:
+	$(MAKE) -f CMakeFiles/test_thread.dir/build.make CMakeFiles/test_thread.dir/tests/test_thread.cpp.s
+.PHONY : tests/test_thread.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -296,6 +363,7 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... test_config"
 	@echo "... edit_cache"
+	@echo "... test_thread"
 	@echo "... test"
 	@echo "... ljrServer"
 	@echo "... ljrServer/config.o"
@@ -304,6 +372,9 @@ help:
 	@echo "... ljrServer/log.o"
 	@echo "... ljrServer/log.i"
 	@echo "... ljrServer/log.s"
+	@echo "... ljrServer/thread.o"
+	@echo "... ljrServer/thread.i"
+	@echo "... ljrServer/thread.s"
 	@echo "... ljrServer/util.o"
 	@echo "... ljrServer/util.i"
 	@echo "... ljrServer/util.s"
@@ -313,6 +384,9 @@ help:
 	@echo "... tests/test_config.o"
 	@echo "... tests/test_config.i"
 	@echo "... tests/test_config.s"
+	@echo "... tests/test_thread.o"
+	@echo "... tests/test_thread.i"
+	@echo "... tests/test_thread.s"
 .PHONY : help
 
 

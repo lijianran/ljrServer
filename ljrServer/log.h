@@ -12,6 +12,7 @@
 #include <map>
 #include "util.h"
 #include "singleton.h"
+#include "thread.h"
 
 // 流式输出
 #define LJRSERVER_LOG_LEVEL(logger, level) \
@@ -166,6 +167,7 @@ namespace ljrserver
 
     public:
         typedef std::shared_ptr<LogAppender> ptr;
+        typedef Spinlock MutexType;
 
         virtual ~LogAppender() {}
 
@@ -173,7 +175,7 @@ namespace ljrserver
 
         virtual std::string toYamlString() = 0;
 
-        LogFormatter::ptr getFormatter() const { return m_formatter; }
+        LogFormatter::ptr getFormatter();
         void setFormatter(LogFormatter::ptr formatter);
 
         LogLevel::Level getLevel() const { return m_level; }
@@ -185,6 +187,8 @@ namespace ljrserver
 
         bool m_hasFormatter = false;
 
+        MutexType m_mutex;
+
         LogFormatter::ptr m_formatter;
     };
 
@@ -195,6 +199,7 @@ namespace ljrserver
 
     public:
         typedef std::shared_ptr<Logger> ptr;
+        typedef Spinlock MutexType;
 
         Logger(const std::string &name = "root");
 
@@ -232,6 +237,8 @@ namespace ljrserver
         LogFormatter::ptr m_formatter;
 
         Logger::ptr m_root;
+
+        MutexType m_mutex;
     };
 
     // 输出到控制台的Appender
@@ -268,12 +275,16 @@ namespace ljrserver
     private:
         std::string m_filename;
         std::ofstream m_filestream;
+
+        uint64_t m_lastTime = 0;
     };
 
     // 日志管理器
     class LoggerManager
     {
     public:
+        typedef Spinlock MutexType;
+
         LoggerManager();
         Logger::ptr getLogger(const std::string &name);
 
@@ -286,6 +297,8 @@ namespace ljrserver
     private:
         std::map<std::string, Logger::ptr> m_loggers;
         Logger::ptr m_root;
+
+        MutexType m_mutex;
     };
 
     typedef ljrserver::Singleton<LoggerManager> LoggerMgr;

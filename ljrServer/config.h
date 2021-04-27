@@ -15,6 +15,7 @@
 #include <unordered_map>
 #include <functional>
 #include "log.h"
+#include "thread.h"
 
 namespace ljrserver
 {
@@ -294,6 +295,7 @@ namespace ljrserver
     class ConfigVar : public ConfigVarBase
     {
     public:
+        typedef RWMutex RWMutexType;
         typedef std::shared_ptr<ConfigVar> ptr;
         typedef std::function<void(const T &old_value, const T &new_value)> on_change_cb;
 
@@ -304,6 +306,8 @@ namespace ljrserver
         {
             try
             {
+                RWMutexType::ReadLock lock(m_mutex);
+
                 // return boost::lexical_cast<std::string>(m_val);
                 return ToStr()(m_val);
             }
@@ -331,39 +335,68 @@ namespace ljrserver
             return false;
         }
 
-        const T getValue() const { return m_val; }
+        const T getValue()
+        {
+            // 加了const函数 不能枷锁 会修改成员变量
+            RWMutexType::ReadLock lock(m_mutex);
+
+            return m_val;
+        }
+
         void setValue(const T &v)
         {
-            if (v == m_val)
             {
-                return;
+                RWMutexType::ReadLock lock(m_mutex);
+
+                if (v == m_val)
+                {
+                    return;
+                }
+                for (auto &i : m_cbs)
+                {
+                    i.second(m_val, v);
+                }
             }
-            for (auto &i : m_cbs)
-            {
-                i.second(m_val, v);
-            }
+            RWMutexType::WirteLock lock(m_mutex);
+
             m_val = v;
         }
 
         std::string getTypeName() const override { return typeid(T).name(); }
 
-        void addListener(uint64_t key, on_change_cb cb)
+        // void addListener(uint64_t key, on_change_cb cb)
+        // {
+        //     m_cbs[key] = cb;
+        // }
+
+        uint64_t addListener(on_change_cb cb)
         {
-            m_cbs[key] = cb;
+            static uint64_t s_fun_id = 0;
+            RWMutexType::WirteLock lock(m_mutex);
+
+            ++s_fun_id;
+            m_cbs[s_fun_id] = cb;
+            return s_fun_id;
         }
 
         void delListener(uint64_t key)
         {
+            RWMutexType::WirteLock lock(m_mutex);
+
             m_cbs.erase(key);
         }
 
         void clearListener()
         {
+            RWMutexType::WirteLock lock(m_mutex);
+
             m_cbs.clear();
         }
 
         on_change_cb getListener(uint64_t key)
         {
+            RWMutexType::ReadLock lock(m_mutex);
+
             auto it = m_cbs.find(key);
             return it == m_cbs.end() ? nullptr : it->second;
         }
@@ -373,16 +406,21 @@ namespace ljrserver
 
         // 变更回调函数组 uint64_t key要求唯一，一般可用hash
         std::map<uint64_t, on_change_cb> m_cbs;
+
+        RWMutexType m_mutex;
     };
 
     class Config
     {
     public:
         typedef std::unordered_map<std::string, ConfigVarBase::ptr> ConfigVarMap;
+        typedef RWMutex RWMutexType;
 
         template <class T>
         static typename ConfigVar<T>::ptr Lookup(const std::string &name, const T &default_value, const std::string &description = "")
         {
+            RWMutexType::WirteLock lock(GetMutex());
+
             auto it = GetDatas().find(name);
             if (it != GetDatas().end())
             {
@@ -425,6 +463,8 @@ namespace ljrserver
         template <class T>
         static typename ConfigVar<T>::ptr Lookup(const std::string &name)
         {
+            RWMutexType::ReadLock lock(GetMutex());
+
             auto it = GetDatas().find(name);
             if (it == GetDatas().end())
             {
@@ -433,9 +473,11 @@ namespace ljrserver
             return std::dynamic_pointer_cast<ConfigVar<T>>(it->second);
         }
 
-        static void LoadFromYmal(const YAML::Node &root);
+        static void LoadFromYaml(const YAML::Node &root);
 
         static ConfigVarBase::ptr LookupBase(const std::string &name);
+
+        static void Visit(std::function<void(ConfigVarBase::ptr)> cb);
 
     private:
         static ConfigVarMap &GetDatas()
@@ -445,6 +487,15 @@ namespace ljrserver
             return s_datas;
         }
         // static ConfigVarMap s_datas;
+
+        static RWMutexType &GetMutex()
+        {
+            // 全局配置 Config
+            // 全局静态变量，初始化没有严格的顺序
+            // 要确保使用锁前，静态锁变量已经被初始化
+            static RWMutexType s_mutex;
+            return s_mutex;
+        }
     };
 
 }
