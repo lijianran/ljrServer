@@ -28,3 +28,11 @@ lijianran's Internet Server
 1. 开始配置config模块
 2. 配置boost、yaml-cpp库
 3. config模块支持简单类型的配置
+4. STL容器偏特化，支持了vector、list、set、map、unordered_set、unordered_map
+5. 支持自定义类型解析配置
+6. 支持监听配置变更事件
+
+- 2021.04.27
+
+1. 日志系统、配置系统整合
+2. 完善日志模块和配置模块
