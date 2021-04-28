@@ -80,6 +80,16 @@ namespace ljrserver
         }
     };
 
+    class ThreadNameFormatItem : public LogFormatter::FormatItem
+    {
+    public:
+        ThreadNameFormatItem(const std::string &str = "") {}
+        void format(std::ostream &os, Logger::ptr logger, LogLevel::Level level, LogEvent::ptr event) override
+        {
+            os << event->getThreadName();
+        }
+    };
+
     class DateTimeFormatItem : public LogFormatter::FormatItem
     {
     public:
@@ -163,9 +173,17 @@ namespace ljrserver
     ***************/
     LogEvent::LogEvent(std::shared_ptr<Logger> logger, LogLevel::Level level,
                        const char *file, int32_t line, uint32_t elapse,
-                       uint32_t thread_id, uint32_t fiber_id, uint64_t time)
-        : m_file(file), m_line(line), m_elapse(elapse), m_threadId(thread_id),
-          m_fiberID(fiber_id), m_time(time), m_logger(logger), m_level(level)
+                       uint32_t thread_id, uint32_t fiber_id, uint64_t time,
+                       const std::string &thread_name)
+        : m_file(file),
+          m_line(line),
+          m_elapse(elapse),
+          m_threadId(thread_id),
+          m_fiberID(fiber_id),
+          m_time(time),
+          m_threadName(thread_name),
+          m_logger(logger),
+          m_level(level)
     {
     }
 
@@ -289,7 +307,7 @@ namespace ljrserver
     Logger::Logger(const std::string &name) : m_name(name), m_level(LogLevel::DEBUG)
     {
         // 默认格式
-        m_formatter.reset(new LogFormatter("%d{%Y.%m.%d %H:%M:%S}%T%t%T%F%T[%p]%T[%c]%T%f:%l%T%m%n"));
+        m_formatter.reset(new LogFormatter("%d{%Y.%m.%d %H:%M:%S}%T%t%T%N%T%F%T[%p]%T[%c]%T%f:%l%T%m%n"));
     }
 
     std::string Logger::toYamlString()
@@ -491,7 +509,7 @@ namespace ljrserver
                 reopen();
                 m_lastTime = now;
             }
-            
+
             MutexType::Lock lock(m_mutex);
 
             m_filestream << m_formatter->format(logger, level, event);
@@ -658,17 +676,19 @@ namespace ljrserver
 #str, [](const std::string &fmt) { return FormatItem::ptr(new C(fmt)); } \
     }
 
-            XX(m, MessageFormatItem),  // 消息
-            XX(p, LevelFormatItem),    // 日志级别
-            XX(r, ElapseFormatItem),   // 累计毫秒数
-            XX(c, NameFormatItem),     // 日志名称
-            XX(t, ThreadIdFormatItem), // 线程id
-            XX(F, FiberIdFormatItem),  // 协程id
-            XX(n, NewLineFormatItem),  // 回车换行
-            XX(d, DateTimeFormatItem), // 日期
-            XX(f, FileNameFormatItem), // 文件名称
-            XX(l, LineFormatItem),     // 行号
-            XX(T, TabFormatItem),      // tab
+            XX(m, MessageFormatItem),    // 消息
+            XX(p, LevelFormatItem),      // 日志级别
+            XX(r, ElapseFormatItem),     // 累计毫秒数
+            XX(c, NameFormatItem),       // 日志名称
+            XX(t, ThreadIdFormatItem),   // 线程id
+            XX(F, FiberIdFormatItem),    // 协程id
+            XX(n, NewLineFormatItem),    // 回车换行
+            XX(d, DateTimeFormatItem),   // 日期
+            XX(f, FileNameFormatItem),   // 文件名称
+            XX(l, LineFormatItem),       // 行号
+            XX(T, TabFormatItem),        // tab
+            XX(N, ThreadNameFormatItem), // 线程名称
+
 #undef XX
         };
 
@@ -914,7 +934,7 @@ namespace ljrserver
         LogIniter()
         {
             g_log_defines->addListener([](const std::set<LogDefine> &old_value,
-                                                    const std::set<LogDefine> &new_value) {
+                                          const std::set<LogDefine> &new_value) {
                 LJRSERVER_LOG_INFO(LJRSERVER_LOG_ROOT()) << "on_logger_conf_changed";
                 for (auto &i : new_value)
                 {

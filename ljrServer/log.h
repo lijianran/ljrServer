@@ -15,9 +15,13 @@
 #include "thread.h"
 
 // 流式输出
-#define LJRSERVER_LOG_LEVEL(logger, level) \
-    if (logger->getLevel() <= level)       \
-    ljrserver::LogEventWrap(ljrserver::LogEvent::ptr(new ljrserver::LogEvent(logger, level, __FILE__, __LINE__, 0, ljrserver::GetThreadId(), ljrserver::GetFiberId(), time(0)))).getSS()
+#define LJRSERVER_LOG_LEVEL(logger, level)                                         \
+    if (logger->getLevel() <= level)                                               \
+    ljrserver::LogEventWrap(ljrserver::LogEvent::ptr(new ljrserver::LogEvent(      \
+                                logger, level, __FILE__, __LINE__, 0,              \
+                                ljrserver::GetThreadId(), ljrserver::GetFiberId(), \
+                                time(0), ljrserver::Thread::GetName())))           \
+        .getSS()
 
 #define LJRSERVER_LOG_DEBUG(logger) LJRSERVER_LOG_LEVEL(logger, ljrserver::LogLevel::DEBUG)
 #define LJRSERVER_LOG_INFO(logger) LJRSERVER_LOG_LEVEL(logger, ljrserver::LogLevel::INFO)
@@ -26,9 +30,14 @@
 #define LJRSERVER_LOG_FATAL(logger) LJRSERVER_LOG_LEVEL(logger, ljrserver::LogLevel::FATAL)
 
 // 格式化输出
-#define LJRSERVER_LOG_FORMAT_LEVEL(logger, level, fmt, ...) \
-    if (logger->getLevel() <= level)                        \
-    ljrserver::LogEventWrap(ljrserver::LogEvent::ptr(new ljrserver::LogEvent(logger, level, __FILE__, __LINE__, 0, ljrserver::GetThreadId(), ljrserver::GetFiberId(), time(0)))).getEvent()->format(fmt, __VA_ARGS__)
+#define LJRSERVER_LOG_FORMAT_LEVEL(logger, level, fmt, ...)                        \
+    if (logger->getLevel() <= level)                                               \
+    ljrserver::LogEventWrap(ljrserver::LogEvent::ptr(new ljrserver::LogEvent(      \
+                                logger, level, __FILE__, __LINE__, 0,              \
+                                ljrserver::GetThreadId(), ljrserver::GetFiberId(), \
+                                time(0), ljrserver::Thread::GetName())))           \
+        .getEvent()                                                                \
+        ->format(fmt, __VA_ARGS__)
 
 #define LJRSERVER_LOG_FORMAT_DEBUG(logger, fmt, ...) LJRSERVER_LOG_FORMAT_LEVEL(logger, ljrserver::LogLevel::DEBUG, fmt, __VA_ARGS__)
 #define LJRSERVER_LOG_FORMAT_INFO(logger, fmt, ...) LJRSERVER_LOG_FORMAT_LEVEL(logger, ljrserver::LogLevel::INFO, fmt, __VA_ARGS__)
@@ -73,7 +82,8 @@ namespace ljrserver
 
         LogEvent(std::shared_ptr<Logger> logger, LogLevel::Level level,
                  const char *file, int32_t line, uint32_t elapse,
-                 uint32_t thread_id, uint32_t fiber_id, uint64_t time);
+                 uint32_t thread_id, uint32_t fiber_id, uint64_t time,
+                 const std::string &thread_name);
 
         const char *getFile() const { return m_file; }
         int32_t getLine() const { return m_line; }
@@ -81,6 +91,7 @@ namespace ljrserver
         uint32_t getThreadId() const { return m_threadId; }
         uint32_t getFiberId() const { return m_fiberID; }
         uint64_t getTime() const { return m_time; }
+        const std::string &getThreadName() const { return m_threadName; }
         std::string getContent() const { return m_ss.str(); }
         std::shared_ptr<Logger> getLogger() const { return m_logger; }
         LogLevel::Level getLevel() const { return m_level; }
@@ -103,6 +114,8 @@ namespace ljrserver
         uint32_t m_fiberID = 0;
         // 时间戳
         uint64_t m_time = 0;
+        // 线程名称
+        std::string m_threadName;
         // 事件内容
         std::stringstream m_ss;
         // 日志器

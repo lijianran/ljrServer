@@ -12,6 +12,9 @@
 // #include <memory> uint32_t
 #include <stdint.h>
 
+#include <vector>
+#include <string>
+
 namespace ljrserver
 {
 
@@ -20,6 +23,12 @@ namespace ljrserver
 
     // 协程id
     uint32_t GetFiberId();
+
+    // 函数调用栈
+    void Backtrace(std::vector<std::string> &bt, int size = 64, int skip = 1);
+
+    // 函数调用栈，string
+    std::string BacktraceToString(int size = 64, int skip = 2, const std::string &prefix = "");
 
 }
 
