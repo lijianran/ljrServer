@@ -30,6 +30,12 @@ namespace ljrserver
     // 函数调用栈，string
     std::string BacktraceToString(int size = 64, int skip = 2, const std::string &prefix = "");
 
+    // 时间 ms
+    uint64_t GetCurrentMS();
+
+    // 时间 us
+    uint64_t GetCurrentUS();
+
 }
 
 #endif

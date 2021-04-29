@@ -114,6 +114,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named test_iomanager
+
+# Build rule for target.
+test_iomanager: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 test_iomanager
+.PHONY : test_iomanager
+
+# fast build rule for target.
+test_iomanager/fast:
+	$(MAKE) -f CMakeFiles/test_iomanager.dir/build.make CMakeFiles/test_iomanager.dir/build
+.PHONY : test_iomanager/fast
+
+#=============================================================================
 # Target rules for targets named test_scheduler
 
 # Build rule for target.
@@ -258,6 +271,33 @@ ljrServer/fiber.cpp.s:
 	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/fiber.cpp.s
 .PHONY : ljrServer/fiber.cpp.s
 
+ljrServer/iomanager.o: ljrServer/iomanager.cpp.o
+
+.PHONY : ljrServer/iomanager.o
+
+# target to build an object file
+ljrServer/iomanager.cpp.o:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/iomanager.cpp.o
+.PHONY : ljrServer/iomanager.cpp.o
+
+ljrServer/iomanager.i: ljrServer/iomanager.cpp.i
+
+.PHONY : ljrServer/iomanager.i
+
+# target to preprocess a source file
+ljrServer/iomanager.cpp.i:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/iomanager.cpp.i
+.PHONY : ljrServer/iomanager.cpp.i
+
+ljrServer/iomanager.s: ljrServer/iomanager.cpp.s
+
+.PHONY : ljrServer/iomanager.s
+
+# target to generate assembly for a file
+ljrServer/iomanager.cpp.s:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/iomanager.cpp.s
+.PHONY : ljrServer/iomanager.cpp.s
+
 ljrServer/log.o: ljrServer/log.cpp.o
 
 .PHONY : ljrServer/log.o
@@ -338,6 +378,33 @@ ljrServer/thread.s: ljrServer/thread.cpp.s
 ljrServer/thread.cpp.s:
 	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/thread.cpp.s
 .PHONY : ljrServer/thread.cpp.s
+
+ljrServer/timer.o: ljrServer/timer.cpp.o
+
+.PHONY : ljrServer/timer.o
+
+# target to build an object file
+ljrServer/timer.cpp.o:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/timer.cpp.o
+.PHONY : ljrServer/timer.cpp.o
+
+ljrServer/timer.i: ljrServer/timer.cpp.i
+
+.PHONY : ljrServer/timer.i
+
+# target to preprocess a source file
+ljrServer/timer.cpp.i:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/timer.cpp.i
+.PHONY : ljrServer/timer.cpp.i
+
+ljrServer/timer.s: ljrServer/timer.cpp.s
+
+.PHONY : ljrServer/timer.s
+
+# target to generate assembly for a file
+ljrServer/timer.cpp.s:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/timer.cpp.s
+.PHONY : ljrServer/timer.cpp.s
 
 ljrServer/util.o: ljrServer/util.cpp.o
 
@@ -447,6 +514,33 @@ tests/test_fiber.cpp.s:
 	$(MAKE) -f CMakeFiles/test_fiber.dir/build.make CMakeFiles/test_fiber.dir/tests/test_fiber.cpp.s
 .PHONY : tests/test_fiber.cpp.s
 
+tests/test_iomanager.o: tests/test_iomanager.cpp.o
+
+.PHONY : tests/test_iomanager.o
+
+# target to build an object file
+tests/test_iomanager.cpp.o:
+	$(MAKE) -f CMakeFiles/test_iomanager.dir/build.make CMakeFiles/test_iomanager.dir/tests/test_iomanager.cpp.o
+.PHONY : tests/test_iomanager.cpp.o
+
+tests/test_iomanager.i: tests/test_iomanager.cpp.i
+
+.PHONY : tests/test_iomanager.i
+
+# target to preprocess a source file
+tests/test_iomanager.cpp.i:
+	$(MAKE) -f CMakeFiles/test_iomanager.dir/build.make CMakeFiles/test_iomanager.dir/tests/test_iomanager.cpp.i
+.PHONY : tests/test_iomanager.cpp.i
+
+tests/test_iomanager.s: tests/test_iomanager.cpp.s
+
+.PHONY : tests/test_iomanager.s
+
+# target to generate assembly for a file
+tests/test_iomanager.cpp.s:
+	$(MAKE) -f CMakeFiles/test_iomanager.dir/build.make CMakeFiles/test_iomanager.dir/tests/test_iomanager.cpp.s
+.PHONY : tests/test_iomanager.cpp.s
+
 tests/test_scheduler.o: tests/test_scheduler.cpp.o
 
 .PHONY : tests/test_scheduler.o
@@ -534,6 +628,7 @@ help:
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
+	@echo "... test_iomanager"
 	@echo "... test_scheduler"
 	@echo "... test_fiber"
 	@echo "... rebuild_cache"
@@ -549,6 +644,9 @@ help:
 	@echo "... ljrServer/fiber.o"
 	@echo "... ljrServer/fiber.i"
 	@echo "... ljrServer/fiber.s"
+	@echo "... ljrServer/iomanager.o"
+	@echo "... ljrServer/iomanager.i"
+	@echo "... ljrServer/iomanager.s"
 	@echo "... ljrServer/log.o"
 	@echo "... ljrServer/log.i"
 	@echo "... ljrServer/log.s"
@@ -558,6 +656,9 @@ help:
 	@echo "... ljrServer/thread.o"
 	@echo "... ljrServer/thread.i"
 	@echo "... ljrServer/thread.s"
+	@echo "... ljrServer/timer.o"
+	@echo "... ljrServer/timer.i"
+	@echo "... ljrServer/timer.s"
 	@echo "... ljrServer/util.o"
 	@echo "... ljrServer/util.i"
 	@echo "... ljrServer/util.s"
@@ -570,6 +671,9 @@ help:
 	@echo "... tests/test_fiber.o"
 	@echo "... tests/test_fiber.i"
 	@echo "... tests/test_fiber.s"
+	@echo "... tests/test_iomanager.o"
+	@echo "... tests/test_iomanager.i"
+	@echo "... tests/test_iomanager.s"
 	@echo "... tests/test_scheduler.o"
 	@echo "... tests/test_scheduler.i"
 	@echo "... tests/test_scheduler.s"
