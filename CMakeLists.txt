@@ -17,6 +17,8 @@ set(CMAKE_CXX_FLAGS "$ENV{CXXFLAGS} -rdynamic -O0 -ggdb -std=c++11 -Wall -Wno-de
 set(LIB_SRC
     ljrServer/config.cpp
     ljrServer/fiber.cpp
+    ljrServer/fd_manager.cpp
+    ljrServer/hook.cpp
     ljrServer/iomanager.cpp
     ljrServer/log.cpp
     ljrServer/scheduler.cpp
@@ -33,6 +35,7 @@ force_redefine_file_macro_for_sources(ljrServer)
 
 set(LIBS
     ljrServer
+    dl
     pthread
     yaml-cpp
 )
@@ -87,6 +90,13 @@ add_dependencies(test_iomanager ljrServer)
 # 重定义宏__FILE__
 force_redefine_file_macro_for_sources(test_iomanager)
 target_link_libraries(test_iomanager ${LIBS})
+
+# 测试HOOK
+add_executable(test_hook tests/test_hook.cpp)
+add_dependencies(test_hook ljrServer)
+# 重定义宏__FILE__
+force_redefine_file_macro_for_sources(test_hook)
+target_link_libraries(test_hook ${LIBS})
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)

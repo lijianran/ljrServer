@@ -357,7 +357,7 @@ namespace ljrserver
                     i.second(m_val, v);
                 }
             }
-            RWMutexType::WirteLock lock(m_mutex);
+            RWMutexType::WriteLock lock(m_mutex);
 
             m_val = v;
         }
@@ -372,7 +372,7 @@ namespace ljrserver
         uint64_t addListener(on_change_cb cb)
         {
             static uint64_t s_fun_id = 0;
-            RWMutexType::WirteLock lock(m_mutex);
+            RWMutexType::WriteLock lock(m_mutex);
 
             ++s_fun_id;
             m_cbs[s_fun_id] = cb;
@@ -381,14 +381,14 @@ namespace ljrserver
 
         void delListener(uint64_t key)
         {
-            RWMutexType::WirteLock lock(m_mutex);
+            RWMutexType::WriteLock lock(m_mutex);
 
             m_cbs.erase(key);
         }
 
         void clearListener()
         {
-            RWMutexType::WirteLock lock(m_mutex);
+            RWMutexType::WriteLock lock(m_mutex);
 
             m_cbs.clear();
         }
@@ -419,7 +419,7 @@ namespace ljrserver
         template <class T>
         static typename ConfigVar<T>::ptr Lookup(const std::string &name, const T &default_value, const std::string &description = "")
         {
-            RWMutexType::WirteLock lock(GetMutex());
+            RWMutexType::WriteLock lock(GetMutex());
 
             auto it = GetDatas().find(name);
             if (it != GetDatas().end())

@@ -17,7 +17,7 @@ void fun1()
 
     for (int i = 0; i < 100000; i++)
     {
-        // ljrserver::RWMutex::WirteLock lock(s_mutex);
+        // ljrserver::RWMutex::WriteLock lock(s_mutex);
         ljrserver::Mutex::Lock lock(s_mutex);
 
         ++count;

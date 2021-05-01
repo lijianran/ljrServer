@@ -75,7 +75,7 @@ namespace ljrserver
     protected:
         virtual void onTimerInsertedAtFront() = 0;
 
-        void addTimer(Timer::ptr timer, RWMutexType::WirteLock &lock);
+        void addTimer(Timer::ptr timer, RWMutexType::WriteLock &lock);
 
     private:
         bool detectClockRollover(uint64_t now_ms);

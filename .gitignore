@@ -32,8 +32,9 @@
 *.app
 
 /.vscode
-/bin
-/build
+/bin/*
+!/bin/conf/
+/build/*
 /lib
 
 /CmakeFiles

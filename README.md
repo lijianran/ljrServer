@@ -53,3 +53,10 @@ lijianran's Internet Server
 
 1. 设计IO协程调度模块
 2. 添加定时器功能 ms
+
+- 2021.04.30
+
+1. 开始服务器HOOK模块
+2. hook成功sleep，同步方式实现异步功能
+3. 添加文件句柄类及句柄管理器，识别句柄是否是socket句柄
+4. hook socket相关的系统函数

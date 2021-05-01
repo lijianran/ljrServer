@@ -10,10 +10,12 @@
 #include <semaphore.h>
 #include <atomic>
 
+#include "noncopyable.h"
+
 namespace ljrserver
 {
 
-    class Semaphore
+    class Semaphore : Noncopyable
     {
     public:
         Semaphore(uint32_t count = 0);
@@ -23,10 +25,10 @@ namespace ljrserver
 
         void notify();
 
-    private:
-        Semaphore(const Semaphore &) = delete;
-        Semaphore(const Semaphore &&) = delete;
-        Semaphore &operator=(const Semaphore &) = delete;
+    // private:
+    //     Semaphore(const Semaphore &) = delete;
+    //     Semaphore(const Semaphore &&) = delete;
+    //     Semaphore &operator=(const Semaphore &) = delete;
 
     private:
         sem_t m_semaphore;
@@ -146,7 +148,7 @@ namespace ljrserver
         bool m_locked;
     };
 
-    class Mutex
+    class Mutex : Noncopyable
     {
     public:
         typedef ScopedLockImpl<Mutex> Lock;
@@ -175,7 +177,7 @@ namespace ljrserver
         pthread_mutex_t m_mutex;
     };
 
-    class NullMutex
+    class NullMutex : Noncopyable
     {
     public:
         typedef ScopedLockImpl<NullMutex> Lock;
@@ -185,11 +187,11 @@ namespace ljrserver
         void unlock() {}
     };
 
-    class RWMutex
+    class RWMutex : Noncopyable
     {
     public:
         typedef ReadScopedLockImpl<RWMutex> ReadLock;
-        typedef WriteScopedLockImpl<RWMutex> WirteLock;
+        typedef WriteScopedLockImpl<RWMutex> WriteLock;
 
         RWMutex()
         {
@@ -220,11 +222,11 @@ namespace ljrserver
         pthread_rwlock_t m_lock;
     };
 
-    class NullRWMutex
+    class NullRWMutex : Noncopyable
     {
     public:
         typedef ReadScopedLockImpl<NullRWMutex> ReadLock;
-        typedef WriteScopedLockImpl<NullRWMutex> WirteLock;
+        typedef WriteScopedLockImpl<NullRWMutex> WriteLock;
         NullRWMutex() {}
         ~NullRWMutex() {}
         void rdlock() {}
@@ -233,7 +235,7 @@ namespace ljrserver
     };
 
     // 自旋锁，性能提升3倍，20～30 M/s
-    class Spinlock
+    class Spinlock : Noncopyable
     {
     public:
         typedef ScopedLockImpl<Spinlock> Lock;
@@ -263,7 +265,7 @@ namespace ljrserver
     };
 
     // 原子锁，和自旋锁性能差不多
-    class CASLock
+    class CASLock : Noncopyable
     {
     public:
         typedef ScopedLockImpl<CASLock> Lock;

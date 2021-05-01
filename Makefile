@@ -114,6 +114,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named test_hook
+
+# Build rule for target.
+test_hook: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 test_hook
+.PHONY : test_hook
+
+# fast build rule for target.
+test_hook/fast:
+	$(MAKE) -f CMakeFiles/test_hook.dir/build.make CMakeFiles/test_hook.dir/build
+.PHONY : test_hook/fast
+
+#=============================================================================
 # Target rules for targets named test_iomanager
 
 # Build rule for target.
@@ -244,6 +257,33 @@ ljrServer/config.cpp.s:
 	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/config.cpp.s
 .PHONY : ljrServer/config.cpp.s
 
+ljrServer/fd_manager.o: ljrServer/fd_manager.cpp.o
+
+.PHONY : ljrServer/fd_manager.o
+
+# target to build an object file
+ljrServer/fd_manager.cpp.o:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/fd_manager.cpp.o
+.PHONY : ljrServer/fd_manager.cpp.o
+
+ljrServer/fd_manager.i: ljrServer/fd_manager.cpp.i
+
+.PHONY : ljrServer/fd_manager.i
+
+# target to preprocess a source file
+ljrServer/fd_manager.cpp.i:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/fd_manager.cpp.i
+.PHONY : ljrServer/fd_manager.cpp.i
+
+ljrServer/fd_manager.s: ljrServer/fd_manager.cpp.s
+
+.PHONY : ljrServer/fd_manager.s
+
+# target to generate assembly for a file
+ljrServer/fd_manager.cpp.s:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/fd_manager.cpp.s
+.PHONY : ljrServer/fd_manager.cpp.s
+
 ljrServer/fiber.o: ljrServer/fiber.cpp.o
 
 .PHONY : ljrServer/fiber.o
@@ -270,6 +310,33 @@ ljrServer/fiber.s: ljrServer/fiber.cpp.s
 ljrServer/fiber.cpp.s:
 	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/fiber.cpp.s
 .PHONY : ljrServer/fiber.cpp.s
+
+ljrServer/hook.o: ljrServer/hook.cpp.o
+
+.PHONY : ljrServer/hook.o
+
+# target to build an object file
+ljrServer/hook.cpp.o:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/hook.cpp.o
+.PHONY : ljrServer/hook.cpp.o
+
+ljrServer/hook.i: ljrServer/hook.cpp.i
+
+.PHONY : ljrServer/hook.i
+
+# target to preprocess a source file
+ljrServer/hook.cpp.i:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/hook.cpp.i
+.PHONY : ljrServer/hook.cpp.i
+
+ljrServer/hook.s: ljrServer/hook.cpp.s
+
+.PHONY : ljrServer/hook.s
+
+# target to generate assembly for a file
+ljrServer/hook.cpp.s:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/hook.cpp.s
+.PHONY : ljrServer/hook.cpp.s
 
 ljrServer/iomanager.o: ljrServer/iomanager.cpp.o
 
@@ -514,6 +581,33 @@ tests/test_fiber.cpp.s:
 	$(MAKE) -f CMakeFiles/test_fiber.dir/build.make CMakeFiles/test_fiber.dir/tests/test_fiber.cpp.s
 .PHONY : tests/test_fiber.cpp.s
 
+tests/test_hook.o: tests/test_hook.cpp.o
+
+.PHONY : tests/test_hook.o
+
+# target to build an object file
+tests/test_hook.cpp.o:
+	$(MAKE) -f CMakeFiles/test_hook.dir/build.make CMakeFiles/test_hook.dir/tests/test_hook.cpp.o
+.PHONY : tests/test_hook.cpp.o
+
+tests/test_hook.i: tests/test_hook.cpp.i
+
+.PHONY : tests/test_hook.i
+
+# target to preprocess a source file
+tests/test_hook.cpp.i:
+	$(MAKE) -f CMakeFiles/test_hook.dir/build.make CMakeFiles/test_hook.dir/tests/test_hook.cpp.i
+.PHONY : tests/test_hook.cpp.i
+
+tests/test_hook.s: tests/test_hook.cpp.s
+
+.PHONY : tests/test_hook.s
+
+# target to generate assembly for a file
+tests/test_hook.cpp.s:
+	$(MAKE) -f CMakeFiles/test_hook.dir/build.make CMakeFiles/test_hook.dir/tests/test_hook.cpp.s
+.PHONY : tests/test_hook.cpp.s
+
 tests/test_iomanager.o: tests/test_iomanager.cpp.o
 
 .PHONY : tests/test_iomanager.o
@@ -628,6 +722,7 @@ help:
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
+	@echo "... test_hook"
 	@echo "... test_iomanager"
 	@echo "... test_scheduler"
 	@echo "... test_fiber"
@@ -641,9 +736,15 @@ help:
 	@echo "... ljrServer/config.o"
 	@echo "... ljrServer/config.i"
 	@echo "... ljrServer/config.s"
+	@echo "... ljrServer/fd_manager.o"
+	@echo "... ljrServer/fd_manager.i"
+	@echo "... ljrServer/fd_manager.s"
 	@echo "... ljrServer/fiber.o"
 	@echo "... ljrServer/fiber.i"
 	@echo "... ljrServer/fiber.s"
+	@echo "... ljrServer/hook.o"
+	@echo "... ljrServer/hook.i"
+	@echo "... ljrServer/hook.s"
 	@echo "... ljrServer/iomanager.o"
 	@echo "... ljrServer/iomanager.i"
 	@echo "... ljrServer/iomanager.s"
@@ -671,6 +772,9 @@ help:
 	@echo "... tests/test_fiber.o"
 	@echo "... tests/test_fiber.i"
 	@echo "... tests/test_fiber.s"
+	@echo "... tests/test_hook.o"
+	@echo "... tests/test_hook.i"
+	@echo "... tests/test_hook.s"
 	@echo "... tests/test_iomanager.o"
 	@echo "... tests/test_iomanager.i"
 	@echo "... tests/test_iomanager.s"

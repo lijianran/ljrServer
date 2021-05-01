@@ -120,7 +120,7 @@ namespace ljrserver
         else
         {
             lock.unlock();
-            RWMutexType::WirteLock lock2(m_mutex);
+            RWMutexType::WriteLock lock2(m_mutex);
             contextResize(fd * 1.5);
             fd_ctx = m_fdContexts[fd];
         }

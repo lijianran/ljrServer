@@ -2,6 +2,7 @@
 #include "scheduler.h"
 #include "log.h"
 #include "macro.h"
+#include "hook.h"
 
 namespace ljrserver
 {
@@ -176,6 +177,9 @@ namespace ljrserver
     void Scheduler::run()
     {
         LJRSERVER_LOG_DEBUG(g_logger) << "run";
+        
+        // HOOK
+        set_hook_enable(true);
 
         // 设置当前线程的协程调度器t_scheduler
         setThis();

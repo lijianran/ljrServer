@@ -42,7 +42,7 @@ namespace ljrserver
 
     bool Timer::cancel()
     {
-        TimerManager::RWMutexType::WirteLock lock(m_manager->m_mutex);
+        TimerManager::RWMutexType::WriteLock lock(m_manager->m_mutex);
         if (m_cb)
         {
             m_cb = nullptr;
@@ -55,7 +55,7 @@ namespace ljrserver
 
     bool Timer::refresh()
     {
-        TimerManager::RWMutexType::WirteLock lock(m_manager->m_mutex);
+        TimerManager::RWMutexType::WriteLock lock(m_manager->m_mutex);
         if (!m_cb)
         {
             return false;
@@ -81,7 +81,7 @@ namespace ljrserver
             return true;
         }
 
-        TimerManager::RWMutexType::WirteLock lock(m_manager->m_mutex);
+        TimerManager::RWMutexType::WriteLock lock(m_manager->m_mutex);
         if (!m_cb)
         {
             return false;
@@ -124,7 +124,7 @@ namespace ljrserver
     Timer::ptr TimerManager::addTimer(uint64_t ms, std::function<void()> cb, bool recurring)
     {
         Timer::ptr timer(new Timer(ms, cb, recurring, this));
-        RWMutexType::WirteLock lock(m_mutex);
+        RWMutexType::WriteLock lock(m_mutex);
 
         addTimer(timer, lock);
 
@@ -188,7 +188,7 @@ namespace ljrserver
             }
         }
 
-        RWMutexType::WirteLock lock(m_mutex);
+        RWMutexType::WriteLock lock(m_mutex);
 
         bool rollover = detectClockRollover(now_ms);
         if (!rollover && ((*m_timers.begin())->m_next > now_ms))
@@ -228,7 +228,7 @@ namespace ljrserver
         return !m_timers.empty();
     }
 
-    void TimerManager::addTimer(Timer::ptr timer, RWMutexType::WirteLock &lock)
+    void TimerManager::addTimer(Timer::ptr timer, RWMutexType::WriteLock &lock)
     {
         auto it = m_timers.insert(timer).first;
         bool at_front = (it == m_timers.begin()) && !m_tickled;
