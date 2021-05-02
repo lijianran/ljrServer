@@ -2,19 +2,26 @@
 #ifndef __LJRSERVER_CONFIG_H__
 #define __LJRSERVER_CONFIG_H__
 
+// 智能指针
 #include <memory>
+// 字符串
 #include <string>
 #include <sstream>
+// 类型转换
 #include <boost/lexical_cast.hpp>
 #include <yaml-cpp/yaml.h>
+// 容器偏特化
 #include <vector>
 #include <list>
 #include <set>
 #include <map>
 #include <unordered_set>
 #include <unordered_map>
+// 函数
 #include <functional>
+// 日志
 #include "log.h"
+// 线程
 #include "thread.h"
 
 namespace ljrserver
@@ -335,6 +342,7 @@ namespace ljrserver
             return false;
         }
 
+        // const T getValue() const
         const T getValue()
         {
             // 加了const函数 不能枷锁 会修改成员变量
@@ -354,6 +362,7 @@ namespace ljrserver
                 }
                 for (auto &i : m_cbs)
                 {
+                    // 回调函数，提醒配置变化 m_val->v
                     i.second(m_val, v);
                 }
             }
@@ -362,6 +371,7 @@ namespace ljrserver
             m_val = v;
         }
 
+        // 返回模版类 T 的类型名称
         std::string getTypeName() const override { return typeid(T).name(); }
 
         // void addListener(uint64_t key, on_change_cb cb)
@@ -369,6 +379,7 @@ namespace ljrserver
         //     m_cbs[key] = cb;
         // }
 
+        // 添加监听函数，返回函数id
         uint64_t addListener(on_change_cb cb)
         {
             static uint64_t s_fun_id = 0;
@@ -379,6 +390,7 @@ namespace ljrserver
             return s_fun_id;
         }
 
+        // 删除监听函数，使用函数id作为key值删除
         void delListener(uint64_t key)
         {
             RWMutexType::WriteLock lock(m_mutex);
@@ -386,6 +398,7 @@ namespace ljrserver
             m_cbs.erase(key);
         }
 
+        // 删除所有监听函数
         void clearListener()
         {
             RWMutexType::WriteLock lock(m_mutex);
@@ -393,6 +406,7 @@ namespace ljrserver
             m_cbs.clear();
         }
 
+        // 通过函数唯一id作为key值，从map中返回函数对象
         on_change_cb getListener(uint64_t key)
         {
             RWMutexType::ReadLock lock(m_mutex);
@@ -402,11 +416,13 @@ namespace ljrserver
         }
 
     private:
+        // 配置项
         T m_val;
 
         // 变更回调函数组 uint64_t key要求唯一，一般可用hash
         std::map<uint64_t, on_change_cb> m_cbs;
 
+        // 读写锁
         RWMutexType m_mutex;
     };
 
@@ -416,6 +432,7 @@ namespace ljrserver
         typedef std::unordered_map<std::string, ConfigVarBase::ptr> ConfigVarMap;
         typedef RWMutex RWMutexType;
 
+        // 获取/创建配置项
         template <class T>
         static typename ConfigVar<T>::ptr Lookup(const std::string &name, const T &default_value, const std::string &description = "")
         {
@@ -460,6 +477,7 @@ namespace ljrserver
             return v;
         }
 
+        // 查找配置项，只传入配置参数名
         template <class T>
         static typename ConfigVar<T>::ptr Lookup(const std::string &name)
         {
@@ -473,10 +491,13 @@ namespace ljrserver
             return std::dynamic_pointer_cast<ConfigVar<T>>(it->second);
         }
 
+        // 使用YAML::Node初始化配置模块
         static void LoadFromYaml(const YAML::Node &root);
 
+        // 查找配置参数，返回配置参数的基类
         static ConfigVarBase::ptr LookupBase(const std::string &name);
 
+        // 遍历配置模块里面所有配置项
         static void Visit(std::function<void(ConfigVarBase::ptr)> cb);
 
     private:

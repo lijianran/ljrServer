@@ -114,6 +114,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named test_socket
+
+# Build rule for target.
+test_socket: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 test_socket
+.PHONY : test_socket
+
+# fast build rule for target.
+test_socket/fast:
+	$(MAKE) -f CMakeFiles/test_socket.dir/build.make CMakeFiles/test_socket.dir/build
+.PHONY : test_socket/fast
+
+#=============================================================================
 # Target rules for targets named test_hook
 
 # Build rule for target.
@@ -151,6 +164,19 @@ test_scheduler: cmake_check_build_system
 test_scheduler/fast:
 	$(MAKE) -f CMakeFiles/test_scheduler.dir/build.make CMakeFiles/test_scheduler.dir/build
 .PHONY : test_scheduler/fast
+
+#=============================================================================
+# Target rules for targets named test_address
+
+# Build rule for target.
+test_address: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 test_address
+.PHONY : test_address
+
+# fast build rule for target.
+test_address/fast:
+	$(MAKE) -f CMakeFiles/test_address.dir/build.make CMakeFiles/test_address.dir/build
+.PHONY : test_address/fast
 
 #=============================================================================
 # Target rules for targets named test_fiber
@@ -229,6 +255,33 @@ ljrServer: cmake_check_build_system
 ljrServer/fast:
 	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/build
 .PHONY : ljrServer/fast
+
+ljrServer/address.o: ljrServer/address.cpp.o
+
+.PHONY : ljrServer/address.o
+
+# target to build an object file
+ljrServer/address.cpp.o:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/address.cpp.o
+.PHONY : ljrServer/address.cpp.o
+
+ljrServer/address.i: ljrServer/address.cpp.i
+
+.PHONY : ljrServer/address.i
+
+# target to preprocess a source file
+ljrServer/address.cpp.i:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/address.cpp.i
+.PHONY : ljrServer/address.cpp.i
+
+ljrServer/address.s: ljrServer/address.cpp.s
+
+.PHONY : ljrServer/address.s
+
+# target to generate assembly for a file
+ljrServer/address.cpp.s:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/address.cpp.s
+.PHONY : ljrServer/address.cpp.s
 
 ljrServer/config.o: ljrServer/config.cpp.o
 
@@ -419,6 +472,33 @@ ljrServer/scheduler.cpp.s:
 	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/scheduler.cpp.s
 .PHONY : ljrServer/scheduler.cpp.s
 
+ljrServer/socket.o: ljrServer/socket.cpp.o
+
+.PHONY : ljrServer/socket.o
+
+# target to build an object file
+ljrServer/socket.cpp.o:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/socket.cpp.o
+.PHONY : ljrServer/socket.cpp.o
+
+ljrServer/socket.i: ljrServer/socket.cpp.i
+
+.PHONY : ljrServer/socket.i
+
+# target to preprocess a source file
+ljrServer/socket.cpp.i:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/socket.cpp.i
+.PHONY : ljrServer/socket.cpp.i
+
+ljrServer/socket.s: ljrServer/socket.cpp.s
+
+.PHONY : ljrServer/socket.s
+
+# target to generate assembly for a file
+ljrServer/socket.cpp.s:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/socket.cpp.s
+.PHONY : ljrServer/socket.cpp.s
+
 ljrServer/thread.o: ljrServer/thread.cpp.o
 
 .PHONY : ljrServer/thread.o
@@ -526,6 +606,33 @@ tests/test.s: tests/test.cpp.s
 tests/test.cpp.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/tests/test.cpp.s
 .PHONY : tests/test.cpp.s
+
+tests/test_address.o: tests/test_address.cpp.o
+
+.PHONY : tests/test_address.o
+
+# target to build an object file
+tests/test_address.cpp.o:
+	$(MAKE) -f CMakeFiles/test_address.dir/build.make CMakeFiles/test_address.dir/tests/test_address.cpp.o
+.PHONY : tests/test_address.cpp.o
+
+tests/test_address.i: tests/test_address.cpp.i
+
+.PHONY : tests/test_address.i
+
+# target to preprocess a source file
+tests/test_address.cpp.i:
+	$(MAKE) -f CMakeFiles/test_address.dir/build.make CMakeFiles/test_address.dir/tests/test_address.cpp.i
+.PHONY : tests/test_address.cpp.i
+
+tests/test_address.s: tests/test_address.cpp.s
+
+.PHONY : tests/test_address.s
+
+# target to generate assembly for a file
+tests/test_address.cpp.s:
+	$(MAKE) -f CMakeFiles/test_address.dir/build.make CMakeFiles/test_address.dir/tests/test_address.cpp.s
+.PHONY : tests/test_address.cpp.s
 
 tests/test_config.o: tests/test_config.cpp.o
 
@@ -662,6 +769,33 @@ tests/test_scheduler.cpp.s:
 	$(MAKE) -f CMakeFiles/test_scheduler.dir/build.make CMakeFiles/test_scheduler.dir/tests/test_scheduler.cpp.s
 .PHONY : tests/test_scheduler.cpp.s
 
+tests/test_socket.o: tests/test_socket.cpp.o
+
+.PHONY : tests/test_socket.o
+
+# target to build an object file
+tests/test_socket.cpp.o:
+	$(MAKE) -f CMakeFiles/test_socket.dir/build.make CMakeFiles/test_socket.dir/tests/test_socket.cpp.o
+.PHONY : tests/test_socket.cpp.o
+
+tests/test_socket.i: tests/test_socket.cpp.i
+
+.PHONY : tests/test_socket.i
+
+# target to preprocess a source file
+tests/test_socket.cpp.i:
+	$(MAKE) -f CMakeFiles/test_socket.dir/build.make CMakeFiles/test_socket.dir/tests/test_socket.cpp.i
+.PHONY : tests/test_socket.cpp.i
+
+tests/test_socket.s: tests/test_socket.cpp.s
+
+.PHONY : tests/test_socket.s
+
+# target to generate assembly for a file
+tests/test_socket.cpp.s:
+	$(MAKE) -f CMakeFiles/test_socket.dir/build.make CMakeFiles/test_socket.dir/tests/test_socket.cpp.s
+.PHONY : tests/test_socket.cpp.s
+
 tests/test_thread.o: tests/test_thread.cpp.o
 
 .PHONY : tests/test_thread.o
@@ -722,9 +856,11 @@ help:
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
+	@echo "... test_socket"
 	@echo "... test_hook"
 	@echo "... test_iomanager"
 	@echo "... test_scheduler"
+	@echo "... test_address"
 	@echo "... test_fiber"
 	@echo "... rebuild_cache"
 	@echo "... test_util"
@@ -733,6 +869,9 @@ help:
 	@echo "... test_thread"
 	@echo "... test"
 	@echo "... ljrServer"
+	@echo "... ljrServer/address.o"
+	@echo "... ljrServer/address.i"
+	@echo "... ljrServer/address.s"
 	@echo "... ljrServer/config.o"
 	@echo "... ljrServer/config.i"
 	@echo "... ljrServer/config.s"
@@ -754,6 +893,9 @@ help:
 	@echo "... ljrServer/scheduler.o"
 	@echo "... ljrServer/scheduler.i"
 	@echo "... ljrServer/scheduler.s"
+	@echo "... ljrServer/socket.o"
+	@echo "... ljrServer/socket.i"
+	@echo "... ljrServer/socket.s"
 	@echo "... ljrServer/thread.o"
 	@echo "... ljrServer/thread.i"
 	@echo "... ljrServer/thread.s"
@@ -766,6 +908,9 @@ help:
 	@echo "... tests/test.o"
 	@echo "... tests/test.i"
 	@echo "... tests/test.s"
+	@echo "... tests/test_address.o"
+	@echo "... tests/test_address.i"
+	@echo "... tests/test_address.s"
 	@echo "... tests/test_config.o"
 	@echo "... tests/test_config.i"
 	@echo "... tests/test_config.s"
@@ -781,6 +926,9 @@ help:
 	@echo "... tests/test_scheduler.o"
 	@echo "... tests/test_scheduler.i"
 	@echo "... tests/test_scheduler.s"
+	@echo "... tests/test_socket.o"
+	@echo "... tests/test_socket.i"
+	@echo "... tests/test_socket.s"
 	@echo "... tests/test_thread.o"
 	@echo "... tests/test_thread.i"
 	@echo "... tests/test_thread.s"

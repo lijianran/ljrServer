@@ -15,6 +15,7 @@ include_directories(.)
 set(CMAKE_CXX_FLAGS "$ENV{CXXFLAGS} -rdynamic -O0 -ggdb -std=c++11 -Wall -Wno-deprecated -Werror -Wno-unused-function -Wno-builtin-macro-redefined")
 
 set(LIB_SRC
+    ljrServer/address.cpp
     ljrServer/config.cpp
     ljrServer/fiber.cpp
     ljrServer/fd_manager.cpp
@@ -22,6 +23,7 @@ set(LIB_SRC
     ljrServer/iomanager.cpp
     ljrServer/log.cpp
     ljrServer/scheduler.cpp
+    ljrServer/socket.cpp
     ljrServer/thread.cpp
     ljrServer/timer.cpp
     ljrServer/util.cpp
@@ -97,6 +99,20 @@ add_dependencies(test_hook ljrServer)
 # 重定义宏__FILE__
 force_redefine_file_macro_for_sources(test_hook)
 target_link_libraries(test_hook ${LIBS})
+
+# 测试address
+add_executable(test_address tests/test_address.cpp)
+add_dependencies(test_address ljrServer)
+# 重定义宏__FILE__
+force_redefine_file_macro_for_sources(test_address)
+target_link_libraries(test_address ${LIBS})
+
+# 测试socket
+add_executable(test_socket tests/test_socket.cpp)
+add_dependencies(test_socket ljrServer)
+# 重定义宏__FILE__
+force_redefine_file_macro_for_sources(test_socket)
+target_link_libraries(test_socket ${LIBS})
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)

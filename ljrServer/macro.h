@@ -6,8 +6,16 @@
 #include <assert.h>
 #include "util.h"
 
+#if defined __GNUC__ || defined __llvm__
+#define LJRSERVER_LICKLY(x) __builtin_expect(!!(x), 1)
+#define LJRSERVER_UNLICKLY(x) __builtin_expect(!!(x), 0)
+#else
+#define LJRSERVER_LICKLY(x) (x)
+#define LJRSERVER_UNLICKLY(x) (x)
+#endif
+
 #define LJRSERVER_ASSERT(x)                                                                         \
-    if (!(x))                                                                                       \
+    if (LJRSERVER_UNLICKLY(!(x)))                                                                   \
     {                                                                                               \
         LJRSERVER_LOG_ERROR(LJRSERVER_LOG_ROOT()) << "ASSERTION: " #x                               \
                                                   << "\nbacktrace:\n"                               \
@@ -16,7 +24,7 @@
     }
 
 #define LJRSERVER_ASSERT2(x, w)                                                                     \
-    if (!(x))                                                                                       \
+    if (LJRSERVER_UNLICKLY(!(x)))                                                                   \
     {                                                                                               \
         LJRSERVER_LOG_ERROR(LJRSERVER_LOG_ROOT()) << "ASSERTION: " #x                               \
                                                   << "\n"                                           \

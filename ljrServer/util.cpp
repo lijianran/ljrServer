@@ -8,7 +8,7 @@
 namespace ljrserver
 {
 
-    ljrserver::Logger::ptr g_logger = LJRSERVER_LOG_NAME("system");
+    static ljrserver::Logger::ptr g_logger = LJRSERVER_LOG_NAME("system");
 
     pid_t GetThreadId()
     {

@@ -60,3 +60,13 @@ lijianran's Internet Server
 2. hook成功sleep，同步方式实现异步功能
 3. 添加文件句柄类及句柄管理器，识别句柄是否是socket句柄
 4. hook socket相关的系统函数
+
+- 2021.05.01
+
+1. 添加网络地址类，包括网络地址虚基类、IP地址类、IPv4类、IPv6类、Unix地址类、未知类
+2. 添加字节序处理类，区分大小端机器，解决网络字节序和本地字节序的转换
+3. 支持转换字符文本格式的地址
+
+- 2021.05.02
+
+1. 封装socket，包括connect、accept、read、write、close
