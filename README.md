@@ -11,6 +11,8 @@ lijianran's Internet Server
 - cmake 3.16.3
 - boost 1.71
 - yaml-cpp 0.6.3
+- ragel 6.10
+- http-parser
 
 ## 开发日志
 
@@ -71,3 +73,8 @@ lijianran's Internet Server
 
 1. 封装socket，包括connect、accept、read、write、close
 2. 封装字节序列化类ByteArray，方便序列化和反序列化
+
+- 2021.05.03
+
+1. 封装HTTP协议，针对HTTP1.1部分API，主要实现HttpRequest、HttpResponse
+2. 使用ragel有限状态机，解析HTTP报文

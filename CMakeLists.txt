@@ -21,6 +21,10 @@ set(LIB_SRC
     ljrServer/fiber.cpp
     ljrServer/fd_manager.cpp
     ljrServer/hook.cpp
+    ljrServer/http/http.cpp
+    ljrServer/http/http_parser.cpp
+    ljrServer/http/http11_parser.cpp
+    ljrServer/http/httpclient_parser.cpp
     ljrServer/iomanager.cpp
     ljrServer/log.cpp
     ljrServer/scheduler.cpp
@@ -121,6 +125,20 @@ add_dependencies(test_bytearray ljrServer)
 # 重定义宏__FILE__
 force_redefine_file_macro_for_sources(test_bytearray)
 target_link_libraries(test_bytearray ${LIBS})
+
+# 测试 http
+add_executable(test_http tests/test_http.cpp)
+add_dependencies(test_http ljrServer)
+# 重定义宏__FILE__
+force_redefine_file_macro_for_sources(test_http)
+target_link_libraries(test_http ${LIBS})
+
+# 测试 http_parser
+add_executable(test_http_parser tests/test_http_parser.cpp)
+add_dependencies(test_http_parser ljrServer)
+# 重定义宏__FILE__
+force_redefine_file_macro_for_sources(test_http_parser)
+target_link_libraries(test_http_parser ${LIBS})
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)

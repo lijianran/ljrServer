@@ -114,17 +114,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named ljrServer
+# Target rules for targets named test_http_parser
 
 # Build rule for target.
-ljrServer: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 ljrServer
-.PHONY : ljrServer
+test_http_parser: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 test_http_parser
+.PHONY : test_http_parser
 
 # fast build rule for target.
-ljrServer/fast:
-	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/build
-.PHONY : ljrServer/fast
+test_http_parser/fast:
+	$(MAKE) -f CMakeFiles/test_http_parser.dir/build.make CMakeFiles/test_http_parser.dir/build
+.PHONY : test_http_parser/fast
 
 #=============================================================================
 # Target rules for targets named test
@@ -268,6 +268,32 @@ test_socket: cmake_check_build_system
 test_socket/fast:
 	$(MAKE) -f CMakeFiles/test_socket.dir/build.make CMakeFiles/test_socket.dir/build
 .PHONY : test_socket/fast
+
+#=============================================================================
+# Target rules for targets named ljrServer
+
+# Build rule for target.
+ljrServer: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 ljrServer
+.PHONY : ljrServer
+
+# fast build rule for target.
+ljrServer/fast:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/build
+.PHONY : ljrServer/fast
+
+#=============================================================================
+# Target rules for targets named test_http
+
+# Build rule for target.
+test_http: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 test_http
+.PHONY : test_http
+
+# fast build rule for target.
+test_http/fast:
+	$(MAKE) -f CMakeFiles/test_http.dir/build.make CMakeFiles/test_http.dir/build
+.PHONY : test_http/fast
 
 ljrServer/address.o: ljrServer/address.cpp.o
 
@@ -430,6 +456,114 @@ ljrServer/hook.s: ljrServer/hook.cpp.s
 ljrServer/hook.cpp.s:
 	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/hook.cpp.s
 .PHONY : ljrServer/hook.cpp.s
+
+ljrServer/http/http.o: ljrServer/http/http.cpp.o
+
+.PHONY : ljrServer/http/http.o
+
+# target to build an object file
+ljrServer/http/http.cpp.o:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/http/http.cpp.o
+.PHONY : ljrServer/http/http.cpp.o
+
+ljrServer/http/http.i: ljrServer/http/http.cpp.i
+
+.PHONY : ljrServer/http/http.i
+
+# target to preprocess a source file
+ljrServer/http/http.cpp.i:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/http/http.cpp.i
+.PHONY : ljrServer/http/http.cpp.i
+
+ljrServer/http/http.s: ljrServer/http/http.cpp.s
+
+.PHONY : ljrServer/http/http.s
+
+# target to generate assembly for a file
+ljrServer/http/http.cpp.s:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/http/http.cpp.s
+.PHONY : ljrServer/http/http.cpp.s
+
+ljrServer/http/http11_parser.o: ljrServer/http/http11_parser.cpp.o
+
+.PHONY : ljrServer/http/http11_parser.o
+
+# target to build an object file
+ljrServer/http/http11_parser.cpp.o:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/http/http11_parser.cpp.o
+.PHONY : ljrServer/http/http11_parser.cpp.o
+
+ljrServer/http/http11_parser.i: ljrServer/http/http11_parser.cpp.i
+
+.PHONY : ljrServer/http/http11_parser.i
+
+# target to preprocess a source file
+ljrServer/http/http11_parser.cpp.i:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/http/http11_parser.cpp.i
+.PHONY : ljrServer/http/http11_parser.cpp.i
+
+ljrServer/http/http11_parser.s: ljrServer/http/http11_parser.cpp.s
+
+.PHONY : ljrServer/http/http11_parser.s
+
+# target to generate assembly for a file
+ljrServer/http/http11_parser.cpp.s:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/http/http11_parser.cpp.s
+.PHONY : ljrServer/http/http11_parser.cpp.s
+
+ljrServer/http/http_parser.o: ljrServer/http/http_parser.cpp.o
+
+.PHONY : ljrServer/http/http_parser.o
+
+# target to build an object file
+ljrServer/http/http_parser.cpp.o:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/http/http_parser.cpp.o
+.PHONY : ljrServer/http/http_parser.cpp.o
+
+ljrServer/http/http_parser.i: ljrServer/http/http_parser.cpp.i
+
+.PHONY : ljrServer/http/http_parser.i
+
+# target to preprocess a source file
+ljrServer/http/http_parser.cpp.i:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/http/http_parser.cpp.i
+.PHONY : ljrServer/http/http_parser.cpp.i
+
+ljrServer/http/http_parser.s: ljrServer/http/http_parser.cpp.s
+
+.PHONY : ljrServer/http/http_parser.s
+
+# target to generate assembly for a file
+ljrServer/http/http_parser.cpp.s:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/http/http_parser.cpp.s
+.PHONY : ljrServer/http/http_parser.cpp.s
+
+ljrServer/http/httpclient_parser.o: ljrServer/http/httpclient_parser.cpp.o
+
+.PHONY : ljrServer/http/httpclient_parser.o
+
+# target to build an object file
+ljrServer/http/httpclient_parser.cpp.o:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/http/httpclient_parser.cpp.o
+.PHONY : ljrServer/http/httpclient_parser.cpp.o
+
+ljrServer/http/httpclient_parser.i: ljrServer/http/httpclient_parser.cpp.i
+
+.PHONY : ljrServer/http/httpclient_parser.i
+
+# target to preprocess a source file
+ljrServer/http/httpclient_parser.cpp.i:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/http/httpclient_parser.cpp.i
+.PHONY : ljrServer/http/httpclient_parser.cpp.i
+
+ljrServer/http/httpclient_parser.s: ljrServer/http/httpclient_parser.cpp.s
+
+.PHONY : ljrServer/http/httpclient_parser.s
+
+# target to generate assembly for a file
+ljrServer/http/httpclient_parser.cpp.s:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/http/httpclient_parser.cpp.s
+.PHONY : ljrServer/http/httpclient_parser.cpp.s
 
 ljrServer/iomanager.o: ljrServer/iomanager.cpp.o
 
@@ -782,6 +916,60 @@ tests/test_hook.cpp.s:
 	$(MAKE) -f CMakeFiles/test_hook.dir/build.make CMakeFiles/test_hook.dir/tests/test_hook.cpp.s
 .PHONY : tests/test_hook.cpp.s
 
+tests/test_http.o: tests/test_http.cpp.o
+
+.PHONY : tests/test_http.o
+
+# target to build an object file
+tests/test_http.cpp.o:
+	$(MAKE) -f CMakeFiles/test_http.dir/build.make CMakeFiles/test_http.dir/tests/test_http.cpp.o
+.PHONY : tests/test_http.cpp.o
+
+tests/test_http.i: tests/test_http.cpp.i
+
+.PHONY : tests/test_http.i
+
+# target to preprocess a source file
+tests/test_http.cpp.i:
+	$(MAKE) -f CMakeFiles/test_http.dir/build.make CMakeFiles/test_http.dir/tests/test_http.cpp.i
+.PHONY : tests/test_http.cpp.i
+
+tests/test_http.s: tests/test_http.cpp.s
+
+.PHONY : tests/test_http.s
+
+# target to generate assembly for a file
+tests/test_http.cpp.s:
+	$(MAKE) -f CMakeFiles/test_http.dir/build.make CMakeFiles/test_http.dir/tests/test_http.cpp.s
+.PHONY : tests/test_http.cpp.s
+
+tests/test_http_parser.o: tests/test_http_parser.cpp.o
+
+.PHONY : tests/test_http_parser.o
+
+# target to build an object file
+tests/test_http_parser.cpp.o:
+	$(MAKE) -f CMakeFiles/test_http_parser.dir/build.make CMakeFiles/test_http_parser.dir/tests/test_http_parser.cpp.o
+.PHONY : tests/test_http_parser.cpp.o
+
+tests/test_http_parser.i: tests/test_http_parser.cpp.i
+
+.PHONY : tests/test_http_parser.i
+
+# target to preprocess a source file
+tests/test_http_parser.cpp.i:
+	$(MAKE) -f CMakeFiles/test_http_parser.dir/build.make CMakeFiles/test_http_parser.dir/tests/test_http_parser.cpp.i
+.PHONY : tests/test_http_parser.cpp.i
+
+tests/test_http_parser.s: tests/test_http_parser.cpp.s
+
+.PHONY : tests/test_http_parser.s
+
+# target to generate assembly for a file
+tests/test_http_parser.cpp.s:
+	$(MAKE) -f CMakeFiles/test_http_parser.dir/build.make CMakeFiles/test_http_parser.dir/tests/test_http_parser.cpp.s
+.PHONY : tests/test_http_parser.cpp.s
+
 tests/test_iomanager.o: tests/test_iomanager.cpp.o
 
 .PHONY : tests/test_iomanager.o
@@ -923,11 +1111,11 @@ help:
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
-	@echo "... ljrServer"
-	@echo "... test"
-	@echo "... test_thread"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
+	@echo "... test_http_parser"
+	@echo "... test"
+	@echo "... test_thread"
 	@echo "... test_config"
 	@echo "... test_bytearray"
 	@echo "... test_util"
@@ -937,6 +1125,8 @@ help:
 	@echo "... test_iomanager"
 	@echo "... test_hook"
 	@echo "... test_socket"
+	@echo "... ljrServer"
+	@echo "... test_http"
 	@echo "... ljrServer/address.o"
 	@echo "... ljrServer/address.i"
 	@echo "... ljrServer/address.s"
@@ -955,6 +1145,18 @@ help:
 	@echo "... ljrServer/hook.o"
 	@echo "... ljrServer/hook.i"
 	@echo "... ljrServer/hook.s"
+	@echo "... ljrServer/http/http.o"
+	@echo "... ljrServer/http/http.i"
+	@echo "... ljrServer/http/http.s"
+	@echo "... ljrServer/http/http11_parser.o"
+	@echo "... ljrServer/http/http11_parser.i"
+	@echo "... ljrServer/http/http11_parser.s"
+	@echo "... ljrServer/http/http_parser.o"
+	@echo "... ljrServer/http/http_parser.i"
+	@echo "... ljrServer/http/http_parser.s"
+	@echo "... ljrServer/http/httpclient_parser.o"
+	@echo "... ljrServer/http/httpclient_parser.i"
+	@echo "... ljrServer/http/httpclient_parser.s"
 	@echo "... ljrServer/iomanager.o"
 	@echo "... ljrServer/iomanager.i"
 	@echo "... ljrServer/iomanager.s"
@@ -994,6 +1196,12 @@ help:
 	@echo "... tests/test_hook.o"
 	@echo "... tests/test_hook.i"
 	@echo "... tests/test_hook.s"
+	@echo "... tests/test_http.o"
+	@echo "... tests/test_http.i"
+	@echo "... tests/test_http.s"
+	@echo "... tests/test_http_parser.o"
+	@echo "... tests/test_http_parser.i"
+	@echo "... tests/test_http_parser.s"
 	@echo "... tests/test_iomanager.o"
 	@echo "... tests/test_iomanager.i"
 	@echo "... tests/test_iomanager.s"
