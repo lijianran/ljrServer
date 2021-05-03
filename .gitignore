@@ -46,3 +46,4 @@ CMakeCache.txt
 /boost*
 
 .DS_Store
+/tmp/

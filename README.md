@@ -70,3 +70,4 @@ lijianran's Internet Server
 - 2021.05.02
 
 1. 封装socket，包括connect、accept、read、write、close
+2. 封装字节序列化类ByteArray，方便序列化和反序列化
