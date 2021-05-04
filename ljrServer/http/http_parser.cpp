@@ -22,24 +22,38 @@ namespace ljrserver
         static uint64_t s_http_request_buffer_size = 0;
         static uint64_t s_http_request_max_body_size = 0;
 
-        struct _RequestSizeIniter
+        uint64_t HttpRequestParser::GetHttpRequestBufferSize()
         {
-            _RequestSizeIniter()
+            return s_http_request_buffer_size;
+        }
+
+        uint64_t HttpRequestParser::GetHttpRequestMaxBodySize()
+        {
+            return s_http_request_max_body_size;
+        }
+        
+        namespace
+        {
+            struct _RequestSizeIniter
             {
-                s_http_request_buffer_size = g_http_request_buffer_size->getValue();
-                s_http_request_max_body_size = g_http_request_max_body_size->getValue();
+                _RequestSizeIniter()
+                {
+                    s_http_request_buffer_size = g_http_request_buffer_size->getValue();
+                    s_http_request_max_body_size = g_http_request_max_body_size->getValue();
 
-                g_http_request_buffer_size->addListener([](const uint64_t &old_value, const uint64_t &new_value) {
-                    s_http_request_buffer_size = new_value;
-                });
+                    g_http_request_buffer_size->addListener([](const uint64_t &old_value, const uint64_t &new_value) {
+                        s_http_request_buffer_size = new_value;
+                    });
 
-                g_http_request_max_body_size->addListener([](const uint64_t &old_value, const uint64_t &new_value) {
-                    s_http_request_max_body_size = new_value;
-                });
-            }
-        };
+                    g_http_request_max_body_size->addListener([](const uint64_t &old_value, const uint64_t &new_value) {
+                        s_http_request_max_body_size = new_value;
+                    });
+                }
+            };
 
-        static _RequestSizeIniter _init;
+            static _RequestSizeIniter _init;
+
+        } // namespace 匿名命名空间，不会污染全局命名空间
 
         /***************
         HttpRequestParser
@@ -114,7 +128,7 @@ namespace ljrserver
             if (flen == 0)
             {
                 LJRSERVER_LOG_WARN(g_logger) << "invalid http request field length = 0";
-                parser->setError(1002);
+                // parser->setError(1002);
                 return;
             }
             parser->getData()->setHeader(std::string(field, flen), std::string(value, vlen));
@@ -152,7 +166,7 @@ namespace ljrserver
             // {
             //     memmove(data, data + offset, len - offset);
             // }
-            memmove(data, data + offset, len - offset);
+            memmove(data, data + offset, (len - offset));
             return offset;
         }
 

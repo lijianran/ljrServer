@@ -48,4 +48,6 @@ CMakeCache.txt
 .DS_Store
 /tmp/
 
+cloc*
+
 ragel*

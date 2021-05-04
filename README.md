@@ -78,3 +78,11 @@ lijianran's Internet Server
 
 1. 封装HTTP协议，针对HTTP1.1部分API，主要实现HttpRequest、HttpResponse
 2. 使用ragel有限状态机，解析HTTP报文
+
+- 2021.05.04
+
+1. 封装TcpServer，基于TcpServer实现一个EchoServer服务器
+2. 针对文件/Socket，封装Stream
+3. 封装HttpSession
+4. 基于TcpServer封装HttpServer，结合HttpSession接收Client的请求数据
+5. 封装HttpServlet

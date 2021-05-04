@@ -115,7 +115,7 @@ namespace ljrserver
         std::string toHexString() const;
         // 只获取内容，不修改 position
         uint64_t getReadBuffers(std::vector<iovec> &buffers, uint64_t len = ~0ull) const;
-        uint64_t getReadBuffers(std::vector<iovec> &buffers, uint64_t len = ~0ull, uint64_t position = 0) const;
+        uint64_t getReadBuffers(std::vector<iovec> &buffers, uint64_t len, uint64_t position) const;
         // 增加容量，不修改 position
         uint64_t getWriteBuffers(std::vector<iovec> &buffers, uint64_t len);
 

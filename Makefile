@@ -114,6 +114,32 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named echo_server
+
+# Build rule for target.
+echo_server: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 echo_server
+.PHONY : echo_server
+
+# fast build rule for target.
+echo_server/fast:
+	$(MAKE) -f CMakeFiles/echo_server.dir/build.make CMakeFiles/echo_server.dir/build
+.PHONY : echo_server/fast
+
+#=============================================================================
+# Target rules for targets named test_tcp_server
+
+# Build rule for target.
+test_tcp_server: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 test_tcp_server
+.PHONY : test_tcp_server
+
+# fast build rule for target.
+test_tcp_server/fast:
+	$(MAKE) -f CMakeFiles/test_tcp_server.dir/build.make CMakeFiles/test_tcp_server.dir/build
+.PHONY : test_tcp_server/fast
+
+#=============================================================================
 # Target rules for targets named test_http_parser
 
 # Build rule for target.
@@ -205,6 +231,19 @@ test_fiber/fast:
 .PHONY : test_fiber/fast
 
 #=============================================================================
+# Target rules for targets named test_http_server
+
+# Build rule for target.
+test_http_server: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 test_http_server
+.PHONY : test_http_server
+
+# fast build rule for target.
+test_http_server/fast:
+	$(MAKE) -f CMakeFiles/test_http_server.dir/build.make CMakeFiles/test_http_server.dir/build
+.PHONY : test_http_server/fast
+
+#=============================================================================
 # Target rules for targets named test_address
 
 # Build rule for target.
@@ -294,6 +333,33 @@ test_http: cmake_check_build_system
 test_http/fast:
 	$(MAKE) -f CMakeFiles/test_http.dir/build.make CMakeFiles/test_http.dir/build
 .PHONY : test_http/fast
+
+examples/echo_server.o: examples/echo_server.cpp.o
+
+.PHONY : examples/echo_server.o
+
+# target to build an object file
+examples/echo_server.cpp.o:
+	$(MAKE) -f CMakeFiles/echo_server.dir/build.make CMakeFiles/echo_server.dir/examples/echo_server.cpp.o
+.PHONY : examples/echo_server.cpp.o
+
+examples/echo_server.i: examples/echo_server.cpp.i
+
+.PHONY : examples/echo_server.i
+
+# target to preprocess a source file
+examples/echo_server.cpp.i:
+	$(MAKE) -f CMakeFiles/echo_server.dir/build.make CMakeFiles/echo_server.dir/examples/echo_server.cpp.i
+.PHONY : examples/echo_server.cpp.i
+
+examples/echo_server.s: examples/echo_server.cpp.s
+
+.PHONY : examples/echo_server.s
+
+# target to generate assembly for a file
+examples/echo_server.cpp.s:
+	$(MAKE) -f CMakeFiles/echo_server.dir/build.make CMakeFiles/echo_server.dir/examples/echo_server.cpp.s
+.PHONY : examples/echo_server.cpp.s
 
 ljrServer/address.o: ljrServer/address.cpp.o
 
@@ -538,6 +604,60 @@ ljrServer/http/http_parser.cpp.s:
 	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/http/http_parser.cpp.s
 .PHONY : ljrServer/http/http_parser.cpp.s
 
+ljrServer/http/http_server.o: ljrServer/http/http_server.cpp.o
+
+.PHONY : ljrServer/http/http_server.o
+
+# target to build an object file
+ljrServer/http/http_server.cpp.o:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/http/http_server.cpp.o
+.PHONY : ljrServer/http/http_server.cpp.o
+
+ljrServer/http/http_server.i: ljrServer/http/http_server.cpp.i
+
+.PHONY : ljrServer/http/http_server.i
+
+# target to preprocess a source file
+ljrServer/http/http_server.cpp.i:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/http/http_server.cpp.i
+.PHONY : ljrServer/http/http_server.cpp.i
+
+ljrServer/http/http_server.s: ljrServer/http/http_server.cpp.s
+
+.PHONY : ljrServer/http/http_server.s
+
+# target to generate assembly for a file
+ljrServer/http/http_server.cpp.s:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/http/http_server.cpp.s
+.PHONY : ljrServer/http/http_server.cpp.s
+
+ljrServer/http/http_session.o: ljrServer/http/http_session.cpp.o
+
+.PHONY : ljrServer/http/http_session.o
+
+# target to build an object file
+ljrServer/http/http_session.cpp.o:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/http/http_session.cpp.o
+.PHONY : ljrServer/http/http_session.cpp.o
+
+ljrServer/http/http_session.i: ljrServer/http/http_session.cpp.i
+
+.PHONY : ljrServer/http/http_session.i
+
+# target to preprocess a source file
+ljrServer/http/http_session.cpp.i:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/http/http_session.cpp.i
+.PHONY : ljrServer/http/http_session.cpp.i
+
+ljrServer/http/http_session.s: ljrServer/http/http_session.cpp.s
+
+.PHONY : ljrServer/http/http_session.s
+
+# target to generate assembly for a file
+ljrServer/http/http_session.cpp.s:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/http/http_session.cpp.s
+.PHONY : ljrServer/http/http_session.cpp.s
+
 ljrServer/http/httpclient_parser.o: ljrServer/http/httpclient_parser.cpp.o
 
 .PHONY : ljrServer/http/httpclient_parser.o
@@ -564,6 +684,33 @@ ljrServer/http/httpclient_parser.s: ljrServer/http/httpclient_parser.cpp.s
 ljrServer/http/httpclient_parser.cpp.s:
 	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/http/httpclient_parser.cpp.s
 .PHONY : ljrServer/http/httpclient_parser.cpp.s
+
+ljrServer/http/servlet.o: ljrServer/http/servlet.cpp.o
+
+.PHONY : ljrServer/http/servlet.o
+
+# target to build an object file
+ljrServer/http/servlet.cpp.o:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/http/servlet.cpp.o
+.PHONY : ljrServer/http/servlet.cpp.o
+
+ljrServer/http/servlet.i: ljrServer/http/servlet.cpp.i
+
+.PHONY : ljrServer/http/servlet.i
+
+# target to preprocess a source file
+ljrServer/http/servlet.cpp.i:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/http/servlet.cpp.i
+.PHONY : ljrServer/http/servlet.cpp.i
+
+ljrServer/http/servlet.s: ljrServer/http/servlet.cpp.s
+
+.PHONY : ljrServer/http/servlet.s
+
+# target to generate assembly for a file
+ljrServer/http/servlet.cpp.s:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/http/servlet.cpp.s
+.PHONY : ljrServer/http/servlet.cpp.s
 
 ljrServer/iomanager.o: ljrServer/iomanager.cpp.o
 
@@ -672,6 +819,87 @@ ljrServer/socket.s: ljrServer/socket.cpp.s
 ljrServer/socket.cpp.s:
 	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/socket.cpp.s
 .PHONY : ljrServer/socket.cpp.s
+
+ljrServer/socket_stream.o: ljrServer/socket_stream.cpp.o
+
+.PHONY : ljrServer/socket_stream.o
+
+# target to build an object file
+ljrServer/socket_stream.cpp.o:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/socket_stream.cpp.o
+.PHONY : ljrServer/socket_stream.cpp.o
+
+ljrServer/socket_stream.i: ljrServer/socket_stream.cpp.i
+
+.PHONY : ljrServer/socket_stream.i
+
+# target to preprocess a source file
+ljrServer/socket_stream.cpp.i:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/socket_stream.cpp.i
+.PHONY : ljrServer/socket_stream.cpp.i
+
+ljrServer/socket_stream.s: ljrServer/socket_stream.cpp.s
+
+.PHONY : ljrServer/socket_stream.s
+
+# target to generate assembly for a file
+ljrServer/socket_stream.cpp.s:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/socket_stream.cpp.s
+.PHONY : ljrServer/socket_stream.cpp.s
+
+ljrServer/stream.o: ljrServer/stream.cpp.o
+
+.PHONY : ljrServer/stream.o
+
+# target to build an object file
+ljrServer/stream.cpp.o:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/stream.cpp.o
+.PHONY : ljrServer/stream.cpp.o
+
+ljrServer/stream.i: ljrServer/stream.cpp.i
+
+.PHONY : ljrServer/stream.i
+
+# target to preprocess a source file
+ljrServer/stream.cpp.i:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/stream.cpp.i
+.PHONY : ljrServer/stream.cpp.i
+
+ljrServer/stream.s: ljrServer/stream.cpp.s
+
+.PHONY : ljrServer/stream.s
+
+# target to generate assembly for a file
+ljrServer/stream.cpp.s:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/stream.cpp.s
+.PHONY : ljrServer/stream.cpp.s
+
+ljrServer/tcp_server.o: ljrServer/tcp_server.cpp.o
+
+.PHONY : ljrServer/tcp_server.o
+
+# target to build an object file
+ljrServer/tcp_server.cpp.o:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/tcp_server.cpp.o
+.PHONY : ljrServer/tcp_server.cpp.o
+
+ljrServer/tcp_server.i: ljrServer/tcp_server.cpp.i
+
+.PHONY : ljrServer/tcp_server.i
+
+# target to preprocess a source file
+ljrServer/tcp_server.cpp.i:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/tcp_server.cpp.i
+.PHONY : ljrServer/tcp_server.cpp.i
+
+ljrServer/tcp_server.s: ljrServer/tcp_server.cpp.s
+
+.PHONY : ljrServer/tcp_server.s
+
+# target to generate assembly for a file
+ljrServer/tcp_server.cpp.s:
+	$(MAKE) -f CMakeFiles/ljrServer.dir/build.make CMakeFiles/ljrServer.dir/ljrServer/tcp_server.cpp.s
+.PHONY : ljrServer/tcp_server.cpp.s
 
 ljrServer/thread.o: ljrServer/thread.cpp.o
 
@@ -970,6 +1198,33 @@ tests/test_http_parser.cpp.s:
 	$(MAKE) -f CMakeFiles/test_http_parser.dir/build.make CMakeFiles/test_http_parser.dir/tests/test_http_parser.cpp.s
 .PHONY : tests/test_http_parser.cpp.s
 
+tests/test_http_server.o: tests/test_http_server.cpp.o
+
+.PHONY : tests/test_http_server.o
+
+# target to build an object file
+tests/test_http_server.cpp.o:
+	$(MAKE) -f CMakeFiles/test_http_server.dir/build.make CMakeFiles/test_http_server.dir/tests/test_http_server.cpp.o
+.PHONY : tests/test_http_server.cpp.o
+
+tests/test_http_server.i: tests/test_http_server.cpp.i
+
+.PHONY : tests/test_http_server.i
+
+# target to preprocess a source file
+tests/test_http_server.cpp.i:
+	$(MAKE) -f CMakeFiles/test_http_server.dir/build.make CMakeFiles/test_http_server.dir/tests/test_http_server.cpp.i
+.PHONY : tests/test_http_server.cpp.i
+
+tests/test_http_server.s: tests/test_http_server.cpp.s
+
+.PHONY : tests/test_http_server.s
+
+# target to generate assembly for a file
+tests/test_http_server.cpp.s:
+	$(MAKE) -f CMakeFiles/test_http_server.dir/build.make CMakeFiles/test_http_server.dir/tests/test_http_server.cpp.s
+.PHONY : tests/test_http_server.cpp.s
+
 tests/test_iomanager.o: tests/test_iomanager.cpp.o
 
 .PHONY : tests/test_iomanager.o
@@ -1051,6 +1306,33 @@ tests/test_socket.cpp.s:
 	$(MAKE) -f CMakeFiles/test_socket.dir/build.make CMakeFiles/test_socket.dir/tests/test_socket.cpp.s
 .PHONY : tests/test_socket.cpp.s
 
+tests/test_tcp_server.o: tests/test_tcp_server.cpp.o
+
+.PHONY : tests/test_tcp_server.o
+
+# target to build an object file
+tests/test_tcp_server.cpp.o:
+	$(MAKE) -f CMakeFiles/test_tcp_server.dir/build.make CMakeFiles/test_tcp_server.dir/tests/test_tcp_server.cpp.o
+.PHONY : tests/test_tcp_server.cpp.o
+
+tests/test_tcp_server.i: tests/test_tcp_server.cpp.i
+
+.PHONY : tests/test_tcp_server.i
+
+# target to preprocess a source file
+tests/test_tcp_server.cpp.i:
+	$(MAKE) -f CMakeFiles/test_tcp_server.dir/build.make CMakeFiles/test_tcp_server.dir/tests/test_tcp_server.cpp.i
+.PHONY : tests/test_tcp_server.cpp.i
+
+tests/test_tcp_server.s: tests/test_tcp_server.cpp.s
+
+.PHONY : tests/test_tcp_server.s
+
+# target to generate assembly for a file
+tests/test_tcp_server.cpp.s:
+	$(MAKE) -f CMakeFiles/test_tcp_server.dir/build.make CMakeFiles/test_tcp_server.dir/tests/test_tcp_server.cpp.s
+.PHONY : tests/test_tcp_server.cpp.s
+
 tests/test_thread.o: tests/test_thread.cpp.o
 
 .PHONY : tests/test_thread.o
@@ -1113,6 +1395,8 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
+	@echo "... echo_server"
+	@echo "... test_tcp_server"
 	@echo "... test_http_parser"
 	@echo "... test"
 	@echo "... test_thread"
@@ -1120,6 +1404,7 @@ help:
 	@echo "... test_bytearray"
 	@echo "... test_util"
 	@echo "... test_fiber"
+	@echo "... test_http_server"
 	@echo "... test_address"
 	@echo "... test_scheduler"
 	@echo "... test_iomanager"
@@ -1127,6 +1412,9 @@ help:
 	@echo "... test_socket"
 	@echo "... ljrServer"
 	@echo "... test_http"
+	@echo "... examples/echo_server.o"
+	@echo "... examples/echo_server.i"
+	@echo "... examples/echo_server.s"
 	@echo "... ljrServer/address.o"
 	@echo "... ljrServer/address.i"
 	@echo "... ljrServer/address.s"
@@ -1154,9 +1442,18 @@ help:
 	@echo "... ljrServer/http/http_parser.o"
 	@echo "... ljrServer/http/http_parser.i"
 	@echo "... ljrServer/http/http_parser.s"
+	@echo "... ljrServer/http/http_server.o"
+	@echo "... ljrServer/http/http_server.i"
+	@echo "... ljrServer/http/http_server.s"
+	@echo "... ljrServer/http/http_session.o"
+	@echo "... ljrServer/http/http_session.i"
+	@echo "... ljrServer/http/http_session.s"
 	@echo "... ljrServer/http/httpclient_parser.o"
 	@echo "... ljrServer/http/httpclient_parser.i"
 	@echo "... ljrServer/http/httpclient_parser.s"
+	@echo "... ljrServer/http/servlet.o"
+	@echo "... ljrServer/http/servlet.i"
+	@echo "... ljrServer/http/servlet.s"
 	@echo "... ljrServer/iomanager.o"
 	@echo "... ljrServer/iomanager.i"
 	@echo "... ljrServer/iomanager.s"
@@ -1169,6 +1466,15 @@ help:
 	@echo "... ljrServer/socket.o"
 	@echo "... ljrServer/socket.i"
 	@echo "... ljrServer/socket.s"
+	@echo "... ljrServer/socket_stream.o"
+	@echo "... ljrServer/socket_stream.i"
+	@echo "... ljrServer/socket_stream.s"
+	@echo "... ljrServer/stream.o"
+	@echo "... ljrServer/stream.i"
+	@echo "... ljrServer/stream.s"
+	@echo "... ljrServer/tcp_server.o"
+	@echo "... ljrServer/tcp_server.i"
+	@echo "... ljrServer/tcp_server.s"
 	@echo "... ljrServer/thread.o"
 	@echo "... ljrServer/thread.i"
 	@echo "... ljrServer/thread.s"
@@ -1202,6 +1508,9 @@ help:
 	@echo "... tests/test_http_parser.o"
 	@echo "... tests/test_http_parser.i"
 	@echo "... tests/test_http_parser.s"
+	@echo "... tests/test_http_server.o"
+	@echo "... tests/test_http_server.i"
+	@echo "... tests/test_http_server.s"
 	@echo "... tests/test_iomanager.o"
 	@echo "... tests/test_iomanager.i"
 	@echo "... tests/test_iomanager.s"
@@ -1211,6 +1520,9 @@ help:
 	@echo "... tests/test_socket.o"
 	@echo "... tests/test_socket.i"
 	@echo "... tests/test_socket.s"
+	@echo "... tests/test_tcp_server.o"
+	@echo "... tests/test_tcp_server.i"
+	@echo "... tests/test_tcp_server.s"
 	@echo "... tests/test_thread.o"
 	@echo "... tests/test_thread.i"
 	@echo "... tests/test_thread.s"

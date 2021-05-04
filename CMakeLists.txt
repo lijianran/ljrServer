@@ -23,13 +23,19 @@ set(LIB_SRC
     ljrServer/hook.cpp
     ljrServer/http/http.cpp
     ljrServer/http/http_parser.cpp
+    ljrServer/http/http_session.cpp
+    ljrServer/http/http_server.cpp
     ljrServer/http/http11_parser.cpp
     ljrServer/http/httpclient_parser.cpp
+    ljrServer/http/servlet.cpp;
     ljrServer/iomanager.cpp
     ljrServer/log.cpp
     ljrServer/scheduler.cpp
     ljrServer/socket.cpp
+    ljrServer/socket_stream.cpp
+    ljrServer/stream.cpp
     ljrServer/thread.cpp
+    ljrServer/tcp_server.cpp
     ljrServer/timer.cpp
     ljrServer/util.cpp
 )
@@ -139,6 +145,24 @@ add_dependencies(test_http_parser ljrServer)
 # 重定义宏__FILE__
 force_redefine_file_macro_for_sources(test_http_parser)
 target_link_libraries(test_http_parser ${LIBS})
+
+# 测试 tcp_server
+add_executable(test_tcp_server tests/test_tcp_server.cpp)
+add_dependencies(test_tcp_server ljrServer)
+# 重定义宏__FILE__
+force_redefine_file_macro_for_sources(test_tcp_server)
+target_link_libraries(test_tcp_server ${LIBS})
+
+# 实例 echo_server
+add_executable(echo_server examples/echo_server.cpp)
+add_dependencies(echo_server ljrServer)
+# 重定义宏__FILE__
+force_redefine_file_macro_for_sources(echo_server)
+target_link_libraries(echo_server ${LIBS})
+
+# 测试 http_server
+ljrserver_add_executable(test_http_server "tests/test_http_server.cpp" ljrServer "${LIBS}")
+
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)

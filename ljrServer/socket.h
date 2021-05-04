@@ -122,6 +122,8 @@ namespace ljrserver
         Address::ptr m_remoteAddress;
     };
 
+    std::ostream &operator<<(std::ostream &os, const Socket &addr);
+
 } // namespace ljrserver
 
 #endif //__LJRSERVER_SOCKET_H__

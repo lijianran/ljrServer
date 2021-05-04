@@ -205,6 +205,8 @@ namespace ljrserver
         sockaddr m_addr;
     };
 
+    std::ostream &operator<<(std::ostream &os, Address &addr);
+
 } // namespace ljrserver
 
 #endif //__LJRSERVER_ADDRESS_H__

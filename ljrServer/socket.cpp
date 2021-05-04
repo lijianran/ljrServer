@@ -540,4 +540,10 @@ namespace ljrserver
         }
     }
 
+
+    std::ostream &operator<<(std::ostream &os, const Socket &socket)
+    {
+        return socket.dump(os);
+    }
+
 } // namespace ljrserver

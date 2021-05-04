@@ -268,7 +268,7 @@ namespace ljrserver
 
             if (!m_body.empty())
             {
-                os << "content-length: " << m_body.size() << "\r\n\r\n";
+                os << "content-length: " << m_body.size() << "\r\n\r\n" << m_body;
             }
             else
             {
@@ -282,6 +282,16 @@ namespace ljrserver
             std::stringstream ss;
             dump(ss);
             return ss.str();
+        }
+
+        std::ostream &operator<<(std::ostream &os, const HttpRequest& req)
+        {
+            return req.dump(os);
+        }
+
+        std::ostream &operator<<(std::ostream &os, const HttpResponse& rsp)
+        {
+            return rsp.dump(os);
         }
 
     } // namespace http

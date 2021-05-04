@@ -602,14 +602,16 @@ namespace ljrserver
     {
         memset(&m_addr, 0, sizeof(m_addr));
         m_addr.sun_family = AF_UNIX;
-        m_length = path.size() - 1;
+        // 写错 m_length = path.size() - 1;
+        m_length = path.size() + 1;
 
         if (!path.empty() && path[0] == '\0')
         {
             --m_length;
         }
 
-        if (m_length <= sizeof(m_addr.sun_path))
+        // 写错 if (m_length <= sizeof(m_addr.sun_path))
+        if (m_length > sizeof(m_addr.sun_path))
         {
             throw std::logic_error("path too long");
         }
@@ -683,5 +685,9 @@ namespace ljrserver
     }
 
     // 流式输出
+    std::ostream &operator<<(std::ostream &os, Address &addr)
+    {
+        return addr.insert(os);
+    }
 
 } // namespace ljrserver
