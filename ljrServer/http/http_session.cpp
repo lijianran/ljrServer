@@ -17,8 +17,8 @@ namespace ljrserver
         HttpRequest::ptr HttpSession::recvRequest()
         {
             HttpRequestParser::ptr parser(new HttpRequestParser);
-            // uint64_t buff_size = HttpRequestParser::GetHttpRequestBufferSize();
-            uint64_t buff_size = 100;
+            uint64_t buff_size = HttpRequestParser::GetHttpRequestBufferSize();
+            // uint64_t buff_size = 100;
             std::shared_ptr<char> buffer(new char[buff_size], [](char *ptr) {
                 // 析构方法
                 delete[] ptr;
@@ -69,12 +69,14 @@ namespace ljrserver
                 int len = 0;
                 if (length >= offset)
                 {
-                    body.append(data, offset);
+                    // body.append(data, offset);
+                    memcpy(&body[0], data, offset);
                     len = offset;
                 }
                 else
                 {
-                    body.append(data, length);
+                    // body.append(data, length);
+                    memcpy(&body[0], data, length);
                     len = length;
                 }
                 length -= offset;

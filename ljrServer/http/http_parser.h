@@ -31,9 +31,11 @@ namespace ljrserver
 
             uint64_t getContentLength();
 
+            const http_parser &getParser() const { return m_parser; }
+
         public:
             static uint64_t GetHttpRequestBufferSize();
-            
+
             static uint64_t GetHttpRequestMaxBodySize();
 
         private:
@@ -53,7 +55,7 @@ namespace ljrserver
 
             HttpResponseParser();
 
-            size_t execute(char *data, size_t len);
+            size_t execute(char *data, size_t len, bool chunck);
 
             int isFinished();
 
@@ -64,6 +66,13 @@ namespace ljrserver
             void setError(int v) { m_error = v; }
 
             uint64_t getContentLength();
+
+            const httpclient_parser &getParser() const { return m_parser; }
+
+        public:
+            static uint64_t GetHttpResponseBufferSize();
+
+            static uint64_t GetHttpResponseMaxBodySize();
 
         private:
             httpclient_parser m_parser;

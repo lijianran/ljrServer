@@ -54,7 +54,7 @@ void test_response()
 {
     ljrserver::http::HttpResponseParser parser;
     std::string tmp = test_response_data;
-    size_t s = parser.execute(&tmp[0], tmp.size());
+    size_t s = parser.execute(&tmp[0], tmp.size(), false);
 
     LJRSERVER_LOG_INFO(g_logger) << "execute rt = " << s
                                  << " has_error = " << parser.hasError()

@@ -238,29 +238,29 @@ namespace ljrserver
         Fiber::ptr cur = GetThis();
         LJRSERVER_ASSERT(cur);
 
-        try
-        {
-            cur->m_cb();
-            cur->m_cb = nullptr;
-            cur->m_state = TERM;
-        }
-        catch (const std::exception &e)
-        {
-            // std::cerr << e.what() << '\n';
-            cur->m_state = EXCEPT;
-            LJRSERVER_LOG_ERROR(g_logger) << "Fiber Except: " << e.what()
-                                          << " fiber_id = " << cur->m_id
-                                          << std::endl
-                                          << ljrserver::BacktraceToString();
-        }
-        catch (...)
-        {
-            cur->m_state = EXCEPT;
-            LJRSERVER_LOG_ERROR(g_logger) << "Fiber Except"
-                                          << " fiber_id = " << cur->m_id
-                                          << std::endl
-                                          << ljrserver::BacktraceToString();
-        }
+        // try
+        // {
+        cur->m_cb();
+        cur->m_cb = nullptr;
+        cur->m_state = TERM;
+        // }
+        // catch (const std::exception &e)
+        // {
+        //     // std::cerr << e.what() << '\n';
+        //     cur->m_state = EXCEPT;
+        //     LJRSERVER_LOG_ERROR(g_logger) << "Fiber Except: " << e.what()
+        //                                   << " fiber_id = " << cur->m_id
+        //                                   << std::endl
+        //                                   << ljrserver::BacktraceToString();
+        // }
+        // catch (...)
+        // {
+        //     cur->m_state = EXCEPT;
+        //     LJRSERVER_LOG_ERROR(g_logger) << "Fiber Except"
+        //                                   << " fiber_id = " << cur->m_id
+        //                                   << std::endl
+        //                                   << ljrserver::BacktraceToString();
+        // }
 
         // 确保智能指针析构
         auto raw_ptr = cur.get();

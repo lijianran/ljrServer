@@ -23,6 +23,7 @@ set(LIB_SRC
     ljrServer/hook.cpp
     ljrServer/http/http.cpp
     ljrServer/http/http_parser.cpp
+    ljrServer/http/http_connection.cpp
     ljrServer/http/http_session.cpp
     ljrServer/http/http_server.cpp
     ljrServer/http/http11_parser.cpp
@@ -39,6 +40,11 @@ set(LIB_SRC
     ljrServer/timer.cpp
     ljrServer/util.cpp
 )
+
+# 编译 ragel
+ragelmaker(ljrServer/http/http11_parser.rl LIB_SRC ${CMAKE_CURRENT_SOURCE_DIR}/ljrServer/http)
+ragelmaker(ljrServer/http/httpclient_parser.rl LIB_SRC ${CMAKE_CURRENT_SOURCE_DIR}/ljrServer/http)
+ragelmaker(ljrServer/uri.rl LIB_SRC ${CMAKE_CURRENT_SOURCE_DIR}/ljrServer)
 
 # 生成so文件
 add_library(ljrServer SHARED ${LIB_SRC})
@@ -163,6 +169,11 @@ target_link_libraries(echo_server ${LIBS})
 # 测试 http_server
 ljrserver_add_executable(test_http_server "tests/test_http_server.cpp" ljrServer "${LIBS}")
 
+# 测试 http_connection
+ljrserver_add_executable(test_http_connection "tests/test_http_connection.cpp" ljrServer "${LIBS}")
+
+# 测试 uri
+ljrserver_add_executable(test_uri "tests/test_uri.cpp" ljrServer "${LIBS}")
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)

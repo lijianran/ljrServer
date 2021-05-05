@@ -14,13 +14,25 @@ namespace ljrserver
         static ljrserver::Logger::ptr g_logger = LJRSERVER_LOG_NAME("system");
 
         static ljrserver::ConfigVar<uint64_t>::ptr g_http_request_buffer_size =
-            ljrserver::Config::Lookup("http.request.buffer_size", (uint64_t)(4 * 1024), "http request buffer size");
+            ljrserver::Config::Lookup("http.request.buffer_size", (uint64_t)(4 * 1024),
+                                      "http request buffer size");
 
         static ljrserver::ConfigVar<uint64_t>::ptr g_http_request_max_body_size =
-            ljrserver::Config::Lookup("http.request.max_body_size", (uint64_t)(64 * 1024 * 1024), "http request max body size");
+            ljrserver::Config::Lookup("http.request.max_body_size", (uint64_t)(64 * 1024 * 1024),
+                                      "http request max body size");
+
+        static ljrserver::ConfigVar<uint64_t>::ptr g_http_response_buffer_size =
+            ljrserver::Config::Lookup("http.response.buffer_size", (uint64_t)(4 * 1024),
+                                      "http response buffer size");
+
+        static ljrserver::ConfigVar<uint64_t>::ptr g_http_response_max_body_size =
+            ljrserver::Config::Lookup("http.response.max_body_size", (uint64_t)(64 * 1024 * 1024),
+                                      "http response max body size");
 
         static uint64_t s_http_request_buffer_size = 0;
         static uint64_t s_http_request_max_body_size = 0;
+        static uint64_t s_http_response_buffer_size = 0;
+        static uint64_t s_http_response_max_body_size = 0;
 
         uint64_t HttpRequestParser::GetHttpRequestBufferSize()
         {
@@ -31,7 +43,17 @@ namespace ljrserver
         {
             return s_http_request_max_body_size;
         }
-        
+
+        uint64_t HttpResponseParser::GetHttpResponseBufferSize()
+        {
+            return s_http_response_buffer_size;
+        }
+
+        uint64_t HttpResponseParser::GetHttpResponseMaxBodySize()
+        {
+            return s_http_response_max_body_size;
+        }
+
         namespace
         {
             struct _RequestSizeIniter
@@ -40,6 +62,8 @@ namespace ljrserver
                 {
                     s_http_request_buffer_size = g_http_request_buffer_size->getValue();
                     s_http_request_max_body_size = g_http_request_max_body_size->getValue();
+                    s_http_response_buffer_size = g_http_response_buffer_size->getValue();
+                    s_http_response_max_body_size = g_http_response_max_body_size->getValue();
 
                     g_http_request_buffer_size->addListener([](const uint64_t &old_value, const uint64_t &new_value) {
                         s_http_request_buffer_size = new_value;
@@ -47,6 +71,14 @@ namespace ljrserver
 
                     g_http_request_max_body_size->addListener([](const uint64_t &old_value, const uint64_t &new_value) {
                         s_http_request_max_body_size = new_value;
+                    });
+
+                    g_http_response_buffer_size->addListener([](const uint64_t &old_value, const uint64_t &new_value) {
+                        s_http_response_buffer_size = new_value;
+                    });
+
+                    g_http_response_max_body_size->addListener([](const uint64_t &old_value, const uint64_t &new_value) {
+                        s_http_response_max_body_size = new_value;
                     });
                 }
             };
@@ -242,7 +274,7 @@ namespace ljrserver
             if (flen == 0)
             {
                 LJRSERVER_LOG_WARN(g_logger) << "invalid http response field length = 0";
-                parser->setError(1002);
+                // parser->setError(1002);
                 return;
             }
             parser->getData()->setHeader(std::string(field, flen), std::string(value, vlen));
@@ -265,8 +297,12 @@ namespace ljrserver
             m_parser.data = this;
         }
 
-        size_t HttpResponseParser::execute(char *data, size_t len)
+        size_t HttpResponseParser::execute(char *data, size_t len, bool chunck)
         {
+            if (chunck)
+            {
+                httpclient_parser_init(&m_parser);
+            }
             size_t offset = httpclient_parser_execute(&m_parser, data, len, 0);
             memmove(data, data + offset, len - offset);
             return offset;

@@ -86,3 +86,10 @@ lijianran's Internet Server
 3. 封装HttpSession
 4. 基于TcpServer封装HttpServer，结合HttpSession接收Client的请求数据
 5. 封装HttpServlet
+
+- 2021.05.05
+
+1. 封装HttpConnetcion
+2. 解析chunked数据
+3. 解析uri
+4. 封装http连接池，支持长连接

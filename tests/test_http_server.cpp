@@ -8,7 +8,7 @@ void run()
 {
     ljrserver::http::HttpServer::ptr server(new ljrserver::http::HttpServer);
 
-    ljrserver::Address::ptr addr = ljrserver::Address::LookupAnyIPAdress("0.0.0.0:8023");
+    ljrserver::Address::ptr addr = ljrserver::Address::LookupAnyIPAddress("0.0.0.0:8023");
 
     while (!server->bind(addr))
     {

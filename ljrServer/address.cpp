@@ -119,7 +119,7 @@ namespace ljrserver
         return nullptr;
     }
 
-    IPAddress::ptr Address::LookupAnyIPAdress(const std::string &host, int family, int type, int protocol)
+    IPAddress::ptr Address::LookupAnyIPAddress(const std::string &host, int family, int type, int protocol)
     {
         std::vector<Address::ptr> result;
         if (Lookup(result, host, family, type, protocol))

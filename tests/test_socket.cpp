@@ -8,7 +8,7 @@ static ljrserver::Logger::ptr g_logger = LJRSERVER_LOG_ROOT();
 
 void test_socket()
 {
-    ljrserver::IPAddress::ptr addr = ljrserver::Address::LookupAnyIPAdress("www.baidu.com");
+    ljrserver::IPAddress::ptr addr = ljrserver::Address::LookupAnyIPAddress("www.baidu.com");
     if (addr)
     {
         LJRSERVER_LOG_INFO(g_logger) << "get address: " << addr->toString();
