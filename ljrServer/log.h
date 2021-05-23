@@ -2,14 +2,16 @@
 #ifndef __LJRSERVER_LOG_H__
 #define __LJRSERVER_LOG_H__
 
-#include <string>
 #include <memory>
+#include <string>
+#include <vector>
 #include <list>
+#include <map>
 #include <sstream>
 #include <fstream>
-#include <vector>
+// __VA_ARGS__ ...
 #include <stdarg.h>
-#include <map>
+
 #include "util.h"
 #include "singleton.h"
 #include "thread.h"
@@ -96,6 +98,7 @@ namespace ljrserver
         std::shared_ptr<Logger> getLogger() const { return m_logger; }
         LogLevel::Level getLevel() const { return m_level; }
 
+        // 获得事件内容的string流
         std::stringstream &getSS() { return m_ss; }
 
         void format(const char *fmt, ...);
@@ -160,7 +163,7 @@ namespace ljrserver
             typedef std::shared_ptr<FormatItem> ptr;
 
             virtual ~FormatItem() {}
-
+            // 格式化日志内容，输出内容到os
             virtual void format(std::ostream &os, std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event) = 0;
         };
 
@@ -168,8 +171,11 @@ namespace ljrserver
         void init();
 
     private:
+        // 格式字符串
         std::string m_pattern;
+        // 格式类 vector集合
         std::vector<FormatItem::ptr> m_items;
+        // 格式解析是否有错误
         bool m_error = false;
     };
 
@@ -197,11 +203,11 @@ namespace ljrserver
     protected:
         // 忘记初始化level
         LogLevel::Level m_level = LogLevel::DEBUG;
-
+        // appender是否有设定的格式
         bool m_hasFormatter = false;
-
+        // appender的锁
         MutexType m_mutex;
-
+        // appender的格式
         LogFormatter::ptr m_formatter;
     };
 
@@ -217,7 +223,6 @@ namespace ljrserver
         Logger(const std::string &name = "root");
 
         void log(LogLevel::Level level, LogEvent::ptr event);
-
         void debug(LogEvent::ptr event);
         void info(LogEvent::ptr event);
         void warn(LogEvent::ptr event);
@@ -244,7 +249,7 @@ namespace ljrserver
         std::string m_name;
         // 日志级别
         LogLevel::Level m_level;
-        // Appender集合
+        // Appender List
         std::list<LogAppender::ptr> m_appenders;
         // 日志格式器
         LogFormatter::ptr m_formatter;
@@ -287,6 +292,7 @@ namespace ljrserver
 
     private:
         std::string m_filename;
+
         std::ofstream m_filestream;
 
         uint64_t m_lastTime = 0;
@@ -299,6 +305,7 @@ namespace ljrserver
         typedef Spinlock MutexType;
 
         LoggerManager();
+
         Logger::ptr getLogger(const std::string &name);
 
         void init();

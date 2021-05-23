@@ -62,11 +62,11 @@ set(LIBS
 # message("******", ${LIB_LIB})
 
 # 测试日志
-add_executable(test tests/test.cpp)
-add_dependencies(test ljrServer)
+add_executable(test_log tests/test_log.cpp)
+add_dependencies(test_log ljrServer)
 # 重定义宏__FILE__
-force_redefine_file_macro_for_sources(test)
-target_link_libraries(test ${LIBS})
+force_redefine_file_macro_for_sources(test_log)
+target_link_libraries(test_log ${LIBS})
 
 # 测试配置
 add_executable(test_config tests/test_config.cpp)

@@ -18,19 +18,19 @@ lijianran's Internet Server
 
 - 2021.04.23
 
-    复习计算机网络，开始学习C++网络服务器开发
+    复习计算机网络，开始学习 C++ 网络服务器开发
 
 - 2021.04.25
 
 1. 初始化仓库
-2. 初步完成日志log模块
+2. 初步完成日志 log 模块
 
 - 2021.04.26
 
-1. 开始配置config模块
-2. 配置boost、yaml-cpp库
-3. config模块支持简单类型的配置
-4. STL容器偏特化，支持了vector、list、set、map、unordered_set、unordered_map
+1. 开始配置 config 模块
+2. 配置 boost、yaml-cpp 库
+3. config 模块支持简单类型的配置
+4. STL 容器偏特化，支持了 vector、list、set、map、unordered_set、unordered_map
 5. 支持自定义类型解析配置
 6. 支持监听配置变更事件
 
@@ -40,27 +40,27 @@ lijianran's Internet Server
 2. 完善日志模块和配置模块
 3. 开始设计线程模块
 4. 设计互斥量、信号量
-5. 使用Spinlock自旋锁替换Mutex，提高日志文件的写入性能
-6. 写文件时周期reopen，防止文件删除
+5. 使用 Spinlock 自旋锁替换 Mutex，提高日志文件的写入性能
+6. 写文件时周期 reopen，防止文件删除
 7. 配置模块增加读写锁
 
 - 2021.04.28
 
 1. 设计协程模块
 2. 添加宏定义模块，增加断言
-3. 添加Backtrace查看函数调用堆栈，方便调试
+3. 添加 Backtrace 查看函数调用堆栈，方便调试
 4. 设计协程调度模块，作为线程池来分配一组线程，并可以调度协程到指定线程上执行
 
 - 2021.04.29
 
-1. 设计IO协程调度模块
+1. 设计 IO协程调度模块
 2. 添加定时器功能 ms
 
 - 2021.04.30
 
-1. 开始服务器HOOK模块
-2. hook成功sleep，同步方式实现异步功能
-3. 添加文件句柄类及句柄管理器，识别句柄是否是socket句柄
+1. 开始服务器 HOOK 模块
+2. hook 成功 sleep，同步方式实现异步功能
+3. 添加文件句柄类及句柄管理器，识别句柄是否是 socket 句柄
 4. hook socket相关的系统函数
 
 - 2021.05.01
@@ -71,25 +71,25 @@ lijianran's Internet Server
 
 - 2021.05.02
 
-1. 封装socket，包括connect、accept、read、write、close
-2. 封装字节序列化类ByteArray，方便序列化和反序列化
+1. 封装 socket，包括 connect、accept、read、write、close
+2. 封装字节序列化类 ByteArray，方便序列化和反序列化
 
 - 2021.05.03
 
-1. 封装HTTP协议，针对HTTP1.1部分API，主要实现HttpRequest、HttpResponse
-2. 使用ragel有限状态机，解析HTTP报文
+1. 封装 HTTP 协议，针对 HTTP1.1 部分 API，主要实现 HttpRequest、HttpResponse
+2. 使用 ragel 有限状态机，解析 HTTP 报文
 
 - 2021.05.04
 
-1. 封装TcpServer，基于TcpServer实现一个EchoServer服务器
-2. 针对文件/Socket，封装Stream
-3. 封装HttpSession
-4. 基于TcpServer封装HttpServer，结合HttpSession接收Client的请求数据
-5. 封装HttpServlet
+1. 封装 TcpServer，基于TcpServer实现一个EchoServer服务器
+2. 针对文件/Socket，封装 Stream
+3. 封装 HttpSession
+4. 基于 TcpServer 封装 HttpServer，结合 HttpSession 接收 Client 的请求数据
+5. 封装 HttpServlet
 
 - 2021.05.05
 
-1. 封装HttpConnetcion
-2. 解析chunked数据
-3. 解析uri
-4. 封装http连接池，支持长连接
+1. 封装 HttpConnection
+2. 解析 chunked 数据
+3. 解析 uri
+4. 封装 http 连接池，支持长连接

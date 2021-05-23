@@ -26,8 +26,7 @@ namespace ljrserver
         output.push_back(std::make_pair(prefix, node));
         if (node.IsMap())
         {
-            for (auto it = node.begin();
-                 it != node.end(); ++it)
+            for (auto it = node.begin(); it != node.end(); ++it)
             {
                 ListAllMember(prefix.empty() ? it->first.Scalar() : prefix + "." + it->first.Scalar(), it->second, output);
             }

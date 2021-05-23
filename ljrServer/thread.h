@@ -2,7 +2,7 @@
 #ifndef __LJRSERVER_THREAD_H__
 #define __LJRSERVER_THREAD_H__
 
-#include <thread>
+// #include <thread>
 #include <functional>
 #include <memory>
 #include <pthread.h>
@@ -292,6 +292,7 @@ namespace ljrserver
         }
 
     private:
+        // volatile 每次访问时都必须从内存中取出值
         volatile std::atomic_flag m_mutex;
     };
 
@@ -324,11 +325,15 @@ namespace ljrserver
         static void *run(void *arg);
 
     private:
+        // 线程 id
         pid_t m_id = -1;
+        // 线程具柄
         pthread_t m_thread = 0;
+        // 线程函数
         std::function<void()> m_cb;
+        // 线程名称
         std::string m_name;
-
+        // 信号量
         Semaphore m_semaphore;
     };
 

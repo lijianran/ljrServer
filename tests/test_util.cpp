@@ -1,5 +1,7 @@
 
-#include "../ljrServer/ljrserver.h"
+// #include "../ljrServer/ljrserver.h"
+#include "../ljrServer/util.h"
+#include "../ljrServer/log.h"
 
 ljrserver::Logger::ptr g_logger = LJRSERVER_LOG_ROOT();
 

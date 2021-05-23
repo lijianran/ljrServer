@@ -1,7 +1,7 @@
 
-#include <iostream>
+// #include <iostream>
 #include "../ljrServer/log.h"
-#include "../ljrServer/util.h"
+// #include "../ljrServer/util.h"
 
 int main(int argc, char const *argv[])
 {
@@ -16,7 +16,7 @@ int main(int argc, char const *argv[])
     // logger->log(ljrserver::LogLevel::DEBUG, event);
 
     ljrserver::FileLogAppender::ptr file_appender(new ljrserver::FileLogAppender("./log.txt"));
-    ljrserver::LogFormatter::ptr file_format(new ljrserver::LogFormatter("%d%T%m%n"));
+    ljrserver::LogFormatter::ptr file_format(new ljrserver::LogFormatter("%d%T%p%T%m%n"));
     file_appender->setFormatter(file_format);
     // file_appender->setLevel(ljrserver::LogLevel::ERROR);
 
@@ -30,5 +30,6 @@ int main(int argc, char const *argv[])
 
     auto l = ljrserver::LoggerMgr::GetInstance()->getLogger("xx");
     LJRSERVER_LOG_DEBUG(l) << "test loggermanager";
+
     return 0;
 }

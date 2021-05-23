@@ -1,6 +1,8 @@
 
-#include "../ljrServer/ljrserver.h"
 #include "../ljrServer/thread.h"
+#include "../ljrServer/log.h"
+#include "../ljrServer/config.h"
+
 
 ljrserver::Logger::ptr g_logger = LJRSERVER_LOG_ROOT();
 
@@ -10,10 +12,10 @@ ljrserver::Mutex s_mutex;
 
 void fun1()
 {
-    LJRSERVER_LOG_INFO(g_logger) << "name: " << ljrserver::Thread::GetName()
-                                 << " this.name: " << ljrserver::Thread::GetThis()->getName()
-                                 << " id: " << ljrserver::GetThreadId()
-                                 << " this.id: " << ljrserver::Thread::GetThis()->getId();
+    LJRSERVER_LOG_INFO(g_logger) << "name=" << ljrserver::Thread::GetName()
+                                 << " this.name=" << ljrserver::Thread::GetThis()->getName()
+                                 << " id=" << ljrserver::GetThreadId()
+                                 << " this.id=" << ljrserver::Thread::GetThis()->getId();
 
     for (int i = 0; i < 100000; i++)
     {
@@ -44,26 +46,30 @@ int main(int argc, char const *argv[])
 {
     LJRSERVER_LOG_INFO(g_logger) << "开始测试线程";
     std::vector<ljrserver::Thread::ptr> thrs;
+
+    // fun1(); // 报错: Segmentation fault (core dumped) 当前 main 主线程非用户创建
+
     // 测试线程
-    // for (int i = 0; i < 5; ++i)
-    // {
-    //     ljrserver::Thread::ptr thr(new ljrserver::Thread(&fun1, "name" + std::to_string(i)));
-    //     thrs.push_back(thr);
-    // }
-
-    // 测试锁
-    YAML::Node root = YAML::LoadFile("/ljrServer/bin/conf/log2.yml");
-    ljrserver::Config::LoadFromYaml(root);
-
-    for (int i = 0; i < 2; i++)
+    for (int i = 0; i < 5; ++i)
     {
-        ljrserver::Thread::ptr thr(new ljrserver::Thread(&fun2, "name_" + std::to_string(i * 2)));
-        ljrserver::Thread::ptr thr2(new ljrserver::Thread(&fun3, "name_" + std::to_string(i * 2)));
-
+        ljrserver::Thread::ptr thr(new ljrserver::Thread(&fun1, "thread_" + std::to_string(i)));
         thrs.push_back(thr);
-        thrs.push_back(thr2);
     }
 
+    // // 测试锁
+    // YAML::Node root = YAML::LoadFile("/ljrServer/bin/conf/log2.yml");
+    // ljrserver::Config::LoadFromYaml(root);
+
+    // for (int i = 0; i < 2; i++)
+    // {
+    //     ljrserver::Thread::ptr thr(new ljrserver::Thread(&fun2, "name_" + std::to_string(i * 2)));
+    //     ljrserver::Thread::ptr thr2(new ljrserver::Thread(&fun3, "name_" + std::to_string(i * 2)));
+
+    //     thrs.push_back(thr);
+    //     thrs.push_back(thr2);
+    // }
+
+    // join
     for (size_t i = 0; i < thrs.size(); ++i)
     {
         thrs[i]->join();

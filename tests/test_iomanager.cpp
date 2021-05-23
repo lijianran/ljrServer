@@ -1,7 +1,9 @@
 
-#include "../ljrServer/ljrserver.h"
+// #include "../ljrServer/ljrserver.h"
 #include "../ljrServer/iomanager.h"
+#include "../ljrServer/log.h"
 
+#include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <fcntl.h>

@@ -1,10 +1,11 @@
 
+#include <atomic>
+
 #include "fiber.h"
 #include "config.h"
 #include "macro.h"
 #include "log.h"
 #include "scheduler.h"
-#include <atomic>
 
 namespace ljrserver
 {
@@ -54,7 +55,8 @@ namespace ljrserver
 
         ++s_fiber_count;
 
-        LJRSERVER_LOG_DEBUG(g_logger) << "Fiber::Fiber";
+        LJRSERVER_LOG_DEBUG(g_logger) << "Fiber::Fiber main"
+                                      << " total=" << s_fiber_count;
     }
 
     Fiber::Fiber(std::function<void()> cb, size_t stacksize, bool use_caller)
@@ -83,7 +85,8 @@ namespace ljrserver
             makecontext(&m_context, &Fiber::CallerMainFunc, 0);
         }
 
-        LJRSERVER_LOG_DEBUG(g_logger) << "Fiber::Fiber id = " << m_id;
+        LJRSERVER_LOG_DEBUG(g_logger) << "Fiber::Fiber id = " << m_id
+                                      << " total=" << s_fiber_count;
     }
 
     Fiber::~Fiber()
@@ -107,10 +110,11 @@ namespace ljrserver
             }
         }
 
-        LJRSERVER_LOG_DEBUG(g_logger) << "Fiber::~Fiber id = " << m_id;
+        LJRSERVER_LOG_DEBUG(g_logger) << "Fiber::~Fiber id=" << m_id
+                                      << " total=" << s_fiber_count;
     }
 
-    // 重置协程函数，并重置状态 INIT、TERM
+    // 重置协程函数，并重置状态 INIT、TERM、EXCEPT
     void Fiber::reset(std::function<void()> cb)
     {
         LJRSERVER_ASSERT(m_stack);
@@ -172,12 +176,16 @@ namespace ljrserver
     void Fiber::back()
     {
         SetThis(t_threadFiber.get());
+
         if (swapcontext(&m_context, &t_threadFiber->m_context))
         {
             LJRSERVER_ASSERT2(false, "swapcontext back");
         }
     }
 
+    /********************************
+    Fiber 类的静态成员函数
+    ********************************/
     // 获取协程id
     uint64_t Fiber::GetFiberId()
     {
@@ -194,7 +202,7 @@ namespace ljrserver
         t_fiber = f;
     }
 
-    // 返回当前执行的协程
+    // 得到当前执行的协程
     Fiber::ptr Fiber::GetThis()
     {
         if (t_fiber)
@@ -202,7 +210,7 @@ namespace ljrserver
             return t_fiber->shared_from_this();
         }
 
-        // 当前线程刚启动，一个协程都没有，创建main_fiber主协程
+        // 当前线程刚启动，一个协程都没有，通过默认构造函数，创建 main_fiber 主协程
         Fiber::ptr main_fiber(new Fiber);
         LJRSERVER_ASSERT(t_fiber == main_fiber.get());
 
@@ -211,7 +219,7 @@ namespace ljrserver
         return t_fiber->shared_from_this();
     }
 
-    // 协程切换到后台，并设置为READY状态
+    // 协程切换到后台，并设置为 READY 状态
     void Fiber::YieldToReady()
     {
         Fiber::ptr cur = GetThis();
@@ -219,7 +227,7 @@ namespace ljrserver
         cur->swapOut();
     }
 
-    // 协程切换到后台，并设置为HOLD状态
+    // 协程切换到后台，并设置为 HOLD 状态
     void Fiber::YieldToHold()
     {
         Fiber::ptr cur = GetThis();
@@ -238,34 +246,34 @@ namespace ljrserver
         Fiber::ptr cur = GetThis();
         LJRSERVER_ASSERT(cur);
 
-        // try
-        // {
-        cur->m_cb();
-        cur->m_cb = nullptr;
-        cur->m_state = TERM;
-        // }
-        // catch (const std::exception &e)
-        // {
-        //     // std::cerr << e.what() << '\n';
-        //     cur->m_state = EXCEPT;
-        //     LJRSERVER_LOG_ERROR(g_logger) << "Fiber Except: " << e.what()
-        //                                   << " fiber_id = " << cur->m_id
-        //                                   << std::endl
-        //                                   << ljrserver::BacktraceToString();
-        // }
-        // catch (...)
-        // {
-        //     cur->m_state = EXCEPT;
-        //     LJRSERVER_LOG_ERROR(g_logger) << "Fiber Except"
-        //                                   << " fiber_id = " << cur->m_id
-        //                                   << std::endl
-        //                                   << ljrserver::BacktraceToString();
-        // }
+        try
+        {
+            cur->m_cb();
+            cur->m_cb = nullptr;
+            cur->m_state = TERM;
+        }
+        catch (const std::exception &e)
+        {
+            // std::cerr << e.what() << '\n';
+            cur->m_state = EXCEPT;
+            LJRSERVER_LOG_ERROR(g_logger) << "Fiber Except: " << e.what()
+                                          << " fiber_id = " << cur->m_id
+                                          << std::endl
+                                          << ljrserver::BacktraceToString();
+        }
+        catch (...)
+        {
+            cur->m_state = EXCEPT;
+            LJRSERVER_LOG_ERROR(g_logger) << "Fiber Except"
+                                          << " fiber_id = " << cur->m_id
+                                          << std::endl
+                                          << ljrserver::BacktraceToString();
+        }
 
         // 确保智能指针析构
         auto raw_ptr = cur.get();
         cur.reset();
-        // 回到主协程mian_fiber
+        // 回到主协程 mian_fiber
         raw_ptr->swapOut();
 
         LJRSERVER_ASSERT2(false, "never reach fiber_id = " + std::to_string(raw_ptr->getId()));
@@ -304,7 +312,7 @@ namespace ljrserver
         // 确保智能指针析构
         auto raw_ptr = cur.get();
         cur.reset();
-        // 回到主协程mian_fiber
+        // 回到主协程 mian_fiber
         raw_ptr->back();
 
         LJRSERVER_ASSERT2(false, "never reach fiber_id = " + std::to_string(raw_ptr->getId()));

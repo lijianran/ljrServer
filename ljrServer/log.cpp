@@ -1,9 +1,10 @@
 
 #include "log.h"
+#include "config.h"
+
 #include <iostream>
 #include <functional>
 #include <time.h>
-#include "config.h"
 
 namespace ljrserver
 {
@@ -101,6 +102,7 @@ namespace ljrserver
                 m_format = "%Y.%m.%d %H:%M:%S";
             }
         }
+
         void format(std::ostream &os, Logger::ptr logger, LogLevel::Level level, LogEvent::ptr event) override
         {
             struct tm tm;
@@ -236,6 +238,7 @@ namespace ljrserver
         MutexType::Lock lock(m_mutex);
 
         m_formatter = formatter;
+        
         if (m_formatter)
         {
             m_hasFormatter = true;
@@ -263,20 +266,20 @@ namespace ljrserver
 #define XX(name)         \
     case LogLevel::name: \
         return #name;    \
-        break;
+        // break;
 
             XX(DEBUG);
             XX(INFO);
             XX(WARN);
             XX(ERROR);
             XX(FATAL);
+
 #undef XX
         default:
             return "UNKNOW";
-            break;
+            // break;
         }
-
-        return "UNKNOW";
+        // return "UNKNOW";
     }
 
     LogLevel::Level LogLevel::FromString(const std::string &str)
@@ -297,6 +300,7 @@ namespace ljrserver
         XX(WARN, WARN);
         XX(ERROR, ERROR);
         XX(FATAL, FATAL);
+
         return LogLevel::UNKNOW;
 #undef XX
     }
@@ -335,6 +339,7 @@ namespace ljrserver
         return ss.str();
     }
 
+    // 格式
     LogFormatter::ptr Logger::getFormatter()
     {
         MutexType::Lock lock(m_mutex);
@@ -348,13 +353,16 @@ namespace ljrserver
 
         m_formatter = val;
 
-        for (auto &i : m_appenders)
+        for (auto &appender : m_appenders)
         {
-            MutexType::Lock ll(i->m_mutex);
-
-            if (!i->m_hasFormatter)
+            // logger是appender的友元类，可以直接操作appender的锁
+            MutexType::Lock ll(appender->m_mutex);
+            // logger是appender的友元类，可以直接访问appender的m_hasFormatter
+            if (!appender->m_hasFormatter)
             {
-                i->m_formatter = m_formatter;
+                // 如果appender没有设定的格式，则把logger的格式给appender
+                // logger是appender的友元类，可以直接操作appender的m_formatter
+                appender->m_formatter = m_formatter;
             }
         }
     }
@@ -373,6 +381,7 @@ namespace ljrserver
         setFormatter(new_val);
     }
 
+    // appender
     void Logger::addAppender(LogAppender::ptr appender)
     {
         MutexType::Lock lock(m_mutex);
@@ -384,6 +393,7 @@ namespace ljrserver
 
             // 如果appender没有定义格式，将logger的默认格式传给appender
             appender->m_formatter = m_formatter;
+            // logger是appender的友元类，可以直接访问appender的m_hasFormatter
             // appender->setFormatter(m_formatter);
         }
 
@@ -411,6 +421,7 @@ namespace ljrserver
         m_appenders.clear();
     }
 
+    // 日志打印
     void Logger::log(LogLevel::Level level, LogEvent::ptr event)
     {
         if (level >= m_level)
@@ -422,6 +433,7 @@ namespace ljrserver
             {
                 for (auto &i : m_appenders)
                 {
+                    // 调用logger的appender打印日志
                     i->log(self, level, event);
                 }
             }
@@ -562,9 +574,10 @@ namespace ljrserver
     std::string LogFormatter::format(std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event)
     {
         std::stringstream ss;
-        for (auto &i : m_items)
+        for (auto &item : m_items)
         {
-            i->format(ss, logger, level, event);
+            // 调用特定的格式类，格式化内容到字符串流ss
+            item->format(ss, logger, level, event);
         }
         return ss.str();
     }
@@ -738,7 +751,7 @@ namespace ljrserver
         {
             return it->second;
         }
-
+        // 没有找到，创建新的名为name的logger
         Logger::ptr logger(new Logger(name));
         logger->m_root = m_root;
         m_loggers[name] = logger;

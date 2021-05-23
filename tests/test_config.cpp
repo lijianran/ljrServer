@@ -5,6 +5,7 @@
 #include <iostream>
 
 ljrserver::ConfigVar<int>::ptr g_int_value_config = ljrserver::Config::Lookup("system.port", (int)8080, "system port");
+
 ljrserver::ConfigVar<float>::ptr g_float_value_config = ljrserver::Config::Lookup("system.value", (float)80.80, "system value");
 
 ljrserver::ConfigVar<float>::ptr g_int_valuex_config = ljrserver::Config::Lookup("system.port", (float)8080, "system port");
@@ -250,8 +251,10 @@ void test_log()
 int main(int argc, char const *argv[])
 {
 
-    // LJRSERVER_LOG_INFO(LJRSERVER_LOG_ROOT()) << g_int_value_config->getValue();
+    LJRSERVER_LOG_INFO(LJRSERVER_LOG_ROOT()) << g_int_value_config->getValue();
+
     // LJRSERVER_LOG_INFO(LJRSERVER_LOG_ROOT()) << g_float_value_config->toString();
+    
     // test_yaml();
 
     // test_config();
@@ -260,12 +263,12 @@ int main(int argc, char const *argv[])
 
     // test_log();
 
-    ljrserver::Config::Visit([](ljrserver::ConfigVarBase::ptr var) {
-        LJRSERVER_LOG_INFO(LJRSERVER_LOG_ROOT()) << "name = " << var->getName()
-                                                 << " description = " << var->getDescription()
-                                                 << " typename = " << var->getTypeName()
-                                                 << " value = " << var->toString();
-    });
+    // ljrserver::Config::Visit([](ljrserver::ConfigVarBase::ptr var) {
+    //     LJRSERVER_LOG_INFO(LJRSERVER_LOG_ROOT()) << "name = " << var->getName()
+    //                                              << " description = " << var->getDescription()
+    //                                              << " typename = " << var->getTypeName()
+    //                                              << " value = " << var->toString();
+    // });
 
     return 0;
 }

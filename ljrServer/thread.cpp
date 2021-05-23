@@ -26,6 +26,7 @@ namespace ljrserver
 
     void Semaphore::wait()
     {
+        // P 操作
         if (sem_wait(&m_semaphore))
         {
             throw std::logic_error("sem_wait error");
@@ -34,6 +35,7 @@ namespace ljrserver
 
     void Semaphore::notify()
     {
+        // V 操作
         if (sem_post(&m_semaphore))
         {
             throw std::logic_error("sem_post error");
@@ -96,6 +98,7 @@ namespace ljrserver
     {
         if (m_thread)
         {
+            // 非阻塞
             pthread_detach(m_thread);
         }
     }
@@ -104,6 +107,7 @@ namespace ljrserver
     {
         if (m_thread)
         {
+            // 阻塞
             int rt = pthread_join(m_thread, nullptr);
             if (rt)
             {

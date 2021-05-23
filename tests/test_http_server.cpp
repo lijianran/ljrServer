@@ -8,7 +8,7 @@ void run()
 {
     ljrserver::http::HttpServer::ptr server(new ljrserver::http::HttpServer);
 
-    ljrserver::Address::ptr addr = ljrserver::Address::LookupAnyIPAddress("0.0.0.0:8023");
+    ljrserver::Address::ptr addr = ljrserver::Address::LookupAnyIPAddress("0.0.0.0:12346");
 
     while (!server->bind(addr))
     {
@@ -27,6 +27,34 @@ void run()
                                           ljrserver::http::HttpResponse::ptr rsp,
                                           ljrserver::http::HttpSession::ptr session) {
         rsp->setBody("Glob:\r\n"+req->toString());
+        return 0;
+    });
+
+    sd->addGlobServlet("/liyaopeng/*", [](ljrserver::http::HttpRequest::ptr req,
+                                          ljrserver::http::HttpResponse::ptr rsp,
+                                          ljrserver::http::HttpSession::ptr session) {
+        rsp->setBody("<h1>welcome, liyaopeng!</h1>");
+        return 0;
+    });
+
+    sd->addGlobServlet("/lijing/*", [](ljrserver::http::HttpRequest::ptr req,
+                                          ljrserver::http::HttpResponse::ptr rsp,
+                                          ljrserver::http::HttpSession::ptr session) {
+        rsp->setBody("<h1>welcome, lijing!</h1>");
+        return 0;
+    });
+
+    sd->addGlobServlet("/jianhong/*", [](ljrserver::http::HttpRequest::ptr req,
+                                          ljrserver::http::HttpResponse::ptr rsp,
+                                          ljrserver::http::HttpSession::ptr session) {
+        rsp->setBody("<h1>welcome, jianhong!</h1>");
+        return 0;
+    });
+
+    sd->addGlobServlet("/liqian/*", [](ljrserver::http::HttpRequest::ptr req,
+                                          ljrserver::http::HttpResponse::ptr rsp,
+                                          ljrserver::http::HttpSession::ptr session) {
+        rsp->setBody("<h1>welcome, liqian!</h1>");
         return 0;
     });
 

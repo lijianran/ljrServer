@@ -36,6 +36,7 @@ namespace ljrserver
         ConfigVarBase(const std::string &name, const std::string &description = "")
             : m_name(name), m_description(description)
         {
+            // 转小写
             std::transform(m_name.begin(), m_name.end(), m_name.begin(), ::tolower);
         }
 
@@ -332,6 +333,7 @@ namespace ljrserver
             {
                 // m_val = boost::lexical_cast<T>(str);
                 setValue(FromStr()(str));
+                return true;
             }
             catch (const std::exception &e)
             {
@@ -362,7 +364,7 @@ namespace ljrserver
                 }
                 for (auto &i : m_cbs)
                 {
-                    // 回调函数，提醒配置变化 m_val->v
+                    // 回调函数，提醒配置变化 m_val -> v
                     i.second(m_val, v);
                 }
             }
@@ -418,10 +420,8 @@ namespace ljrserver
     private:
         // 配置项
         T m_val;
-
         // 变更回调函数组 uint64_t key要求唯一，一般可用hash
         std::map<uint64_t, on_change_cb> m_cbs;
-
         // 读写锁
         RWMutexType m_mutex;
     };
@@ -449,7 +449,7 @@ namespace ljrserver
                 }
                 else
                 {
-                    LJRSERVER_LOG_ERROR(LJRSERVER_LOG_ROOT()) << "Lookup name = " << name
+                    LJRSERVER_LOG_ERROR(LJRSERVER_LOG_ROOT()) << "Lookup name: " << name
                                                               << " exists but type not "
                                                               << typeid(T).name()
                                                               << " real_type = "
@@ -468,7 +468,7 @@ namespace ljrserver
 
             if (name.find_first_not_of("abcdefghijklmnopqrstuvwxyz._012345678") != std::string::npos)
             {
-                LJRSERVER_LOG_ERROR(LJRSERVER_LOG_ROOT()) << "Lookup name invalid " << name;
+                LJRSERVER_LOG_ERROR(LJRSERVER_LOG_ROOT()) << "Lookup name invalid: " << name;
                 throw std::invalid_argument(name);
             }
 
