@@ -21,7 +21,7 @@ void test_fiber()
 
 int main(int argc, char const *argv[])
 {
-    ljrserver::Scheduler sc(3, false, "test");
+    ljrserver::Scheduler sc(1, true, "test");
     ljrserver::Thread::SetName("调度器");
 
     // sc.schedule(&test_fiber);

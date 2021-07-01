@@ -40,10 +40,11 @@ namespace ljrserver
                 std::function<void()> cb;
             };
 
+            // 获得事件上下文
             EventContext &getContext(Event event);
-
+            // 重置事件上下文
             void resetContext(EventContext &ctx);
-
+            // 触发事件
             void triggerEvent(Event event);
 
             // 事件句柄
@@ -70,7 +71,7 @@ namespace ljrserver
         bool cancelEvent(int fd, Event event);
         // 取消句柄下所有事件
         bool cancelAll(int fd);
-        // 获取当前的io管理器
+        // 获取当前的 IO 管理器
         static IOManager *GetThis();
 
     protected:

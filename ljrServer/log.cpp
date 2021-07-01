@@ -238,7 +238,7 @@ namespace ljrserver
         MutexType::Lock lock(m_mutex);
 
         m_formatter = formatter;
-        
+
         if (m_formatter)
         {
             m_hasFormatter = true;
@@ -478,7 +478,8 @@ namespace ljrserver
         {
             MutexType::Lock lock(m_mutex);
 
-            std::cout << m_formatter->format(logger, level, event);
+            // std::cout << m_formatter->format(logger, level, event);
+            m_formatter->format(std::cout, logger, level, event);
         }
     }
 
@@ -580,6 +581,15 @@ namespace ljrserver
             item->format(ss, logger, level, event);
         }
         return ss.str();
+    }
+
+    std::ostream &LogFormatter::format(std::ostream &ofs, std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event)
+    {
+        for (auto &i : m_items)
+        {
+            i->format(ofs, logger, level, event);
+        }
+        return ofs;
     }
 
     void LogFormatter::init()

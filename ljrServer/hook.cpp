@@ -71,7 +71,7 @@ namespace ljrserver
             });
         }
     };
-    // 在main函数之前执行，全局变量初始化在main函数之前
+    // 在 main 函数之前执行，全局变量初始化在 main 函数之前
     static _HookIniter s_hook_initer;
 
     bool is_hook_enable()

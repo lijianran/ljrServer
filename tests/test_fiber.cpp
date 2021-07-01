@@ -26,7 +26,7 @@ void test_fiber()
     {
         ljrserver::Fiber::GetThis();
         LJRSERVER_LOG_INFO(g_logger) << "main begin";
-        ljrserver::Fiber::ptr fiber(new ljrserver::Fiber(&run_in_fiber, 0, true));
+        ljrserver::Fiber::ptr fiber(new ljrserver::Fiber(&run_in_fiber, 0, false));
         fiber->call();
         LJRSERVER_LOG_INFO(g_logger) << "main after swapIn";
         fiber->call();
@@ -43,7 +43,7 @@ int main(int argc, char const *argv[])
 
     // 测试多线程多协程
     std::vector<ljrserver::Thread::ptr> thrs;
-    for (int i = 0; i < 1; i++)
+    for (int i = 0; i < 5; i++)
     {
         thrs.push_back(ljrserver::Thread::ptr(new ljrserver::Thread(&test_fiber, "name_" + std::to_string(i))));
     }

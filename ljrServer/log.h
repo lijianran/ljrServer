@@ -151,6 +151,7 @@ namespace ljrserver
         LogFormatter(const std::string &pattern);
 
         std::string format(std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event);
+        std::ostream &format(std::ostream &ofs, std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event);
 
         bool isError() const { return m_error; }
 

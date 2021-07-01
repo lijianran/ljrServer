@@ -26,7 +26,7 @@ void test_fiber()
     memset(&addr, 0, sizeof(addr));
     addr.sin_family = AF_INET;
     addr.sin_port = htons(80);
-    inet_pton(AF_INET, "182.61.200.7", &addr.sin_addr.s_addr);
+    inet_pton(AF_INET, "112.80.248.75", &addr.sin_addr.s_addr);
 
     if (!connect(sock, (const sockaddr *)&addr, sizeof(addr)))
     {
@@ -38,6 +38,7 @@ void test_fiber()
         ljrserver::IOManager::GetThis()->addEvent(sock, ljrserver::IOManager::READ, []() {
             LJRSERVER_LOG_INFO(g_logger) << "read callback";
         });
+
         ljrserver::IOManager::GetThis()->addEvent(sock, ljrserver::IOManager::WRITE, []() {
             LJRSERVER_LOG_INFO(g_logger) << "write callback";
             // close(sock);
@@ -55,7 +56,7 @@ void test_fiber()
 void test1()
 {
     std::cout << "EPOLLIN = " << EPOLLIN << " EPOLLOUT = " << EPOLLOUT << std::endl;
-    ljrserver::IOManager iom(2, false, "test");
+    ljrserver::IOManager iom(1, false, "test");
     iom.schedule(&test_fiber);
 }
 
@@ -81,7 +82,7 @@ void test_timer()
 
 int main(int argc, char const *argv[])
 {
-    // test1();
-    test_timer();
+    test1();
+    // test_timer();
     return 0;
 }

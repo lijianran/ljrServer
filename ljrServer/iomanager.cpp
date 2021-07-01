@@ -297,7 +297,7 @@ namespace ljrserver
         return true;
     }
 
-    // 获取当前的io管理器
+    // 获取当前的 IO 管理器
     IOManager *IOManager::GetThis()
     {
         return dynamic_cast<IOManager *>(Scheduler::GetThis());

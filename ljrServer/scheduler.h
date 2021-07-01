@@ -135,14 +135,19 @@ namespace ljrserver
         };
 
     protected:
+        // 线程池 id
         std::vector<int> m_threadIds;
         // 线程数
         size_t m_threadCount = 0;
+        // 活动线程数量
         std::atomic<size_t> m_activeThreadCount = {0};
+        // 闲置线程数量
         std::atomic<size_t> m_idleThreadCount = {0};
+        // 是否停止
         bool m_stopping = true;
+        // 自动停止
         bool m_autoStop = false;
-        // 线程id
+        // 调度器线程 id
         int m_rootThread = 0;
 
     private:
@@ -152,7 +157,7 @@ namespace ljrserver
         std::vector<Thread::ptr> m_threads;
         // 协程队列
         std::list<FiberAndThread> m_fibers;
-        // 主协程
+        // 调度器协程
         Fiber::ptr m_rootFiber;
         // 名称
         std::string m_name;

@@ -85,8 +85,7 @@ namespace ljrserver
             makecontext(&m_context, &Fiber::CallerMainFunc, 0);
         }
 
-        LJRSERVER_LOG_DEBUG(g_logger) << "Fiber::Fiber id = " << m_id
-                                      << " total=" << s_fiber_count;
+        LJRSERVER_LOG_DEBUG(g_logger) << "Fiber::Fiber id = " << m_id << " total=" << s_fiber_count;
     }
 
     Fiber::~Fiber()

@@ -11,7 +11,7 @@ namespace ljrserver
 
     // 线程局部变量
     static thread_local Scheduler *t_scheduler = nullptr;
-    static thread_local Fiber *t_fiber = nullptr;
+    static thread_local Fiber *t_scheduler_fiber = nullptr;
 
     Scheduler::Scheduler(size_t threads, bool use_caller, const std::string &name) : m_name(name)
     {
@@ -29,7 +29,7 @@ namespace ljrserver
             m_rootFiber.reset(new Fiber(std::bind(&Scheduler::run, this), 0, true));
             ljrserver::Thread::SetName(m_name);
 
-            t_fiber = m_rootFiber.get();
+            t_scheduler_fiber = m_rootFiber.get();
 
             m_rootThread = ljrserver::GetThreadId();
             m_threadIds.push_back(m_rootThread);
@@ -58,10 +58,10 @@ namespace ljrserver
         return t_scheduler;
     }
 
-    // 获取主协程
+    // 获取调度器所在协程
     Fiber *Scheduler::GetMainFiber()
     {
-        return t_fiber;
+        return t_scheduler_fiber;
     }
 
     // 启动线程池
@@ -79,10 +79,9 @@ namespace ljrserver
         m_threads.resize(m_threadCount);
         for (size_t i = 0; i < m_threadCount; ++i)
         {
-            m_threads[i].reset(new Thread(std::bind(&Scheduler::run, this),
-                                          m_name + "_" + std::to_string(i)));
+            m_threads[i].reset(new Thread(std::bind(&Scheduler::run, this), m_name + "_" + std::to_string(i)));
 
-            // Thread 构造函数中加了信号量，确保线程id会初始化，这里能获取正确的线程id
+            // Thread 构造函数中加了信号量，确保线程 id 会初始化，这里能获取正确的线程 id
             m_threadIds.push_back(m_threads[i]->getId());
         }
         lock.unlock();
@@ -137,7 +136,7 @@ namespace ljrserver
             //     {
             //         m_rootFiber.reset(new Fiber(std::bind(&Scheduler::run, this), 0, true));
             //         LJRSERVER_LOG_INFO(g_logger) << " root fiber is term, reset";
-            //         t_fiber = m_rootFiber.get();
+            //         t_scheduler_fiber = m_rootFiber.get();
             //     }
             //     m_rootFiber->call();
             // }
@@ -177,17 +176,17 @@ namespace ljrserver
     void Scheduler::run()
     {
         LJRSERVER_LOG_DEBUG(g_logger) << "run";
-        
-        // HOOK
-        set_hook_enable(true);
 
-        // 设置当前线程的协程调度器t_scheduler
+        // HOOK
+        set_hook_enable(false);
+
+        // 设置当前线程的协程调度器 t_scheduler
         setThis();
 
-        // 设置当前线程执行的协程t_fiber
+        // 设置当前线程执行的协程 t_scheduler_fiber
         if (ljrserver::GetThreadId() != m_rootThread)
         {
-            t_fiber = Fiber::GetThis().get();
+            t_scheduler_fiber = Fiber::GetThis().get();
         }
 
         // 闲置协程
@@ -211,7 +210,7 @@ namespace ljrserver
                 auto it = m_fibers.begin();
                 while (it != m_fibers.end())
                 {
-                    // 有指定线程id，但不是当前线程，continue，同时提醒其他线程处理
+                    // 有指定线程 id，但不是当前线程，continue，同时提醒其他线程处理
                     if (it->thread != -1 && it->thread != ljrserver::GetThreadId())
                     {
                         ++it;
@@ -248,14 +247,14 @@ namespace ljrserver
                 ft.fiber->swapIn();
                 --m_activeThreadCount;
 
-                // 协程出来后，若状态位ready，则继续进协程队列等待处理
+                // 协程出来后，若状态位 ready，则继续进协程队列等待处理
                 if (ft.fiber->getState() == Fiber::READY)
                 {
                     schedule(ft.fiber);
                 }
                 else if (ft.fiber->getState() != Fiber::TERM && ft.fiber->getState() != Fiber::EXCEPT)
                 {
-                    // 如果协程不是终止或意外，则设为hold挂起状态
+                    // 如果协程不是终止或意外，则设为 hold 挂起状态
                     ft.fiber->m_state = Fiber::HOLD;
                 }
                 ft.reset();
@@ -280,7 +279,7 @@ namespace ljrserver
                 cb_fiber->swapIn();
                 --m_activeThreadCount;
 
-                // 协程出来后，状态是ready，则进入协程队列
+                // 协程出来后，状态是 ready，则进入协程队列
                 if (cb_fiber->getState() == Fiber::READY)
                 {
                     schedule(cb_fiber);
@@ -293,7 +292,7 @@ namespace ljrserver
                 }
                 else // if (cb_fiber->getState() != Fiber::TERM)
                 {
-                    // 其他状态，设为hold挂起
+                    // 其他状态，设为 hold 挂起
                     cb_fiber->m_state = Fiber::HOLD;
                     cb_fiber.reset();
                 }
@@ -306,7 +305,7 @@ namespace ljrserver
                     continue;
                 }
 
-                // 协程队列中没有待处理的协程，则使用idle协程占用cpu
+                // 协程队列中没有待处理的协程，则使用 idle 协程占用 cpu
                 if (idle_fiber->getState() == Fiber::TERM)
                 {
                     LJRSERVER_LOG_INFO(g_logger) << "idle fiber terminate";
