@@ -56,3 +56,6 @@ yaml*
 
 ljrServer/http/http11_parser.cpp
 ljrServer/http/httpclient_parser.cpp
+ljrServer/uri.cpp
+
+dockerfiles/

@@ -14,6 +14,8 @@ include_directories(.)
 # gdb调试版本，生成的程序可以用vscode调试
 set(CMAKE_CXX_FLAGS "$ENV{CXXFLAGS} -rdynamic -O0 -ggdb -std=c++11 -Wall -Wno-deprecated -Werror -Wno-unused-function -Wno-builtin-macro-redefined")
 
+# set(CMAKE_DEBUG_TYPE "Debug")
+
 set(LIB_SRC
     ljrServer/address.cpp
     ljrServer/bytearray.cpp
