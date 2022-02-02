@@ -1,5 +1,7 @@
-
-FROM ubuntu:20.04
+# x86
+# FROM --platform=linux/amd64 ubuntu:20.04
+# arm
+FROM --platform=linux/arm64 ubuntu:20.04
 
 EXPOSE 22
 
@@ -10,8 +12,8 @@ COPY dockerfiles/ohmyzsh /root/.oh-my-zsh
 COPY dockerfiles/install-oh-my-zsh.sh /root
 
 RUN sed -i s@/ports.ubuntu.com/ubuntu-ports/@/mirrors.ustc.edu.cn/ubuntu-ports/@g /etc/apt/sources.list \
-    && sed -i s@/archive.ubuntu.com/@/mirrors.aliyun.com/@g /etc/apt/sources.list \
-    && sed -i s@/security.ubuntu.com/@/mirrors.aliyun.com/@g /etc/apt/sources.list \
+    && sed -i s@/archive.ubuntu.com/@/mirrors.ustc.edu.cn/@g /etc/apt/sources.list \
+    && sed -i s@/security.ubuntu.com/@/mirrors.ustc.edu.cn/@g /etc/apt/sources.list \
     && apt-get clean \
     && apt update \
     && apt upgrade -y \

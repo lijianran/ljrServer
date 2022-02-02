@@ -15,27 +15,27 @@
 #include <vector>
 #include <string>
 
-namespace ljrserver
-{
+namespace ljrserver {
 
-    // 线程id
-    pid_t GetThreadId();
+// 线程id
+pid_t GetThreadId();
 
-    // 协程id
-    uint32_t GetFiberId();
+// 协程id
+uint32_t GetFiberId();
 
-    // 函数调用栈
-    void Backtrace(std::vector<std::string> &bt, int size = 64, int skip = 1);
+// 函数调用栈
+void Backtrace(std::vector<std::string> &bt, int size = 64, int skip = 1);
 
-    // 函数调用栈，string
-    std::string BacktraceToString(int size = 64, int skip = 2, const std::string &prefix = "");
+// 函数调用栈，string
+std::string BacktraceToString(int size = 64, int skip = 2,
+                              const std::string &prefix = "");
 
-    // 时间 ms
-    uint64_t GetCurrentMS();
+// 时间 ms
+uint64_t GetCurrentMS();
 
-    // 时间 us
-    uint64_t GetCurrentUS();
+// 时间 us
+uint64_t GetCurrentUS();
 
-}
+}  // namespace ljrserver
 
 #endif

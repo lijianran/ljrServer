@@ -14,24 +14,21 @@
 #define LJRSERVER_UNLICKLY(x) (x)
 #endif
 
-#define LJRSERVER_ASSERT(x)                                                                         \
-    if (LJRSERVER_UNLICKLY(!(x)))                                                                   \
-    {                                                                                               \
-        LJRSERVER_LOG_ERROR(LJRSERVER_LOG_ROOT()) << "ASSERTION: " #x                               \
-                                                  << "\nbacktrace:\n"                               \
-                                                  << ljrserver::BacktraceToString(100, 2, "     "); \
-        assert(x);                                                                                  \
+#define LJRSERVER_ASSERT(x)                                   \
+    if (LJRSERVER_UNLICKLY(!(x))) {                           \
+        LJRSERVER_LOG_ERROR(LJRSERVER_LOG_ROOT())             \
+            << "ASSERTION: " #x << "\nbacktrace:\n"           \
+            << ljrserver::BacktraceToString(100, 2, "     "); \
+        assert(x);                                            \
     }
 
-#define LJRSERVER_ASSERT2(x, w)                                                                     \
-    if (LJRSERVER_UNLICKLY(!(x)))                                                                   \
-    {                                                                                               \
-        LJRSERVER_LOG_ERROR(LJRSERVER_LOG_ROOT()) << "ASSERTION: " #x                               \
-                                                  << "\n"                                           \
-                                                  << w                                              \
-                                                  << "\nbacktrace:\n"                               \
-                                                  << ljrserver::BacktraceToString(100, 2, "     "); \
-        assert(x);                                                                                  \
+#define LJRSERVER_ASSERT2(x, w)                               \
+    if (LJRSERVER_UNLICKLY(!(x))) {                           \
+        LJRSERVER_LOG_ERROR(LJRSERVER_LOG_ROOT())             \
+            << "ASSERTION: " #x << "\n"                       \
+            << w << "\nbacktrace:\n"                          \
+            << ljrserver::BacktraceToString(100, 2, "     "); \
+        assert(x);                                            \
     }
 
 #endif
