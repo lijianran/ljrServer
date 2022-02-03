@@ -1,3 +1,4 @@
+# log
 logs:
     - name: root
       level: info
@@ -12,50 +13,52 @@ logs:
             file: /apps/logs/sylar/system.txt
           - type: StdoutLogAppender
 
+# test_config
 system:
     port: 9900
     value: 10
     int_vec:
-      - 10
-      - 29
+        - 10
+        - 29
     int_list: [21, 45, 75]
     int_set: [123, 110, 645, 110]
     int_unordered_set: [123, 110, 645, 110]
     str_int_map:
-      k: 0623
-      k2: 10
-      k3: 110
+        k: 0623
+        k2: 10
+        k3: 110
     str_int_umap:
-      k: 980623
-      k2: 12
-      k3: 21
+        k: 980623
+        k2: 12
+        k3: 21
 
+# test_config
 class:
-  person:
-    name: "lijianran"
-    age: 24
-    sex: true
-  map:
-    person1:
-      name: lijianran
-      age: 18
-      sex: false
-    person2:
-      name: ljr
-      age: 24
-      sex: true
-  vec_map:
-    k1:
-      - name: p1
-        age: 1
+    person:
+        name: "lijianran"
+        age: 24
         sex: true
-      - name: p2
-        age: 2
-        sex: false
-    k2:
-      - name: p21
-        age: 21
-        sex: true
-      - name: p22
-        age: 22
-        sex: false
+    map:
+        person1:
+            name: lijianran
+            age: 18
+            sex: false
+        person2:
+            name: ljr
+            age: 24
+            sex: true
+    vec_map:
+        k1:
+            - name: p1
+              age: 1
+              sex: true
+            - name: p2
+              age: 2
+              sex: false
+        k2:
+            - name: p21
+              age: 21
+              sex: true
+            - name: p22
+              age: 22
+              sex: false

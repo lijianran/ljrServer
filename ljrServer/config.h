@@ -6,9 +6,11 @@
 #include <memory>
 // 字符串
 #include <string>
+// 字符流
 #include <sstream>
 // 类型转换
 #include <boost/lexical_cast.hpp>
+// yaml
 #include <yaml-cpp/yaml.h>
 // 容器偏特化
 #include <vector>
@@ -26,39 +28,96 @@
 
 namespace ljrserver {
 
-// 配置项基类
+/**
+ * @brief Class 配置项基类
+ *
+ * 抽象类 不能实例化对象
+ */
 class ConfigVarBase {
 public:
     typedef std::shared_ptr<ConfigVarBase> ptr;
 
+    /**
+     * @brief Construct a new Config Var Base object
+     *
+     * @param name 配置名自动转小写
+     * @param description 配置描述
+     */
     ConfigVarBase(const std::string &name, const std::string &description = "")
         : m_name(name), m_description(description) {
         // 转小写
         std::transform(m_name.begin(), m_name.end(), m_name.begin(), ::tolower);
     }
 
+    /**
+     * @brief Destroy the Config Var Base object
+     *
+     * 基类析构函数需要设置为虚函数
+     */
     virtual ~ConfigVarBase() {}
 
+    /**
+     * @brief Get the Name object 获取配置项名称
+     *
+     * @return const std::string&
+     */
     const std::string &getName() const { return m_name; }
+
+    /**
+     * @brief Get the Description object 获取配置项的描述
+     *
+     * @return const std::string&
+     */
     const std::string &getDescription() const { return m_description; }
 
+    /**
+     * @brief 纯虚函数 config -> 字符串
+     *
+     * @return std::string
+     */
     virtual std::string toString() = 0;
+
+    /**
+     * @brief 纯虚函数 字符串 -> config
+     *
+     * @param str
+     * @return true
+     * @return false
+     */
     virtual bool fromString(const std::string &str) = 0;
 
+    /**
+     * @brief 纯虚函数 获取类型名称
+     *
+     * @return std::string
+     */
     virtual std::string getTypeName() const = 0;
 
 protected:
+    // 配置项名称
     std::string m_name;
+
+    // 描述
     std::string m_description;
 };
 
-// 基础类型转换
-// F from_type, T to_type
+/**
+ * @brief 基础类型转换
+ *
+ * boost::lexical_cast<T>(F)
+ *
+ * @tparam F from_type
+ * @tparam T to_type
+ */
 template <class F, class T>
 class LexicalCast {
 public:
     T operator()(const F &v) { return boost::lexical_cast<T>(v); }
 };
+
+/**************
+ * 容器偏特化
+ **************/
 
 // vector
 template <class T>
@@ -256,26 +315,50 @@ public:
     }
 };
 
-// FromStr T operator()(const std::string &)
-// ToStr   std::string operator()(const T &)
+/**
+ * @brief Class 配置项
+ *
+ * 模版类
+ *
+ * @tparam T
+ * @tparam FromStr T operator()(const std::string &)
+ * @tparam ToStr   std::string operator()(const T &)
+ */
 template <class T, class FromStr = LexicalCast<std::string, T>,
           class ToStr = LexicalCast<T, std::string>>
 class ConfigVar : public ConfigVarBase {
 public:
-    typedef RWMutex RWMutexType;
     typedef std::shared_ptr<ConfigVar> ptr;
+
+    // 读写锁
+    typedef RWMutex RWMutexType;
+
+    // 监听回调函数
     typedef std::function<void(const T &old_value, const T &new_value)>
         on_change_cb;
 
+    /**
+     * @brief Construct a new Config Var object
+     *
+     * @param name 配置项名称
+     * @param default_value 默认值
+     * @param description 描述
+     */
     ConfigVar(const std::string &name, const T &default_value,
               const std::string &description = "")
         : ConfigVarBase(name, description), m_val(default_value) {}
 
+    /**
+     * @brief 纯虚函数的实现 config -> 字符串
+     *
+     * @return std::string 配置字符串
+     */
     std::string toString() override {
         try {
             RWMutexType::ReadLock lock(m_mutex);
 
             // return boost::lexical_cast<std::string>(m_val);
+            // 仿函数 ToStr()(m_val);
             return ToStr()(m_val);
         } catch (const std::exception &e) {
             LJRSERVER_LOG_ERROR(LJRSERVER_LOG_ROOT())
@@ -285,9 +368,17 @@ public:
         return "";
     }
 
+    /**
+     * @brief 纯虚函数的实现 字符串 -> config
+     *
+     * @param str 配置字符串
+     * @return true
+     * @return false
+     */
     bool fromString(const std::string &str) override {
         try {
             // m_val = boost::lexical_cast<T>(str);
+            // 仿函数 FromStr()(str);
             setValue(FromStr()(str));
             return true;
         } catch (const std::exception &e) {
@@ -299,16 +390,36 @@ public:
         return false;
     }
 
-    // const T getValue() const
+    /**
+     * @brief 纯虚函数的实现 返回模版类 T 的类型名称
+     *
+     * @return std::string
+     */
+    std::string getTypeName() const override { return typeid(T).name(); }
+
+    /**
+     * @brief 获取配置项的值
+     *
+     * @return const T
+     */
     const T getValue() {
-        // 加了const函数 不能枷锁 会修改成员变量
+        // const T getValue() const { // const 无法上锁 }
+        // 加了 const 限制函数 不能枷锁 会修改成员变量
         RWMutexType::ReadLock lock(m_mutex);
 
         return m_val;
     }
 
+    /**
+     * @brief 设置配置项的值
+     *
+     * 变更监听
+     *
+     * @param v
+     */
     void setValue(const T &v) {
         {
+            // 局部上读锁
             RWMutexType::ReadLock lock(m_mutex);
 
             if (v == m_val) {
@@ -319,22 +430,28 @@ public:
                 i.second(m_val, v);
             }
         }
+        // 上写锁
         RWMutexType::WriteLock lock(m_mutex);
 
         m_val = v;
     }
-
-    // 返回模版类 T 的类型名称
-    std::string getTypeName() const override { return typeid(T).name(); }
 
     // void addListener(uint64_t key, on_change_cb cb)
     // {
     //     m_cbs[key] = cb;
     // }
 
-    // 添加监听函数，返回函数id
+    /**
+     * @brief 添加监听函数，返回函数 id
+     *
+     * @param cb 回调函数
+     * @return uint64_t 监听 id
+     */
     uint64_t addListener(on_change_cb cb) {
+        // 局部静态变量
         static uint64_t s_fun_id = 0;
+
+        // 上写锁
         RWMutexType::WriteLock lock(m_mutex);
 
         ++s_fun_id;
@@ -342,22 +459,37 @@ public:
         return s_fun_id;
     }
 
-    // 删除监听函数，使用函数id作为key值删除
+    /**
+     * @brief 删除监听函数，使用函数 id 作为 key 值删除
+     *
+     * @param key 监听 id
+     */
     void delListener(uint64_t key) {
+        // 上写锁
         RWMutexType::WriteLock lock(m_mutex);
 
         m_cbs.erase(key);
     }
 
-    // 删除所有监听函数
+    /**
+     * @brief 删除所有监听函数
+     *
+     */
     void clearListener() {
+        // 上写锁
         RWMutexType::WriteLock lock(m_mutex);
 
         m_cbs.clear();
     }
 
-    // 通过函数唯一id作为key值，从map中返回函数对象
-    on_change_cb getListener(uint64_t key) {
+    /**
+     * @brief 通过函数唯一 id 作为 key 值，从 map 中返回函数对象
+     *
+     * @param key 监听 id
+     * @return on_change_cb 回调函数
+     */
+    on_change_cb getListener(const uint64_t key) const {
+        // 上读锁
         RWMutexType::ReadLock lock(m_mutex);
 
         auto it = m_cbs.find(key);
@@ -365,34 +497,57 @@ public:
     }
 
 private:
-    // 配置项
+    // 配置项的值
     T m_val;
-    // 变更回调函数组 uint64_t key要求唯一，一般可用hash
+
+    // 变更回调函数组 uint64_t key 要求唯一 一般可用 hash
     std::map<uint64_t, on_change_cb> m_cbs;
+
     // 读写锁
     RWMutexType m_mutex;
 };
 
+/**
+ * @brief Class 配置
+ */
 class Config {
 public:
+    // 配置项 map
     typedef std::unordered_map<std::string, ConfigVarBase::ptr> ConfigVarMap;
+
+    // 读写锁
     typedef RWMutex RWMutexType;
 
-    // 获取/创建配置项
+    /**
+     * @brief 获取配置项 没有则创建
+     *
+     * 模版函数 定义与实现不要分离 避免链接出错
+     *
+     * @tparam T
+     * @param name 配置项名称
+     * @param default_value 默认值
+     * @param description 描述
+     * @return ConfigVar<T>::ptr 配置项指针
+     */
     template <class T>
     static typename ConfigVar<T>::ptr Lookup(
         const std::string &name, const T &default_value,
         const std::string &description = "") {
+        // 上写锁
         RWMutexType::WriteLock lock(GetMutex());
 
+        // find key
         auto it = GetDatas().find(name);
         if (it != GetDatas().end()) {
+            // 动态转换
             auto tmp = std::dynamic_pointer_cast<ConfigVar<T>>(it->second);
             if (tmp) {
+                // 找到了配置项
                 LJRSERVER_LOG_INFO(LJRSERVER_LOG_ROOT())
                     << "Lookup name = " << name << " exists.";
                 return tmp;
             } else {
+                // 找到配置项但类型不对 转换失败
                 LJRSERVER_LOG_ERROR(LJRSERVER_LOG_ROOT())
                     << "Lookup name: " << name << " exists but type not "
                     << typeid(T).name()
@@ -406,25 +561,40 @@ public:
         // if (tmp)
         // {
         //     LJRSERVER_LOG_INFO(LJRSERVER_LOG_ROOT()) << "Lookup name = " <<
-        //     name << " exists."; return tmp;
+        //     name << " exists.";
+        //     return tmp;
         // }
 
         if (name.find_first_not_of("abcdefghijklmnopqrstuvwxyz._012345678") !=
             std::string::npos) {
+            // 配置项名称错误
             LJRSERVER_LOG_ERROR(LJRSERVER_LOG_ROOT())
                 << "Lookup name invalid: " << name;
             throw std::invalid_argument(name);
         }
 
+        // 创建配置项
         typename ConfigVar<T>::ptr v(
             new ConfigVar<T>(name, default_value, description));
+
+        // 存入配置 map
         GetDatas()[name] = v;
         return v;
     }
 
-    // 查找配置项，只传入配置参数名
+    /**
+     * @brief 获取配置项
+     *
+     * 参数列表不同  重载
+     * 模版函数 定义与实现不要分离 避免链接出错
+     *
+     * @tparam T
+     * @param name 配置项名称
+     * @return ConfigVar<T>::ptr 配置项指针
+     */
     template <class T>
     static typename ConfigVar<T>::ptr Lookup(const std::string &name) {
+        // 上读锁
         RWMutexType::ReadLock lock(GetMutex());
 
         auto it = GetDatas().find(name);
@@ -434,23 +604,51 @@ public:
         return std::dynamic_pointer_cast<ConfigVar<T>>(it->second);
     }
 
-    // 使用 YAML::Node 初始化配置模块
+    /**
+     * @brief 使用 YAML::Node 初始化配置模块
+     *
+     *  YAML::Node root = YAML::LoadFile("/ljrServer/bin/conf/test.yml");
+        ljrserver::Config::LoadFromYaml(root);
+
+     * @param root
+     */
     static void LoadFromYaml(const YAML::Node &root);
 
-    // 查找配置参数，返回配置参数的基类
+    /**
+     * @brief 查找配置参数，返回配置参数的基类
+     *
+     * @param name 配置项名称
+     * @return ConfigVarBase::ptr
+     */
     static ConfigVarBase::ptr LookupBase(const std::string &name);
 
-    // 遍历配置模块里面所有配置项
+    /**
+     * @brief 遍历配置模块里所有的配置项
+     *
+     * @param cb 访问函数
+     */
     static void Visit(std::function<void(ConfigVarBase::ptr)> cb);
 
 private:
+    // 不能确保使用前已经初始化
+    // static ConfigVarMap s_datas;
+
+    /**
+     * @brief 获取配置项 map
+     *
+     * @return ConfigVarMap&
+     */
     static ConfigVarMap &GetDatas() {
         // 防止静态变量没被初始化，确保先被初始化
         static ConfigVarMap s_datas;
         return s_datas;
     }
-    // static ConfigVarMap s_datas;
 
+    /**
+     * @brief 获取锁
+     *
+     * @return RWMutexType&
+     */
     static RWMutexType &GetMutex() {
         // 全局配置 Config
         // 全局静态变量，初始化没有严格的顺序
@@ -462,4 +660,4 @@ private:
 
 }  // namespace ljrserver
 
-#endif
+#endif  // __LJRSERVER_CONFIG_H__

@@ -959,7 +959,7 @@ std::string LoggerManager::toYamlString() {
 }
 
 /***************
-配置
+日志配置
 ***************/
 
 struct LogAppenderDefine {
@@ -1011,11 +1011,14 @@ public:
 
             LogDefine ld;
             ld.name = n["name"].as<std::string>();
+
             ld.level = LogLevel::FromString(
                 n["level"].IsDefined() ? n["level"].as<std::string>() : "");
+
             if (n["formatter"].IsDefined()) {
                 ld.formatter = n["formatter"].as<std::string>();
             }
+
             if (n["appenders"].IsDefined()) {
                 for (size_t j = 0; j < n["appenders"].size(); ++j) {
                     auto a = n["appenders"][j];
@@ -1040,8 +1043,10 @@ public:
                         if (a["formatter"].IsDefined()) {
                             lad.formatter = a["formatter"].as<std::string>();
                         }
+
                     } else if (type == "StdoutLogAppender") {
                         lad.type = 2;
+
                     } else {
                         std::cout
                             << "log config error: appender type is invalid, "
@@ -1071,7 +1076,9 @@ public:
         YAML::Node node;
         for (auto &i : v) {
             YAML::Node n;
+
             n["name"] = i.name;
+
             if (i.level != LogLevel::UNKNOW) {
                 n["level"] = LogLevel::ToString(i.level);
             }
@@ -1079,6 +1086,7 @@ public:
             if (!i.formatter.empty()) {
                 n["formatter"] = i.formatter;
             }
+
             for (auto &a : i.appenders) {
                 YAML::Node na;
                 if (a.type == 1) {
@@ -1126,67 +1134,86 @@ struct LogIniter {
     /**
      * @brief 构造函数
      *
-     * 配置监听
+     * 日志配置变更事件监听
      */
     LogIniter() {
+        // 添加监听函数
         g_log_defines->addListener([](const std::set<LogDefine> &old_value,
                                       const std::set<LogDefine> &new_value) {
+            // 日志配置更改
             LJRSERVER_LOG_INFO(LJRSERVER_LOG_ROOT())
-                << "on_logger_conf_changed";
-            for (auto &i : new_value) {
-                auto it = old_value.find(i);
+                << "on_logger_config_changed";
+
+            // 遍历新的 logger 配置
+            for (auto &new_i : new_value) {
+                auto it = old_value.find(new_i);
+
                 ljrserver::Logger::ptr logger;
                 if (it == old_value.end()) {
-                    // 新增logger
+                    // 新增 logger
                     // logger.reset(new ljrserver::Logger(i.name));
-                    logger = LJRSERVER_LOG_NAME(i.name);
+                    logger = LJRSERVER_LOG_NAME(new_i.name);
                 } else {
-                    if (!(i == *it)) {
-                        // 修改logger
-                        logger = LJRSERVER_LOG_NAME(i.name);
+                    if (!(new_i == *it)) {
+                        // 修改 logger
+                        logger = LJRSERVER_LOG_NAME(new_i.name);
                     }
                 }
-                logger->setLevel(i.level);
-                if (!i.formatter.empty()) {
-                    logger->setFormatter(i.formatter);
+
+                // 日志器等级
+                logger->setLevel(new_i.level);
+
+                // 日志器格式
+                if (!new_i.formatter.empty()) {
+                    logger->setFormatter(new_i.formatter);
                 }
 
+                // 日志器 appender
                 logger->clearAppenders();
-                for (auto &a : i.appenders) {
+                for (auto &a : new_i.appenders) {
                     ljrserver::LogAppender::ptr ap;
                     if (a.type == 1) {
                         ap.reset(new FileLogAppender(a.file));
                     } else if (a.type == 2) {
                         ap.reset(new StdoutLogAppender);
                     }
+                    // appender 等级
                     ap->setLevel(a.level);
 
+                    // appender 格式
                     if (!a.formatter.empty()) {
                         LogFormatter::ptr fmt(new LogFormatter(a.formatter));
                         if (!fmt->isError()) {
+                            // 格式无误
                             ap->setFormatter(fmt);
                         } else {
-                            std::cout << "log.name = " << i.name
+                            // 格式错误
+                            std::cout << "log.name = " << new_i.name
                                       << "appender type = " << a.type
                                       << " formatter = " << a.formatter
                                       << " is invalid" << std::endl;
                         }
                     }
 
+                    // appender 加入 logger 日志器中
                     logger->addAppender(ap);
                 }
 
-                for (auto &i : old_value) {
-                    auto it = new_value.find(i);
+                // 删除 logger
+                for (auto &old_i : old_value) {
+                    auto it = new_value.find(old_i);
                     if (it == new_value.end()) {
-                        // 删除logger
-                        auto logger = LJRSERVER_LOG_NAME(i.name);
+                        auto logger = LJRSERVER_LOG_NAME(old_i.name);
+                        // 设置大级别
                         logger->setLevel((LogLevel::Level)100);
+                        // 清空 appender
                         logger->clearAppenders();
                     }
                 }
+                // 软删除
             }
         });
+        // main 函数之前开启监听
     }
 };
 

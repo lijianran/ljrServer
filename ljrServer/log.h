@@ -62,10 +62,10 @@
     LJRSERVER_LOG_FORMAT_LEVEL(logger, ljrserver::LogLevel::FATAL, fmt, \
                                __VA_ARGS__)
 
-// root日志
+// root 日志
 #define LJRSERVER_LOG_ROOT() ljrserver::LoggerMgr::GetInstance()->getRoot()
 
-// 找到log
+// 按 name 找到 logger 没有则创建
 #define LJRSERVER_LOG_NAME(name) \
     ljrserver::LoggerMgr::GetInstance()->getLogger(name)
 
@@ -326,7 +326,7 @@ private:
  * @brief Class 日志输出地
  *
  * 纯虚基类 抽象类 -> StdoutLogAppender / FileLogAppender
- * 
+ *
  * 抽象类无法实例化
  */
 class LogAppender {
@@ -677,4 +677,4 @@ typedef ljrserver::Singleton<LoggerManager> LoggerMgr;
 
 }  // namespace ljrserver
 
-#endif
+#endif  // __LJRSERVER_LOG_H__
