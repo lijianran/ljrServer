@@ -1,3 +1,4 @@
+# test_thread
 logs:
     - name: root
       level: INFO

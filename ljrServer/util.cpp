@@ -7,8 +7,14 @@
 
 namespace ljrserver {
 
+// system 日志
 static ljrserver::Logger::ptr g_logger = LJRSERVER_LOG_NAME("system");
 
+/**
+ * @brief 获取当前线程 id
+ * 
+ * @return pid_t 
+ */
 pid_t GetThreadId() { return syscall(SYS_gettid); }
 
 uint32_t GetFiberId() {
