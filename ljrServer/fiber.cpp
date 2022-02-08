@@ -12,9 +12,9 @@ namespace ljrserver {
 // system 日志
 static Logger::ptr g_logger = LJRSERVER_LOG_NAME("system");
 
-// 原子量 协程 id 只增
+// 原子量 协程 id 只增 static 全局唯一
 static std::atomic<uint64_t> s_fiber_id{0};
-// 原子量 协程数目
+// 原子量 协程数目 static 全局唯一
 static std::atomic<uint64_t> s_fiber_count{0};
 
 // 线程局部变量 线程当前执行的线程
@@ -52,7 +52,7 @@ Fiber::Fiber() {
     // 设置当前协程 t_fiber
     SetThis(this);
 
-    // 获取 main_fiber 主协程
+    // 获取当前线程执行的上下文作为 main_fiber 主协程
     if (getcontext(&m_context)) {
         LJRSERVER_ASSERT2(false, "getcontext");
     }
@@ -61,8 +61,8 @@ Fiber::Fiber() {
     ++s_fiber_count;
 
     // main_fiber 主协程
-    LJRSERVER_LOG_DEBUG(g_logger) << "Fiber::Fiber main"
-                                  << " total=" << s_fiber_count;
+    LJRSERVER_LOG_DEBUG(g_logger) << "Fiber::Fiber id=" << m_id
+                                  << " total=" << s_fiber_count << " (main)";
 }
 
 /**
@@ -70,7 +70,7 @@ Fiber::Fiber() {
  *
  * @param cb 协程执行函数
  * @param stacksize 协程栈大小 = 0
- * @param use_caller 是否使用 caller = false
+ * @param use_caller 是否使用 caller [= false]
  */
 Fiber::Fiber(std::function<void()> cb, size_t stacksize, bool use_caller)
     : m_id(++s_fiber_id), m_cb(cb) {
@@ -103,7 +103,7 @@ Fiber::Fiber(std::function<void()> cb, size_t stacksize, bool use_caller)
     }
 
     LJRSERVER_LOG_DEBUG(g_logger)
-        << "Fiber::Fiber id = " << m_id << " total=" << s_fiber_count;
+        << "Fiber::Fiber id=" << m_id << " total=" << s_fiber_count;
 }
 
 /**

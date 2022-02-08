@@ -20,6 +20,7 @@ class Scheduler;
  *
  */
 class Fiber : public std::enable_shared_from_this<Fiber> {
+    // 调度器作为友元类 可以直接操作成员变量
     friend class Scheduler;
 
 public:
@@ -45,7 +46,7 @@ public:
      *
      * @param cb 协程执行函数
      * @param stacksize 协程栈大小 = 0
-     * @param use_caller 是否使用 caller = false
+     * @param use_caller 是否使用 caller [= false]
      */
     Fiber(std::function<void()> cb, size_t stacksize = 0,
           bool use_caller = false);
