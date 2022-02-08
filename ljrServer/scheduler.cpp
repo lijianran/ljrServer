@@ -220,7 +220,7 @@ void Scheduler::setThis() { t_scheduler = this; }
  *
  */
 void Scheduler::run() {
-    LJRSERVER_LOG_DEBUG(g_logger) << "run";
+    LJRSERVER_LOG_DEBUG(g_logger) << "new thread run";
 
     // 当前线程是否开启 HOOK
     set_hook_enable(false);
@@ -274,6 +274,7 @@ void Scheduler::run() {
                 // 取出协程任务
                 ft = *it;
                 m_fibers.erase(it);
+
                 // 工作线程 +1
                 ++m_activeThreadCount;
 

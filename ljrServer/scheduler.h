@@ -78,7 +78,7 @@ public:
     void stop();
 
     /**
-     * @brief 调度模版函数
+     * @brief 调度任务 模版函数
      *
      * @tparam FiberOrCb
      * @param fc 协程 Fiber 对象或者函数
@@ -99,18 +99,21 @@ public:
     }
 
     /**
-     * @brief 调度模版函数
+     * @brief 调度任务 模版函数
      *
      * @tparam InputIterator
-     * @param begin
-     * @param end
+     * @param begin 迭代器起始
+     * @param end 迭代器终止
      */
     template <class InputIterator>
     void schedule(InputIterator begin, InputIterator end) {
+        // 是否需要 tickle
         bool need_tickle = false;
+
         {
             MutexType::Lock lock(m_mutex);
             while (begin != end) {
+                // 添加任务
                 need_tickle = scheduleNoLock(&(*begin), -1) || need_tickle;
                 ++begin;
             }
@@ -163,11 +166,25 @@ protected:
     bool hasIdleThreads() { return m_idleThreadCount > 0; }
 
 private:
+    /**
+     * @brief 添加任务 模版函数
+     *
+     * @tparam FiberOrCb
+     * @param fc 任务 协程对象或者函数
+     * @param thread 指定的线程 id
+     * @return true
+     * @return false
+     */
     template <class FiberOrCb>
     bool scheduleNoLock(FiberOrCb fc, int thread) {
+        // 任务队列为空 来了新的任务需要提醒
         bool need_tickle = m_fibers.empty();
+
+        // 创建任务
         FiberAndThread ft(fc, thread);
+        // 有协程或函数对象
         if (ft.fiber || ft.cb) {
+            // 加入任务队列
             m_fibers.push_back(ft);
         }
         return need_tickle;
@@ -175,7 +192,7 @@ private:
 
 private:
     /**
-     * @brief 线程/协程 结构体
+     * @brief 任务对象结构体 协程对象或者函数
      *
      */
     struct FiberAndThread {
@@ -183,25 +200,47 @@ private:
         Fiber::ptr fiber;
         // 执行函数
         std::function<void()> cb;
-        // 线程 id
+        // 指定的线程 id
         int thread;
 
         /**
-         * @brief 构造函数
+         * @brief 构造函数重载
          *
-         * @param f
-         * @param thr
+         * @param f 协程对象
+         * @param thr 指定线程 id
          */
         FiberAndThread(Fiber::ptr f, int thr) : fiber(f), thread(thr) {}
 
+        /**
+         * @brief 构造函数重载
+         *
+         * @param f 协程对象的指针
+         * @param thr 指定线程 id
+         */
         FiberAndThread(Fiber::ptr *f, int thr) : thread(thr) { fiber.swap(*f); }
 
+        /**
+         * @brief 构造函数重载
+         *
+         * @param f functional 函数对象
+         * @param thr 指定线程 id
+         */
         FiberAndThread(std::function<void()> f, int thr) : cb(f), thread(thr) {}
 
+        /**
+         * @brief 构造函数重载
+         *
+         * @param f functional 函数的指针
+         * @param thr 指定线程 id
+         */
         FiberAndThread(std::function<void()> *f, int thr) : thread(thr) {
             cb.swap(*f);
         }
 
+        /**
+         * @brief 默认构造函数
+         *
+         */
         FiberAndThread() : thread(-1) {}
 
         /**

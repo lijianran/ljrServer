@@ -17,10 +17,10 @@ void test_fiber() {
     sleep(1);
     if (--s_count >= 0) {
         ljrserver::Scheduler::GetThis()->schedule(&test_fiber);
-        // ljrserver::Fiber::YieldToReady();
 
+        // 指定在当前线程执行
         // ljrserver::Scheduler::GetThis()->schedule(&test_fiber,
-        // ljrserver::GetThreadId());
+        //                                           ljrserver::GetThreadId());
     }
 }
 
@@ -32,8 +32,9 @@ void test_fiber() {
  * @return int
  */
 int main(int argc, char const *argv[]) {
-    ljrserver::Scheduler sc(2, true, "sc");
-    // ljrserver::Thread::SetName("");
+    ljrserver::Thread::SetName("caller");
+
+    ljrserver::Scheduler sc(1, false, "sc");
 
     // sc.schedule(&test_fiber);
 

@@ -423,7 +423,7 @@ public:
      *
      * @param name 日志器名称
      */
-    Logger(const std::string &name = "root");
+    Logger(const std::string &name = " root ");
 
     /**
      * @brief 日志器 logger 打印日志
