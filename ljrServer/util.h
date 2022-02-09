@@ -17,23 +17,52 @@
 
 namespace ljrserver {
 
-// 线程id
+/**
+ * @brief 获取当前线程 id
+ *
+ * @return pid_t
+ */
 pid_t GetThreadId();
 
-// 协程id
+/**
+ * @brief 获取协程 id
+ *
+ * @return uint32_t
+ */
 uint32_t GetFiberId();
 
-// 函数调用栈
+/**
+ * @brief 函数调用栈
+ *
+ * @param bt
+ * @param size
+ * @param skip
+ */
 void Backtrace(std::vector<std::string> &bt, int size = 64, int skip = 1);
 
-// 函数调用栈，string
+/**
+ * @brief 函数调用栈 string
+ *
+ * @param size
+ * @param skip
+ * @param prefix
+ * @return std::string
+ */
 std::string BacktraceToString(int size = 64, int skip = 2,
                               const std::string &prefix = "");
 
-// 时间 ms
+/**
+ * @brief 获取时间 ms
+ *
+ * @return uint64_t
+ */
 uint64_t GetCurrentMS();
 
-// 时间 us
+/**
+ * @brief 获取时间 us
+ *
+ * @return uint64_t
+ */
 uint64_t GetCurrentUS();
 
 }  // namespace ljrserver

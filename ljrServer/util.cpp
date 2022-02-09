@@ -3,6 +3,7 @@
 #include "log.h"
 #include "fiber.h"
 #include <execinfo.h>
+// timer
 #include <sys/time.h>
 
 namespace ljrserver {
@@ -12,17 +13,28 @@ static ljrserver::Logger::ptr g_logger = LJRSERVER_LOG_NAME("system");
 
 /**
  * @brief 获取当前线程 id
- * 
- * @return pid_t 
+ *
+ * @return pid_t
  */
 pid_t GetThreadId() { return syscall(SYS_gettid); }
 
+/**
+ * @brief 获取协程 id
+ *
+ * @return uint32_t
+ */
 uint32_t GetFiberId() {
     // return 0;
     return ljrserver::Fiber::GetFiberId();
 }
 
-// 函数调用栈
+/**
+ * @brief 函数调用栈
+ * 
+ * @param bt 
+ * @param size 
+ * @param skip 
+ */
 void Backtrace(std::vector<std::string> &bt, int size, int skip) {
     void **array = (void **)malloc((sizeof(void *) * size));
     size_t s = ::backtrace(array, size);
@@ -41,7 +53,14 @@ void Backtrace(std::vector<std::string> &bt, int size, int skip) {
     free(array);
 }
 
-// 函数调用栈，string
+/**
+ * @brief 函数调用栈 string
+ * 
+ * @param size 
+ * @param skip 
+ * @param prefix 
+ * @return std::string 
+ */
 std::string BacktraceToString(int size, int skip, const std::string &prefix) {
     std::vector<std::string> bt;
     Backtrace(bt, size, skip);
@@ -52,14 +71,22 @@ std::string BacktraceToString(int size, int skip, const std::string &prefix) {
     return ss.str();
 }
 
-// 时间 ms
+/**
+ * @brief 获取时间 ms
+ * 
+ * @return uint64_t 
+ */
 uint64_t GetCurrentMS() {
     struct timeval tv;
     gettimeofday(&tv, NULL);
     return tv.tv_sec * 1000ul + tv.tv_usec / 1000;
 }
 
-// 时间 us
+/**
+ * @brief 获取时间 us
+ * 
+ * @return uint64_t 
+ */
 uint64_t GetCurrentUS() {
     struct timeval tv;
     gettimeofday(&tv, NULL);
