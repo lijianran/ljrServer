@@ -19,11 +19,26 @@
 
 namespace ljrserver {
 
+/**
+ * @brief 当前线程是否开启 hook
+ *
+ * @return true
+ * @return false
+ */
 bool is_hook_enable();
 
+/**
+ * @brief 设置 hook 状态
+ *
+ * @param flag 是否 hook
+ */
 void set_hook_enable(bool flag);
 
 }  // namespace ljrserver
+
+/***********************************
+ * C 代码
+ ***********************************/
 
 extern "C" {
 
@@ -101,6 +116,15 @@ typedef int (*setsockopt_fun)(int sockfd, int level, int optname,
                               const void *optval, socklen_t optlen);
 extern setsockopt_fun setsockopt_f;
 
+/**
+ * @brief socket 连接加上超时
+ * 
+ * @param fd socket 句柄
+ * @param addr 连接地址
+ * @param addrlen 地址长度
+ * @param timeout_ms 超时
+ * @return int 
+ */
 extern int connect_with_timeout(int fd, const struct sockaddr *addr,
                                 socklen_t addrlen, uint64_t timeout_ms);
 }

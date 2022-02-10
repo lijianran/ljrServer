@@ -1,5 +1,7 @@
 
 #include "hook.h"
+
+// dlsym
 #include <dlfcn.h>
 
 #include "log.h"
@@ -8,16 +10,23 @@
 #include "fd_manager.h"
 #include "config.h"
 
+// system 日志
 static ljrserver::Logger::ptr g_logger = LJRSERVER_LOG_NAME("system");
 
 namespace ljrserver {
 
+// 配置 tcp 连接的超时 timeout 5s
 static ljrserver::ConfigVar<int>::ptr g_tcp_connect_timeout =
     ljrserver::Config::Lookup("tcp.connect.timeout", 5000,
                               " tcp connect timeout");
 
+// thread_local 线程局部变量 是否开启了 hook [= false]
 static thread_local bool t_hook_enable = false;
 
+// 全局静态变量 连接超时参数
+static uint64_t s_connect_timeout = -1;
+
+// hook
 #define HOOK_FUN(XX) \
     XX(sleep)        \
     XX(usleep)       \
@@ -41,39 +50,75 @@ static thread_local bool t_hook_enable = false;
     XX(getsockopt)   \
     XX(setsockopt)
 
+/**
+ * @brief 初始化执行函数
+ *
+ */
 void hook_init() {
     static bool is_init = false;
     if (is_init) {
         return;
     }
 
+    // 获取原系统函数
+    // sleep_f = (sleep_fun)dlsym(RTLD_NEXT, "sleep");
+
 #define XX(name) name##_f = (name##_fun)dlsym(RTLD_NEXT, #name);
+    // XX(sleep) -> sleep_f = (sleep_fun)dlsym(RTLD_NEXT, "sleep");
     HOOK_FUN(XX);
 #undef XX
 }
 
-static uint64_t s_connect_timeout = -1;
-
+/**
+ * @brief 初始化
+ *
+ */
 struct _HookIniter {
+    /**
+     * @brief 结构体构造函数
+     *
+     */
     _HookIniter() {
+        // 初始化 hook
         hook_init();
 
+        // 设置连接超时参数
         s_connect_timeout = g_tcp_connect_timeout->getValue();
 
+        // 添加变更监听函数
         g_tcp_connect_timeout->addListener([](const int &old_value,
                                               const int &new_value) {
             LJRSERVER_LOG_INFO(g_logger) << "tcp connect timeout changed from "
                                          << old_value << " to  " << new_value;
+            // 更新连接超时参数
             s_connect_timeout = new_value;
         });
     }
 };
+
 // 在 main 函数之前执行，全局变量初始化在 main 函数之前
 static _HookIniter s_hook_initer;
 
-bool is_hook_enable() { return t_hook_enable; }
+/**
+ * @brief 当前线程是否开启 hook
+ *
+ * @return true
+ * @return false
+ */
+bool is_hook_enable() {
+    // 线程局部变量 thread_local
+    return t_hook_enable;
+}
 
-void set_hook_enable(bool flag) { t_hook_enable = flag; }
+/**
+ * @brief 设置 hook 状态
+ *
+ * @param flag 是否 hook
+ */
+void set_hook_enable(bool flag) {
+    // 线程局部变量 thread_local
+    t_hook_enable = flag;
+}
 
 }  // namespace ljrserver
 
@@ -81,10 +126,23 @@ struct timer_info {
     int cancelled = 0;
 };
 
+/**
+ * @brief 模版函数 执行 IO 操作
+ * 
+ * @tparam OriginFun 原系统调用函数
+ * @tparam Args 函数参数
+ * @param fd 句柄
+ * @param fun 原系统调用函数
+ * @param hook_fun_name hook 后的处理函数
+ * @param event 事件
+ * @param timeout_so 超时
+ * @param args 其他参数
+ * @return ssize_t 
+ */
 template <typename OriginFun, typename... Args>
 static ssize_t do_io(int fd, OriginFun fun, const char *hook_fun_name,
                      uint32_t event, int timeout_so, Args &&...args) {
-    // 没有hook，用系统函数执行返回
+    // 当前线程没有 hook，用系统函数执行返回
     if (!ljrserver::t_hook_enable) {
         return fun(fd, std::forward<Args>(args)...);
     }
@@ -101,7 +159,7 @@ static ssize_t do_io(int fd, OriginFun fun, const char *hook_fun_name,
         return -1;
     }
 
-    // 不是socket句柄，或者用户已经设置了非阻塞，用系统函数执行返回
+    // 不是 socket 句柄，或者用户已经设置了非阻塞，用系统函数执行返回
     if (!ctx->isSocket() || ctx->getUserNonblock()) {
         return fun(fd, std::forward<Args>(args)...);
     }
@@ -169,27 +227,51 @@ retry:
     return n;
 }
 
+/***********************************
+ * C 代码
+ ***********************************/
+
 extern "C" {
-// ##是链接符
+
+// 定义原系统函数
+// sleep_fun sleep_f = nullptr;
+
+// ## 是链接符
 #define XX(name) name##_fun name##_f = nullptr;
+// XX(sleep) -> sleep_fun sleep_f = nullptr;
 HOOK_FUN(XX);
 #undef XX
 
+/***********************
+ * sleep
+ ***********************/
 unsigned int sleep(unsigned int seconds) {
     if (!ljrserver::t_hook_enable) {
+        // 当前线程没有开启 hook 直接返回原系统调用
         return sleep_f(seconds);
     }
 
+    // 获取当前协程
     ljrserver::Fiber::ptr fiber = ljrserver::Fiber::GetThis();
+    // 获取当前 IO 调度管理器
     ljrserver::IOManager *iom = ljrserver::IOManager::GetThis();
+
+    // 添加定时器 sleep 后再调度执行当前协程
     iom->addTimer(seconds * 1000,
-                  std::bind((void (ljrserver::Scheduler::*)(
+                  std::bind((void(ljrserver::Scheduler::*)(
                                 ljrserver::Fiber::ptr, int thread)) &
                                 ljrserver::IOManager::schedule,
                             iom, fiber, -1));
+
+    // 协程执行函数
+    // (void(ljrserver::Scheduler::*)(ljrserver::Fiber::ptr, int thread))
+    // &ljrserver::IOManager::schedule
+
     // iom->addTimer(seconds * 1000, [iom, fiber]() {
     //     iom->schedule(fiber);
     // });
+
+    // 回到调度协程 等待 sleep 结束
     ljrserver::Fiber::YieldToHold();
     return 0;
 }
@@ -202,7 +284,7 @@ int usleep(useconds_t usec) {
     ljrserver::Fiber::ptr fiber = ljrserver::Fiber::GetThis();
     ljrserver::IOManager *iom = ljrserver::IOManager::GetThis();
     iom->addTimer(usec / 1000,
-                  std::bind((void (ljrserver::Scheduler::*)(
+                  std::bind((void(ljrserver::Scheduler::*)(
                                 ljrserver::Fiber::ptr, int thread)) &
                                 ljrserver::IOManager::schedule,
                             iom, fiber, -1));
@@ -223,7 +305,7 @@ int nanosleep(const struct timespec *req, struct timespec *rem) {
     ljrserver::Fiber::ptr fiber = ljrserver::Fiber::GetThis();
     ljrserver::IOManager *iom = ljrserver::IOManager::GetThis();
     iom->addTimer(timeout_ms,
-                  std::bind((void (ljrserver::Scheduler::*)(
+                  std::bind((void(ljrserver::Scheduler::*)(
                                 ljrserver::Fiber::ptr, int thread)) &
                                 ljrserver::IOManager::schedule,
                             iom, fiber, -1));
@@ -234,6 +316,9 @@ int nanosleep(const struct timespec *req, struct timespec *rem) {
     return 0;
 }
 
+/***********************
+ * socket
+ ***********************/
 int socket(int domain, int type, int protocol) {
     if (!ljrserver::t_hook_enable) {
         return socket_f(domain, type, protocol);
@@ -248,10 +333,20 @@ int socket(int domain, int type, int protocol) {
     return fd;
 }
 
+/**
+ * @brief socket 连接加上超时
+ *
+ * @param fd socket 句柄
+ * @param addr 连接地址
+ * @param addrlen 地址长度
+ * @param timeout_ms 超时
+ * @return int
+ */
 int connect_with_timeout(int fd, const struct sockaddr *addr, socklen_t addrlen,
                          uint64_t timeout_ms) {
-    LJRSERVER_LOG_DEBUG(g_logger) << ljrserver::t_hook_enable;
+    // LJRSERVER_LOG_DEBUG(g_logger) << ljrserver::t_hook_enable;
     if (!ljrserver::t_hook_enable) {
+        // 当前线程没有开启 hook 直接返回原系统调用
         return connect_f(fd, addr, addrlen);
     }
 
@@ -329,6 +424,7 @@ int connect_with_timeout(int fd, const struct sockaddr *addr, socklen_t addrlen,
 
 int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen) {
     // return connect_f(sockfd, addr, addrlen);
+    // 连接加上超时功能
     return connect_with_timeout(sockfd, addr, addrlen,
                                 ljrserver::s_connect_timeout);
 }
@@ -343,7 +439,9 @@ int accept(int s, struct sockaddr *addr, socklen_t *addrlen) {
     return fd;
 }
 
-// socket read
+/***********************
+ * socket read
+ ***********************/
 ssize_t read(int fd, void *buf, size_t count) {
     return do_io(fd, read_f, "read", ljrserver::IOManager::READ, SO_RCVTIMEO,
                  buf, count);
@@ -371,7 +469,9 @@ ssize_t recvmsg(int sockfd, struct msghdr *msg, int flags) {
                  SO_RCVTIMEO, msg, flags);
 }
 
-// socket write
+/***********************
+ * socket write
+ ***********************/
 ssize_t write(int fd, const void *buf, size_t count) {
     return do_io(fd, write_f, "write", ljrserver::IOManager::WRITE, SO_SNDTIMEO,
                  buf, count);
@@ -398,7 +498,9 @@ ssize_t sendmsg(int s, const struct msghdr *msg, int flags) {
                  SO_SNDTIMEO, msg, flags);
 }
 
-// socket close
+/***********************
+ * socket close
+ ***********************/
 int close(int fd) {
     if (!ljrserver::t_hook_enable) {
         return close_f(fd);
@@ -416,7 +518,9 @@ int close(int fd) {
     return close_f(fd);
 }
 
-// 设置根句柄相关的参数
+/***********************
+ * 设置根句柄相关的参数
+ ***********************/
 int fcntl(int fd, int cmd, ... /* arg */) {
     va_list va;
     va_start(va, cmd);

@@ -6,34 +6,27 @@
 
 #include "bytearray.h"
 
-namespace ljrserver
-{
-    
-    class Stream
-    {
-    public:
-        typedef std::shared_ptr<Stream> ptr;
+namespace ljrserver {
 
-        virtual ~Stream() {}
+class Stream {
+public:
+    typedef std::shared_ptr<Stream> ptr;
 
-        virtual int read(void *buffer, size_t length) = 0;
-        virtual int read(ByteArray::ptr ba, size_t length) = 0;
-        virtual int readFixSize(void *buffer, size_t length);
-        virtual int readFixSize(ByteArray::ptr ba, size_t length);
+    virtual ~Stream() {}
 
-        virtual int write(const void *buffer, size_t length) = 0;
-        virtual int write(ByteArray::ptr ba, size_t length) = 0;
-        virtual int writeFixSize(const void *buffer, size_t length);
-        virtual int writeFixSize(ByteArray::ptr ba, size_t length);
+    virtual int read(void *buffer, size_t length) = 0;
+    virtual int read(ByteArray::ptr ba, size_t length) = 0;
+    virtual int readFixSize(void *buffer, size_t length);
+    virtual int readFixSize(ByteArray::ptr ba, size_t length);
 
-        virtual void close() = 0;
+    virtual int write(const void *buffer, size_t length) = 0;
+    virtual int write(ByteArray::ptr ba, size_t length) = 0;
+    virtual int writeFixSize(const void *buffer, size_t length);
+    virtual int writeFixSize(ByteArray::ptr ba, size_t length);
 
-    };
+    virtual void close() = 0;
+};
 
+}  // namespace ljrserver
 
-} // namespace ljrserver
-
-
-
-
-#endif //__LJRSERVER_STREAM_H__
+#endif  //__LJRSERVER_STREAM_H__

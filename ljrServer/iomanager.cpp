@@ -525,7 +525,7 @@ void IOManager::idle() {
 
             // 是否有定时任务
             if (next_timeout != ~0ull) {
-                // 下一个定时任务执行时间大于 5s
+                // 下一个定时任务执行时间是否大于 5s 是否需要在下一次任务前唤醒
                 next_timeout = (int)next_timeout > MAX_TIMEOUT ? MAX_TIMEOUT
                                                                : next_timeout;
             } else {
