@@ -130,6 +130,7 @@ IOManager::~IOManager() {
     close(m_tickleFds[0]);
     close(m_tickleFds[1]);
 
+    // 清理内存
     for (size_t i = 0; i < m_fdContexts.size(); ++i) {
         if (m_fdContexts[i]) {
             delete m_fdContexts[i];

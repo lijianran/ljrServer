@@ -392,7 +392,7 @@ int socket(int domain, int type, int protocol) {
  */
 int connect_with_timeout(int fd, const struct sockaddr *addr, socklen_t addrlen,
                          uint64_t timeout_ms) {
-    // LJRSERVER_LOG_DEBUG(g_logger) << ljrserver::t_hook_enable;
+    LJRSERVER_LOG_DEBUG(g_logger) << "是否 Hook: " << ljrserver::t_hook_enable;
     if (!ljrserver::t_hook_enable) {
         // 当前线程没有开启 hook 直接返回原系统调用
         return connect_f(fd, addr, addrlen);
@@ -485,10 +485,10 @@ int connect_with_timeout(int fd, const struct sockaddr *addr, socklen_t addrlen,
             << "connect addEvent(" << fd << ", WRITE) error";
     }
 
-    // 检查是否连接成功
+    // 检查是否成功
     int error = 0;
     socklen_t len = sizeof(int);
-    // 取出错误描述
+    // 取出错误
     if (-1 == getsockopt(fd, SOL_SOCKET, SO_ERROR, &error, &len)) {
         return -1;
     }

@@ -223,7 +223,7 @@ void Scheduler::run() {
     LJRSERVER_LOG_DEBUG(g_logger) << "new thread run";
 
     // 当前线程是否开启 HOOK
-    set_hook_enable(false);
+    set_hook_enable(true);
 
     // 设置当前线程的协程调度器 t_scheduler
     setThis();

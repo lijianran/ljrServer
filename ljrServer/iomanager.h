@@ -100,7 +100,7 @@ public:
      * @param name 调度器名称
      */
     IOManager(size_t threads = 1, bool use_caller = true,
-              const std::string &name = "");
+              const std::string &name = "iom");
 
     /**
      * @brief IO 协程调度器的析构函数
