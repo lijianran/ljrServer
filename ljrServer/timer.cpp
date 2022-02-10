@@ -36,7 +36,10 @@ bool Timer::Comparator::operator()(const Timer::ptr &lhs,
 /**
  * @brief 重载定时器构造函数 private
  *
- * @param next
+ * @param ms
+ * @param cb
+ * @param recurring
+ * @param manager
  */
 Timer::Timer(uint64_t ms, std::function<void()> cb, bool recurring,
              TimerManager *manager)
@@ -205,14 +208,22 @@ Timer::ptr TimerManager::addTimer(uint64_t ms, std::function<void()> cb,
     return timer;
 }
 
-// weak_ptr 不会让引用计数加1，但可以知道指向的内容是否被释放
+/**
+ * @brief 条件定时器的执行函数
+ *
+ * weak_ptr 不会让引用计数加1，但可以知道指向的内容是否被释放
+ *
+ * @param weak_condition 条件
+ * @param cb 任务函数
+ */
 static void OnTimer(std::weak_ptr<void> weak_condition,
                     std::function<void()> cb) {
     // 返回智能指针
     std::shared_ptr<void> tmp = weak_condition.lock();
 
-    // 智能指针没被释放，则执行回调函数
+    // 智能指针没被释放 符合条件 则执行回调函数
     if (tmp) {
+        // 执行定时任务
         cb();
     }
 }

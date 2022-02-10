@@ -20,7 +20,7 @@
 namespace ljrserver {
 
 /**
- * @brief 当前线程是否开启 hook
+ * @brief 当前线程是否开启了 hook
  *
  * @return true
  * @return false
@@ -30,7 +30,7 @@ bool is_hook_enable();
 /**
  * @brief 设置 hook 状态
  *
- * @param flag 是否 hook
+ * @param flag 是否开启 hook
  */
 void set_hook_enable(bool flag);
 
@@ -117,7 +117,7 @@ typedef int (*setsockopt_fun)(int sockfd, int level, int optname,
 extern setsockopt_fun setsockopt_f;
 
 /**
- * @brief socket 连接加上超时
+ * @brief socket 连接加上超时取消功能
  * 
  * @param fd socket 句柄
  * @param addr 连接地址

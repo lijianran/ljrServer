@@ -111,15 +111,16 @@ public:
     /**
      * @brief 添加事件
      *
+     * 1 success, 2 retry, -1 error
      * @param fd 事件句柄
-     * @param event 事件
-     * @param cb 函数
-     * @return int 1 success, 2 retry, -1 error
+     * @param event 事件类型
+     * @param cb 事件函数 [= nullptr]
+     * @return int 0-success
      */
     int addEvent(int fd, Event event, std::function<void()> cb = nullptr);
 
     /**
-     * @brief 删除事件
+     * @brief 删除事件 不会触发事件
      *
      * @param fd 事件句柄
      * @param event 事件
@@ -129,7 +130,7 @@ public:
     bool delEvent(int fd, Event event);
 
     /**
-     * @brief 取消事件
+     * @brief 取消事件 如果事件存在则触发事件
      *
      * @param fd 事件句柄
      * @param event 事件
@@ -139,7 +140,7 @@ public:
     bool cancelEvent(int fd, Event event);
 
     /**
-     * @brief 取消句柄下所有事件
+     * @brief 取消句柄下所有事件 会执行事件
      *
      * @param fd 事件句柄
      * @return true

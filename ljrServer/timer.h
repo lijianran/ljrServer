@@ -65,6 +65,9 @@ private:
     /**
      * @brief 重载定时器构造函数 private
      *
+     * 用于实例化当前时间的定时器对象
+     * Timer::ptr now_timer(new Timer(now_ms));
+     *
      * @param next
      */
     Timer(uint64_t next);
@@ -137,10 +140,10 @@ public:
     /**
      * @brief 添加条件定时器
      *
-     * @param ms
-     * @param cb
-     * @param weak_conditon
-     * @param recurring
+     * @param ms 执行周期
+     * @param cb 任务函数
+     * @param weak_conditon 执行条件 weak_ptr
+     * @param recurring 是否循环执行 [= false]
      * @return Timer::ptr
      */
     Timer::ptr addConditionTimer(uint64_t ms, std::function<void()> cb,

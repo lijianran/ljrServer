@@ -159,9 +159,9 @@ void IOManager::contextResize(size_t size) {
  * @brief 添加事件
  *
  * @param fd 事件句柄
- * @param event 事件
- * @param cb 函数
- * @return int 1 success, 2 retry, -1 error
+ * @param event 事件类型
+ * @param cb 事件函数 [= nullptr]
+ * @return int 0 success
  */
 int IOManager::addEvent(int fd, Event event, std::function<void()> cb) {
     // 创建句柄事件上下文
@@ -186,6 +186,7 @@ int IOManager::addEvent(int fd, Event event, std::function<void()> cb) {
         fd_ctx = m_fdContexts[fd];
     }
 
+    // 句柄上下文互斥锁
     FdContext::MutexType::Lock lock2(fd_ctx->mutex);
 
     // 已经有该事件
@@ -229,7 +230,7 @@ int IOManager::addEvent(int fd, Event event, std::function<void()> cb) {
     // 设置调度器
     event_ctx.scheduler = Scheduler::GetThis();
     if (cb) {
-        // 有回调函数
+        // 有任务函数
         event_ctx.cb.swap(cb);
     } else {
         // 设置当前协程作为要调度的任务
@@ -358,7 +359,7 @@ bool IOManager::cancelEvent(int fd, Event event) {
 }
 
 /**
- * @brief 取消句柄下所有事件
+ * @brief 取消句柄下所有事件 会执行事件
  *
  * @param fd 事件句柄
  * @return true
@@ -609,8 +610,10 @@ void IOManager::idle() {
             // 边缘触发
             event.events = EPOLLET | left_events;
 
+            // 继续配置 epoll
             int rt2 = epoll_ctl(m_epollfd, op, fd_ctx->fd, &event);
             if (rt2) {
+                // 返回值不为零 错误
                 LJRSERVER_LOG_ERROR(g_logger)
                     << "epoll_ctl(" << m_epollfd << ", " << op << ", "
                     << fd_ctx->fd << ", " << (EPOLL_EVENTS)event.events

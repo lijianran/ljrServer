@@ -30,10 +30,10 @@ uint32_t GetFiberId() {
 
 /**
  * @brief 函数调用栈
- * 
- * @param bt 
- * @param size 
- * @param skip 
+ *
+ * @param bt
+ * @param size
+ * @param skip
  */
 void Backtrace(std::vector<std::string> &bt, int size, int skip) {
     void **array = (void **)malloc((sizeof(void *) * size));
@@ -55,26 +55,28 @@ void Backtrace(std::vector<std::string> &bt, int size, int skip) {
 
 /**
  * @brief 函数调用栈 string
- * 
- * @param size 
- * @param skip 
- * @param prefix 
- * @return std::string 
+ *
+ * @param size
+ * @param skip
+ * @param prefix
+ * @return std::string
  */
 std::string BacktraceToString(int size, int skip, const std::string &prefix) {
     std::vector<std::string> bt;
     Backtrace(bt, size, skip);
+
     std::stringstream ss;
     for (size_t i = 0; i < bt.size(); i++) {
         ss << prefix << bt[i] << std::endl;
     }
+
     return ss.str();
 }
 
 /**
  * @brief 获取时间 ms
- * 
- * @return uint64_t 
+ *
+ * @return uint64_t
  */
 uint64_t GetCurrentMS() {
     struct timeval tv;
@@ -84,8 +86,8 @@ uint64_t GetCurrentMS() {
 
 /**
  * @brief 获取时间 us
- * 
- * @return uint64_t 
+ *
+ * @return uint64_t
  */
 uint64_t GetCurrentUS() {
     struct timeval tv;

@@ -26,8 +26,7 @@ ljrserver::Logger::ptr g_logger = LJRSERVER_LOG_ROOT();
 //     LJRSERVER_LOG_INFO(g_logger) << "sleep test";
 // }
 
-void test_sock()
-{
+void test_sock() {
     int sock = socket(AF_INET, SOCK_STREAM, 0);
 
     sockaddr_in addr;
@@ -40,10 +39,10 @@ void test_sock()
 
     int rt = connect(sock, (const sockaddr *)&addr, sizeof(addr));
 
-    LJRSERVER_LOG_INFO(g_logger) << "connect rt = " << rt << " errno = " << errno;
+    LJRSERVER_LOG_INFO(g_logger)
+        << "connect rt = " << rt << " errno = " << errno;
 
-    if (rt)
-    {
+    if (rt) {
         return;
     }
 
@@ -53,8 +52,7 @@ void test_sock()
 
     LJRSERVER_LOG_INFO(g_logger) << "send rt = " << rt << " errno = " << errno;
 
-    if (rt <= 0)
-    {
+    if (rt <= 0) {
         return;
     }
 
@@ -64,8 +62,7 @@ void test_sock()
     rt = recv(sock, &buff[0], buff.size(), 0);
     LJRSERVER_LOG_INFO(g_logger) << "recv rt = " << rt << " errno = " << errno;
 
-    if (rt <= 0)
-    {
+    if (rt <= 0) {
         return;
     }
 
@@ -73,8 +70,7 @@ void test_sock()
     LJRSERVER_LOG_INFO(g_logger) << buff;
 }
 
-int main(int argc, char const *argv[])
-{
+int main(int argc, char const *argv[]) {
     // test_sleep();
 
     // test_sock();
