@@ -152,7 +152,7 @@ void Socket::setRecvTimeout(int64_t v) {
     struct timeval tv {
         int(v / 1000), int(v % 1000 * 1000)
     };
-    // 设置发送超时
+    // 设置接收超时
     setOption(SOL_SOCKET, SO_RCVTIMEO, tv);
 }
 
@@ -246,7 +246,7 @@ bool Socket::bind(const Address::ptr addr) {
         return false;
     }
 
-    // 绑定地址 Address::ptr 动态多态
+    // 绑定地址 Address::ptr 动态多态 bind 没有 hook
     if (::bind(m_sock, addr->getAddr(), addr->getAddrLen())) {
         LJRSERVER_LOG_ERROR(g_logger) << "bind error errno = " << errno
                                       << " errno-string = " << strerror(errno);
