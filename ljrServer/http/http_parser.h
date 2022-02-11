@@ -6,85 +6,81 @@
 #include "http11_parser.h"
 #include "httpclient_parser.h"
 
-namespace ljrserver
-{
+namespace ljrserver {
 
-    namespace http
-    {
+namespace http {
 
-        class HttpRequestParser
-        {
-        public:
-            typedef std::shared_ptr<HttpRequestParser> ptr;
+class HttpRequestParser {
+public:
+    typedef std::shared_ptr<HttpRequestParser> ptr;
 
-            HttpRequestParser();
+    HttpRequestParser();
 
-            size_t execute(char *data, size_t len);
+    size_t execute(char *data, size_t len);
 
-            int isFinished();
+    int isFinished();
 
-            int hasError();
+    int hasError();
 
-            HttpRequest::ptr getData() const { return m_data; }
+    HttpRequest::ptr getData() const { return m_data; }
 
-            void setError(int v) { m_error = v; }
+    void setError(int v) { m_error = v; }
 
-            uint64_t getContentLength();
+    uint64_t getContentLength();
 
-            const http_parser &getParser() const { return m_parser; }
+    const http_parser &getParser() const { return m_parser; }
 
-        public:
-            static uint64_t GetHttpRequestBufferSize();
+public:
+    static uint64_t GetHttpRequestBufferSize();
 
-            static uint64_t GetHttpRequestMaxBodySize();
+    static uint64_t GetHttpRequestMaxBodySize();
 
-        private:
-            http_parser m_parser;
+private:
+    http_parser m_parser;
 
-            HttpRequest::ptr m_data;
-            // 1000: invalid method
-            // 1001: invalid version
-            // 1002: invalid field
-            int m_error;
-        };
+    HttpRequest::ptr m_data;
+    // 1000: invalid method
+    // 1001: invalid version
+    // 1002: invalid field
+    int m_error;
+};
 
-        class HttpResponseParser
-        {
-        public:
-            typedef std::shared_ptr<HttpResponseParser> ptr;
+class HttpResponseParser {
+public:
+    typedef std::shared_ptr<HttpResponseParser> ptr;
 
-            HttpResponseParser();
+    HttpResponseParser();
 
-            size_t execute(char *data, size_t len, bool chunck);
+    size_t execute(char *data, size_t len, bool chunck);
 
-            int isFinished();
+    int isFinished();
 
-            int hasError();
+    int hasError();
 
-            HttpResponse::ptr getData() const { return m_data; }
+    HttpResponse::ptr getData() const { return m_data; }
 
-            void setError(int v) { m_error = v; }
+    void setError(int v) { m_error = v; }
 
-            uint64_t getContentLength();
+    uint64_t getContentLength();
 
-            const httpclient_parser &getParser() const { return m_parser; }
+    const httpclient_parser &getParser() const { return m_parser; }
 
-        public:
-            static uint64_t GetHttpResponseBufferSize();
+public:
+    static uint64_t GetHttpResponseBufferSize();
 
-            static uint64_t GetHttpResponseMaxBodySize();
+    static uint64_t GetHttpResponseMaxBodySize();
 
-        private:
-            httpclient_parser m_parser;
+private:
+    httpclient_parser m_parser;
 
-            HttpResponse::ptr m_data;
-            // 1001: invalid version
-            // 1002: invalid field
-            int m_error;
-        };
+    HttpResponse::ptr m_data;
+    // 1001: invalid version
+    // 1002: invalid field
+    int m_error;
+};
 
-    } // namespace http
+}  // namespace http
 
-} // namespace ljrserver
+}  // namespace ljrserver
 
-#endif //__LJRSERVER_HTTP_PARSER_H__
+#endif  //__LJRSERVER_HTTP_PARSER_H__

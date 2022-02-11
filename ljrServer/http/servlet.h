@@ -12,106 +12,100 @@
 #include "http_session.h"
 #include "../thread.h"
 
-namespace ljrserver
-{
+namespace ljrserver {
 
-    namespace http
-    {
+namespace http {
 
-        class Servlet
-        {
-        public:
-            typedef std::shared_ptr<Servlet> ptr;
+class Servlet {
+public:
+    typedef std::shared_ptr<Servlet> ptr;
 
-            Servlet(const std::string &name) : m_name(name) {}
+    Servlet(const std::string &name) : m_name(name) {}
 
-            virtual ~Servlet() {}
+    virtual ~Servlet() {}
 
-            virtual int32_t handle(ljrserver::http::HttpRequest::ptr request,
-                                   ljrserver::http::HttpResponse::ptr response,
-                                   ljrserver::http::HttpSession::ptr session) = 0;
-
-            const std::string &getName() const { return m_name; }
-
-        protected:
-            std::string m_name;
-        };
-
-        class FunctionServlet : public Servlet
-        {
-        public:
-            typedef std::shared_ptr<FunctionServlet> ptr;
-
-            typedef std::function<int32_t(ljrserver::http::HttpRequest::ptr request,
-                                          ljrserver::http::HttpResponse::ptr response,
-                                          ljrserver::http::HttpSession::ptr session)>
-                callback;
-
-            FunctionServlet(callback cb);
-
-            int32_t handle(ljrserver::http::HttpRequest::ptr request,
+    virtual int32_t handle(ljrserver::http::HttpRequest::ptr request,
                            ljrserver::http::HttpResponse::ptr response,
-                           ljrserver::http::HttpSession::ptr session) override;
+                           ljrserver::http::HttpSession::ptr session) = 0;
 
-        private:
-            callback m_cb;
-        };
+    const std::string &getName() const { return m_name; }
 
-        class ServletDispatch : public Servlet
-        {
-        public:
-            typedef std::shared_ptr<ServletDispatch> ptr;
-            typedef RWMutex RWMutexType;
+protected:
+    std::string m_name;
+};
 
-            ServletDispatch();
+class FunctionServlet : public Servlet {
+public:
+    typedef std::shared_ptr<FunctionServlet> ptr;
 
-            int32_t handle(ljrserver::http::HttpRequest::ptr request,
-                           ljrserver::http::HttpResponse::ptr response,
-                           ljrserver::http::HttpSession::ptr session) override;
+    typedef std::function<int32_t(ljrserver::http::HttpRequest::ptr request,
+                                  ljrserver::http::HttpResponse::ptr response,
+                                  ljrserver::http::HttpSession::ptr session)>
+        callback;
 
-            void addServlet(const std::string &uri, Servlet::ptr slt);
+    FunctionServlet(callback cb);
 
-            void addServlet(const std::string &uri, FunctionServlet::callback cb);
+    int32_t handle(ljrserver::http::HttpRequest::ptr request,
+                   ljrserver::http::HttpResponse::ptr response,
+                   ljrserver::http::HttpSession::ptr session) override;
 
-            void addGlobServlet(const std::string &uri, Servlet::ptr slt);
+private:
+    callback m_cb;
+};
 
-            void addGlobServlet(const std::string &uri, FunctionServlet::callback cb);
+class ServletDispatch : public Servlet {
+public:
+    typedef std::shared_ptr<ServletDispatch> ptr;
+    typedef RWMutex RWMutexType;
 
-            void delServlet(const std::string &uri);
-            void delGlobServlet(const std::string &uri);
+    ServletDispatch();
 
-            Servlet::ptr getDefault() const { return m_default; }
-            void setDefault(Servlet::ptr v) { m_default = v; }
+    int32_t handle(ljrserver::http::HttpRequest::ptr request,
+                   ljrserver::http::HttpResponse::ptr response,
+                   ljrserver::http::HttpSession::ptr session) override;
 
-            Servlet::ptr getServlet(const std::string &uri);
-            Servlet::ptr getGlobServlet(const std::string &uri);
+    void addServlet(const std::string &uri, Servlet::ptr slt);
 
-            Servlet::ptr getMatchedServlet(const std::string &uri);
+    void addServlet(const std::string &uri, FunctionServlet::callback cb);
 
-        private:
-            RWMutexType m_mutex;
-            // uri (/ljrserver/xxx) -> servlet 精准命中
-            std::unordered_map<std::string, Servlet::ptr> m_datas;
-            // uri (/ljrserver/*) -> servlet 模糊命中
-            std::vector<std::pair<std::string, Servlet::ptr>> m_globs;
-            // 默认servlet，所有路径都没有匹配到时使用
-            Servlet::ptr m_default;
-        };
+    void addGlobServlet(const std::string &uri, Servlet::ptr slt);
 
-        class NotFoundServlet : public Servlet
-        {
-        public:
-            typedef std::shared_ptr<NotFoundServlet> ptr;
+    void addGlobServlet(const std::string &uri, FunctionServlet::callback cb);
 
-            NotFoundServlet();
+    void delServlet(const std::string &uri);
+    void delGlobServlet(const std::string &uri);
 
-            int32_t handle(ljrserver::http::HttpRequest::ptr request,
-                           ljrserver::http::HttpResponse::ptr response,
-                           ljrserver::http::HttpSession::ptr session) override;
-        };
+    Servlet::ptr getDefault() const { return m_default; }
+    void setDefault(Servlet::ptr v) { m_default = v; }
 
-    } // namespace http
+    Servlet::ptr getServlet(const std::string &uri);
+    Servlet::ptr getGlobServlet(const std::string &uri);
 
-} // namespace ljrserver
+    Servlet::ptr getMatchedServlet(const std::string &uri);
 
-#endif //__LJRSERVER_HTTP_SERVLET_H__
+private:
+    RWMutexType m_mutex;
+    // uri (/ljrserver/xxx) -> servlet 精准命中
+    std::unordered_map<std::string, Servlet::ptr> m_datas;
+    // uri (/ljrserver/*) -> servlet 模糊命中
+    std::vector<std::pair<std::string, Servlet::ptr>> m_globs;
+    // 默认servlet，所有路径都没有匹配到时使用
+    Servlet::ptr m_default;
+};
+
+class NotFoundServlet : public Servlet {
+public:
+    typedef std::shared_ptr<NotFoundServlet> ptr;
+
+    NotFoundServlet();
+
+    int32_t handle(ljrserver::http::HttpRequest::ptr request,
+                   ljrserver::http::HttpResponse::ptr response,
+                   ljrserver::http::HttpSession::ptr session) override;
+};
+
+}  // namespace http
+
+}  // namespace ljrserver
+
+#endif  //__LJRSERVER_HTTP_SERVLET_H__

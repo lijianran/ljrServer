@@ -3,6 +3,13 @@
 #include "../ljrServer/log.h"
 // #include "../ljrServer/util.h"
 
+/**
+ * @brief 测试日志
+ *
+ * @param argc
+ * @param argv
+ * @return int
+ */
 int main(int argc, char const *argv[]) {
     // 添加日志器
     ljrserver::Logger::ptr logger(new ljrserver::Logger);
@@ -30,7 +37,7 @@ int main(int argc, char const *argv[]) {
     // 日志格式
     ljrserver::LogFormatter::ptr file_format(
         new ljrserver::LogFormatter("%d%T%p%T%m%n"));
-    
+
     // 设置格式
     file_appender->setFormatter(file_format);
 

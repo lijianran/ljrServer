@@ -3,9 +3,16 @@
 #include "../ljrServer/log.h"
 #include "../ljrServer/macro.h"
 
+#include <iostream>
+
+// 日志
 static ljrserver::Logger::ptr g_logger = LJRSERVER_LOG_ROOT();
 
-void test() {
+/**
+ * @brief 测试 byte array 读写 int
+ *
+ */
+void test_byte_array() {
 #define XX(type, len, write_fun, read_fun, base_len)                      \
     {                                                                     \
         std::vector<type> vec;                                            \
@@ -23,10 +30,11 @@ void test() {
         }                                                                 \
         LJRSERVER_ASSERT(ba->getReadSize() == 0);                         \
         LJRSERVER_LOG_INFO(g_logger)                                      \
-            << #write_fun " / " #read_fun " (" #type ") len = " << len    \
-            << " base_len = " << base_len << " size = " << ba->getSize(); \
+            << #write_fun " / " #read_fun " (" #type ") len=" << len      \
+            << " base_len=" << base_len << " size=" << ba->getSize();     \
     }
 
+    // 固定长度
     XX(int8_t, 100, writeFint8, readFint8, 1);
     XX(uint8_t, 100, writeFuint8, readFuint8, 1);
     XX(int16_t, 100, writeFint16, readFint16, 1);
@@ -36,6 +44,7 @@ void test() {
     XX(int64_t, 100, writeFint64, readFint64, 1);
     XX(uint64_t, 100, writeFuint64, readFuint64, 1);
 
+    // 变长
     XX(int32_t, 100, writeInt32, readInt32, 1);
     XX(uint32_t, 100, writeUint32, readUint32, 1);
     XX(int64_t, 100, writeInt64, readInt64, 1);
@@ -43,6 +52,10 @@ void test() {
 #undef XX
 }
 
+/**
+ * @brief 测试文件操作
+ *
+ */
 void test_file() {
 #define XX(type, len, write_fun, read_fun, base_len)                           \
     {                                                                          \
@@ -61,8 +74,8 @@ void test_file() {
         }                                                                      \
         LJRSERVER_ASSERT(ba->getReadSize() == 0);                              \
         LJRSERVER_LOG_INFO(g_logger)                                           \
-            << #write_fun " / " #read_fun " (" #type ") len = " << len         \
-            << " base_len = " << base_len << " size = " << ba->getSize();      \
+            << #write_fun " / " #read_fun " (" #type ") len=" << len           \
+            << " base_len=" << base_len << " size=" << ba->getSize();          \
         ba->setPostion(0);                                                     \
         LJRSERVER_ASSERT(                                                      \
             ba->writeToFile("./tmp/" #type "_" #len "_" #read_fun ".dat"));    \
@@ -75,6 +88,7 @@ void test_file() {
         LJRSERVER_ASSERT(ba2->getPosition() == 0);                             \
     }
 
+    // 固定长度
     XX(int8_t, 100, writeFint8, readFint8, 1);
     XX(uint8_t, 100, writeFuint8, readFuint8, 1);
     XX(int16_t, 100, writeFint16, readFint16, 1);
@@ -84,6 +98,7 @@ void test_file() {
     XX(int64_t, 100, writeFint64, readFint64, 1);
     XX(uint64_t, 100, writeFuint64, readFuint64, 1);
 
+    // 变长
     XX(int32_t, 100, writeInt32, readInt32, 1);
     XX(uint32_t, 100, writeUint32, readUint32, 1);
     XX(int64_t, 100, writeInt64, readInt64, 1);
@@ -91,9 +106,20 @@ void test_file() {
 #undef XX
 }
 
+/**
+ * @brief 测试
+ *
+ * @param argc
+ * @param argv
+ * @return int
+ */
 int main(int argc, char const *argv[]) {
-    // test();
+    // 测试 byte array 读写 int
+    LJRSERVER_LOG_INFO(g_logger) << "测试 byte array 读写 int";
+    test_byte_array();
 
+    // 测试文件操作
+    LJRSERVER_LOG_INFO(g_logger) << "测试文件操作";
     test_file();
 
     return 0;
