@@ -35,6 +35,7 @@ namespace ljrserver {
  */
 class ConfigVarBase {
 public:
+    // 智能指针
     typedef std::shared_ptr<ConfigVarBase> ptr;
 
     /**
@@ -328,6 +329,7 @@ template <class T, class FromStr = LexicalCast<std::string, T>,
           class ToStr = LexicalCast<T, std::string>>
 class ConfigVar : public ConfigVarBase {
 public:
+    // 智能指针
     typedef std::shared_ptr<ConfigVar> ptr;
 
     // 读写锁

@@ -4,6 +4,11 @@
 
 #include "http11_common.h"
 
+/**
+ * @brief 服务器 http 请求解析
+ *
+ */
+
 typedef struct http_parser {
     int cs;
     size_t body_start;

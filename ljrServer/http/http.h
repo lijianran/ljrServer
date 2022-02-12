@@ -120,79 +120,169 @@ namespace http {
     XX(510, NOT_EXTENDED, Not Extended)                                       \
     XX(511, NETWORK_AUTHENTICATION_REQUIRED, Network Authentication Required)
 
-// 枚举类
+/**
+ * @brief 枚举类
+ *
+ * http 请求方法 get post ...
+ */
 enum class HttpMethod {
 #define XX(num, name, string) name = num,
-
+    /* Request Methods */
     HTTP_METHOD_MAP(XX)
 #undef XX
-        INVALID_METHOD
+    // 非法 method
+    INVALID_METHOD
 };
 
+/**
+ * @brief 枚举类
+ *
+ * http 状态 200 ok ...
+ */
 enum class HttpStatus {
 #define XX(code, name, desc) name = code,
+    /* Status Codes */
     HTTP_STATUS_MAP(XX)
 #undef XX
 };
 
+/**
+ * @brief string 字符串转 http 请求方法
+ *
+ * @param m
+ * @return HttpMethod
+ */
 HttpMethod StringToHttpMethod(const std::string &m);
 
+/**
+ * @brief char* 字符串转 http 请求方法
+ *
+ * @param m
+ * @return HttpMethod
+ */
 HttpMethod CharsToHttpMethod(const char *m);
 
+/**
+ * @brief http 请求方法转字符串
+ *
+ * @param m
+ * @return const char*
+ */
 const char *HttpMethodToString(const HttpMethod &m);
 
+/**
+ * @brief http 状态转字符串
+ *
+ * @param s
+ * @return const char*
+ */
 const char *HttpStatusToString(const HttpStatus &s);
 
-// map比较仿函数，大小写无关
+/**
+ * @brief 实现 map 比较仿函数，大小写无关
+ *
+ */
 struct CaseInsensitiveLess {
+    /**
+     * @brief 仿函数 重载类/结构体的 () 操作符
+     *
+     * @param lhs
+     * @param rhs
+     * @return true
+     * @return false
+     */
     bool operator()(const std::string &lhs, const std::string &rhs) const;
 };
 
+/**
+ * @brief 模版类 检查并动态转换 map 中某个键的值为 T 类型
+ *
+ * @tparam MapType
+ * @tparam T
+ * @param m map
+ * @param key key
+ * @param val 返回值
+ * @param def 默认值
+ * @return true
+ * @return false
+ */
 template <class MapType, class T>
 bool checkGetAs(const MapType &m, const std::string &key, T &val,
                 const T &def = T()) {
-    std::string std;
+    // std::string std;
     auto it = m.find(key);
     if (it == m.end()) {
+        // 没找到 使用默认值
         val = def;
         return false;
     }
 
     try {
+        // 动态转换
         val = boost::lexical_cast<T>(it->second);
         return true;
     } catch (const std::exception &e) {
+        // 抛出异常 使用默认值
         val = def;
         // std::cerr << e.what() << '\n';
     }
     return false;
 }
 
+/**
+ * @brief 模版类 动态转换 map 中某个键的值为 T 类型
+ *
+ * @tparam MapType
+ * @tparam T
+ * @param m map
+ * @param key key
+ * @param def 默认值
+ * @return T
+ */
 template <class MapType, class T>
 T getAs(const MapType &m, const std::string &key, const T &def = T()) {
+    // 在 map 中查找 key
     auto it = m.find(key);
     if (it == m.end()) {
+        // 没找到 直接返回默认值
         return def;
     }
 
     try {
+        // 直接转换
         return boost::lexical_cast<T>(it->second);
     } catch (const std::exception &e) {
+        // 抛出异常
         std::cerr << e.what() << '\n';
     }
+    // 转换失败 返回默认值
     return def;
 }
 
+/**
+ * @brief Class 封装 http 请求
+ *
+ */
 class HttpRequest {
 public:
+    // 智能指针
     typedef std::shared_ptr<HttpRequest> ptr;
+
+    // map 类型
     typedef std::map<std::string, std::string, CaseInsensitiveLess> MapType;
 
+    /**
+     * @brief http 请求对象构造函数
+     *
+     * @param version 版本 [= 0x11]
+     * @param close 是否长连接 [= true] 默认非长连接
+     */
     HttpRequest(uint8_t version = 0x11, bool close = true);
 
+public:
     HttpMethod getMethod() const { return m_method; }
-    uint8_t getVersion() const { return m_version; }
     // HttpStatus getStatus() const { return m_status; }
+    uint8_t getVersion() const { return m_version; }
     const std::string &getPath() const { return m_path; }
     const std::string &getQuery() const { return m_query; }
     const std::string &getFragment() const { return m_fragment; }
@@ -202,7 +292,7 @@ public:
     const MapType &getCookies() const { return m_cookies; }
 
     void setMethod(HttpMethod m) { m_method = m; }
-    // void setStatsu(HttpStatus s) { m_status = s; }
+    // void setStatus(HttpStatus s) { m_status = s; }
     void setVersion(uint8_t v) { m_version = v; }
     void setPath(const std::string &v) { m_path = v; }
     void setQuery(const std::string &v) { m_query = v; }
@@ -215,6 +305,7 @@ public:
     bool isCose() const { return m_close; }
     void setClose(bool v) { m_close = v; }
 
+public:
     std::string getHeader(const std::string &key,
                           const std::string &def = "") const;
     std::string getParam(const std::string &key,
@@ -234,6 +325,7 @@ public:
     bool hasParam(const std::string &key, std::string *val = nullptr);
     bool hasCookie(const std::string &key, std::string *val = nullptr);
 
+public:
     template <class T>
     bool checkGetHeaderAs(const std::string &key, T &val, const T &def = T()) {
         return checkGetAs(m_headers, key, val, def);
@@ -264,25 +356,34 @@ public:
         return getAs(m_cookies, key, def);
     }
 
+public:
     std::ostream &dump(std::ostream &os) const;
 
     std::string toString() const;
 
 private:
+    // 请求方法
     HttpMethod m_method;
 
+    // 状态
     // HttpStatus m_status;
 
+    // 版本
     uint8_t m_version;
 
+    // 是否长连接
     bool m_close;
 
+    // 请求 path
     std::string m_path;
 
+    // 请求 query
     std::string m_query;
 
+    // 请求 fragment
     std::string m_fragment;
 
+    // 请求 body
     std::string m_body;
 
     MapType m_headers;
@@ -290,13 +391,27 @@ private:
     MapType m_cookies;
 };
 
+/**
+ * @brief Class 封装 http 响应
+ *
+ */
 class HttpResponse {
 public:
+    // 智能指针
     typedef std::shared_ptr<HttpResponse> ptr;
+
+    // map 类型
     typedef std::map<std::string, std::string, CaseInsensitiveLess> MapType;
 
+    /**
+     * @brief http 响应对象构造函数
+     *
+     * @param version 版本 [= 0x11]
+     * @param close 是否长连接 [= true] 默认非长连接
+     */
     HttpResponse(uint8_t version = 0x11, bool close = true);
 
+public:
     HttpStatus getStatus() const { return m_status; }
     uint8_t getVersion() const { return m_version; }
     const std::string &getBody() const { return m_body; }
@@ -312,10 +427,12 @@ public:
     bool isCose() const { return m_close; }
     void setClose(bool v) { m_close = v; }
 
+public:
     std::string getHeader(const std::string &key, std::string &def) const;
     void setHeader(const std::string &key, const std::string &val);
     void delHeader(const std::string &key);
 
+public:
     template <class T>
     bool checkGetHeaderAs(const std::string &key, T &val, const T &def = T()) {
         return checkGetAs(m_headers, key, val, def);
@@ -326,25 +443,47 @@ public:
         return getAs(m_headers, key, def);
     }
 
+public:
     std::ostream &dump(std::ostream &os) const;
 
     std::string toString() const;
 
 private:
+    // http 状态
     HttpStatus m_status;
 
+    // 版本
     uint8_t m_version;
 
+    // 是否长连接
     bool m_close;
 
+    // 响应 body
     std::string m_body;
 
+    // 响应 reason
     std::string m_reason;
 
+    // 响应 header
     MapType m_headers;
 };
 
+/**
+ * @brief 重载 http 请求类的流式操作符
+ *
+ * @param os
+ * @param req
+ * @return std::ostream&
+ */
 std::ostream &operator<<(std::ostream &os, const HttpRequest &req);
+
+/**
+ * @brief 重载 http 响应类的流式操作符
+ *
+ * @param os
+ * @param rsp
+ * @return std::ostream&
+ */
 std::ostream &operator<<(std::ostream &os, const HttpResponse &rsp);
 
 }  // namespace http

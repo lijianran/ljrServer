@@ -4,9 +4,16 @@
 namespace ljrserver {
 
 namespace http {
+
 /***************
 辅助方法
 ***************/
+/**
+ * @brief string 字符串转 http 请求方法
+ *
+ * @param m
+ * @return HttpMethod
+ */
 HttpMethod StringToHttpMethod(const std::string &m) {
 #define XX(num, name, string)                  \
     {                                          \
@@ -19,6 +26,12 @@ HttpMethod StringToHttpMethod(const std::string &m) {
     return HttpMethod::INVALID_METHOD;
 }
 
+/**
+ * @brief char* 字符串转 http 请求方法
+ *
+ * @param m
+ * @return HttpMethod
+ */
 HttpMethod CharsToHttpMethod(const char *m) {
 #define XX(num, name, string)                            \
     {                                                    \
@@ -31,12 +44,19 @@ HttpMethod CharsToHttpMethod(const char *m) {
     return HttpMethod::INVALID_METHOD;
 }
 
+// 静态 http 请求方法数组
 static const char *s_method_string[] = {
 #define XX(num, name, string) #string,
     HTTP_METHOD_MAP(XX)
 #undef XX
 };
 
+/**
+ * @brief http 请求方法转字符串
+ *
+ * @param m
+ * @return const char*
+ */
 const char *HttpMethodToString(const HttpMethod &m) {
     uint32_t index = (uint32_t)m;
     if (index > sizeof(s_method_string) / sizeof(s_method_string[0])) {
@@ -45,6 +65,12 @@ const char *HttpMethodToString(const HttpMethod &m) {
     return s_method_string[index];
 }
 
+/**
+ * @brief http 状态转字符串
+ *
+ * @param s
+ * @return const char*
+ */
 const char *HttpStatusToString(const HttpStatus &s) {
     switch (s) {
 #define XX(code, name, msg) \
@@ -58,6 +84,14 @@ const char *HttpStatusToString(const HttpStatus &s) {
     }
 }
 
+/**
+ * @brief 仿函数 重载类/结构体的 () 操作符
+ *
+ * @param lhs
+ * @param rhs
+ * @return true
+ * @return false
+ */
 bool CaseInsensitiveLess::operator()(const std::string &lhs,
                                      const std::string &rhs) const {
     // 不分大小写比较
@@ -67,11 +101,22 @@ bool CaseInsensitiveLess::operator()(const std::string &lhs,
 /***************
 HttpRequest
 ***************/
+/**
+ * @brief http 请求对象构造函数
+ *
+ * @param version 版本 [= 0x11]
+ * @param close 是否长连接 [= true] 默认非长连接
+ */
 HttpRequest::HttpRequest(uint8_t version, bool close)
     : m_method(HttpMethod::GET),
       m_version(version),
       m_close(close),
-      m_path("/") {}
+      m_path("/") {
+    // 初始化列表顺序与成员变量定义顺序一致
+    // 默认 GET method http1.1 长连接 根目录
+}
+
+/// GET 获取
 
 std::string HttpRequest::getHeader(const std::string &key,
                                    const std::string &def) const {
@@ -91,6 +136,8 @@ std::string HttpRequest::getCookie(const std::string &key,
     return it == m_cookies.end() ? def : it->second;
 }
 
+/// SET 设置
+
 void HttpRequest::setHeader(const std::string &key, const std::string &val) {
     m_headers[key] = val;
 }
@@ -103,11 +150,15 @@ void HttpRequest::setCookie(const std::string &key, const std::string &val) {
     m_cookies[key] = val;
 }
 
+/// DEL 删除
+
 void HttpRequest::delHeader(const std::string &key) { m_headers.erase(key); }
 
 void HttpRequest::delParam(const std::string &key) { m_params.erase(key); }
 
 void HttpRequest::delCookie(const std::string &key) { m_cookies.erase(key); }
+
+/// HAS 包含
 
 bool HttpRequest::hasHeader(const std::string &key, std::string *val) {
     auto it = m_headers.find(key);
@@ -142,12 +193,15 @@ bool HttpRequest::hasCookie(const std::string &key, std::string *val) {
     return true;
 }
 
+/// 打印输出
+
 std::ostream &HttpRequest::dump(std::ostream &os) const {
-    // GET /uri HTTP/1.1
-    // host: www.baidu.com
-    //
-    //
-    // m_body
+    /**
+     * GET /uri HTTP/1.1
+     * host: www.baidu.com
+     *
+     * m_body
+     */
     os << HttpMethodToString(m_method) << " " << m_path
        << (m_query.empty() ? "" : "?") << m_query
        << (m_fragment.empty() ? "" : "#") << m_fragment << " HTTP/"
@@ -180,8 +234,19 @@ std::string HttpRequest::toString() const {
 /***************
 HttpResponse
 ***************/
+/**
+ * @brief http 响应对象构造函数
+ *
+ * @param version 版本 [= 0x11]
+ * @param close 是否长连接 [= true] 默认非长连接
+ */
 HttpResponse::HttpResponse(uint8_t version, bool close)
-    : m_status(HttpStatus::OK), m_version(version), m_close(close) {}
+    : m_status(HttpStatus::OK), m_version(version), m_close(close) {
+    // 初始化列表顺序与成员变量定义顺序一致
+    // 默认 200 OK http1.1 长连接
+}
+
+/// 响应 Header
 
 std::string HttpResponse::getHeader(const std::string &key,
                                     std::string &def) const {
@@ -194,6 +259,8 @@ void HttpResponse::setHeader(const std::string &key, const std::string &val) {
 }
 
 void HttpResponse::delHeader(const std::string &key) { m_headers.erase(key); }
+
+/// 打印输出
 
 std::ostream &HttpResponse::dump(std::ostream &os) const {
     os << "HTTP/" << ((uint32_t)(m_version >> 4)) << "."
@@ -222,10 +289,28 @@ std::string HttpResponse::toString() const {
     return ss.str();
 }
 
+/***************
+流式输出 对应 toString()
+***************/
+
+/**
+ * @brief 重载 http 请求类的流式操作符
+ *
+ * @param os
+ * @param req
+ * @return std::ostream&
+ */
 std::ostream &operator<<(std::ostream &os, const HttpRequest &req) {
     return req.dump(os);
 }
 
+/**
+ * @brief 重载 http 响应类的流式操作符
+ *
+ * @param os
+ * @param rsp
+ * @return std::ostream&
+ */
 std::ostream &operator<<(std::ostream &os, const HttpResponse &rsp) {
     return rsp.dump(os);
 }

@@ -106,6 +106,7 @@ public:
  */
 class LogEvent {
 public:
+    // 智能指针
     typedef std::shared_ptr<LogEvent> ptr;
 
     /**
@@ -227,6 +228,7 @@ private:
  */
 class LogFormatter {
 public:
+    // 智能指针
     typedef std::shared_ptr<LogFormatter> ptr;
 
     /**
@@ -283,6 +285,7 @@ public:
      */
     class FormatItem {
     public:
+        // 智能指针
         typedef std::shared_ptr<FormatItem> ptr;
 
         /**
@@ -333,7 +336,10 @@ class LogAppender {
     friend class Logger;
 
 public:
+    // 智能指针
     typedef std::shared_ptr<LogAppender> ptr;
+
+    // 自旋锁
     typedef Spinlock MutexType;
 
     /**
@@ -412,7 +418,10 @@ class Logger : public std::enable_shared_from_this<Logger> {
     friend class LoggerManager;
 
 public:
+    // 智能指针
     typedef std::shared_ptr<Logger> ptr;
+
+    // 自旋锁
     typedef Spinlock MutexType;
 
     /**
@@ -540,6 +549,7 @@ class StdoutLogAppender : public LogAppender {
     friend class Logger;
 
 public:
+    // 智能指针
     typedef std::shared_ptr<StdoutLogAppender> ptr;
 
     /**
@@ -568,9 +578,11 @@ private:
  * LogAppender 的子类
  */
 class FileLogAppender : public LogAppender {
+    // 友元类 Logger
     friend class Logger;
 
 public:
+    // 智能指针
     typedef std::shared_ptr<FileLogAppender> ptr;
 
     /**
@@ -622,6 +634,7 @@ private:
  */
 class LoggerManager {
 public:
+    // 自旋锁
     typedef Spinlock MutexType;
 
     /**

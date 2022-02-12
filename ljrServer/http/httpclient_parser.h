@@ -37,6 +37,11 @@
 
 #include "http11_common.h"
 
+/**
+ * @brief 客户端 http 响应解析
+ *
+ */
+
 typedef struct httpclient_parser {
     int cs;
     size_t body_start;
