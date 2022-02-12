@@ -292,9 +292,9 @@ bool Socket::connect(const Address::ptr addr, uint64_t timeout_ms) {
         if (::connect(m_sock, addr->getAddr(), addr->getAddrLen())) {
             // 失败
             LJRSERVER_LOG_ERROR(g_logger)
-                << "sock = " << m_sock << " connect(" << addr->toString()
-                << ") error errno = " << errno
-                << " errno-string = " << strerror(errno);
+                << "sock=" << m_sock << " connect(" << addr->toString()
+                << ") error errno=" << errno
+                << " errno-string=" << strerror(errno);
             // 关闭 socket
             close();
             return false;
@@ -306,8 +306,8 @@ bool Socket::connect(const Address::ptr addr, uint64_t timeout_ms) {
             // 失败
             LJRSERVER_LOG_ERROR(g_logger)
                 << "sock = " << m_sock << " connect(" << addr->toString()
-                << ") timeout = " << timeout_ms << " error errno = " << errno
-                << " errno-string = " << strerror(errno);
+                << ") timeout=" << timeout_ms << " error errno=" << errno
+                << " errno-string=" << strerror(errno);
             // 关闭 socket
             close();
             return false;

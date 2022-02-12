@@ -77,6 +77,7 @@ public:
      */
     virtual void stop();
 
+public:
     uint64_t getRecvTimeout() const { return m_recvTimeout; }
     void setRecvTimeout(uint64_t v) { m_recvTimeout = v; }
 

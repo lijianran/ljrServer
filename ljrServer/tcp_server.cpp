@@ -18,7 +18,8 @@ static ljrserver::Logger::ptr g_logger = LJRSERVER_LOG_NAME("system");
  * @brief tcp 服务器的构造函数
  *
  * @param worker 工作协程 [= ljrserver::IOManager::GetThis()]
- * @param acceptworker 等待接受客户端连接的协程 [= ljrserver::IOManager::GetThis()]
+ * @param acceptworker 等待接受客户端连接的协程 [=
+ * ljrserver::IOManager::GetThis()]
  */
 TcpServer::TcpServer(ljrserver::IOManager *worker,
                      ljrserver::IOManager *acceptworker)
@@ -87,7 +88,7 @@ bool TcpServer::bind(const std::vector<Address::ptr> &addrs,
             continue;
         }
 
-        // 监听地址
+        // 监听地址 未 hook
         if (!sock->listen()) {
             // 监听失败
             LJRSERVER_LOG_ERROR(g_logger)

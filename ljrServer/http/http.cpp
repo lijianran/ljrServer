@@ -193,7 +193,7 @@ bool HttpRequest::hasCookie(const std::string &key, std::string *val) {
     return true;
 }
 
-/// 打印输出
+/// 打印输出 http 报文
 
 std::ostream &HttpRequest::dump(std::ostream &os) const {
     /**
@@ -260,7 +260,7 @@ void HttpResponse::setHeader(const std::string &key, const std::string &val) {
 
 void HttpResponse::delHeader(const std::string &key) { m_headers.erase(key); }
 
-/// 打印输出
+/// 打印输出 http 报文
 
 std::ostream &HttpResponse::dump(std::ostream &os) const {
     os << "HTTP/" << ((uint32_t)(m_version >> 4)) << "."

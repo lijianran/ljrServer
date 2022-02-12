@@ -59,12 +59,35 @@ public:  /// SET 方法
     void setPort(const int32_t &v) { m_port = v; }
 
 public:  /// 辅助方法
+    /**
+     * @brief 流式输出 URI 路径
+     *
+     * @param os
+     * @return std::ostream&
+     */
     std::ostream &dump(std::ostream &os) const;
+
+    /**
+     * @brief URI 转路径字符串
+     *
+     * @return std::string
+     */
     std::string toString() const;
 
+    /**
+     * @brief 根据 host 创建 Address 地址对象
+     *
+     * @return Address::ptr 纯虚基类指针
+     */
     Address::ptr createAddress() const;
 
 private:
+    /**
+     * @brief 是否是默认端口
+     *
+     * @return true
+     * @return false
+     */
     bool isDefaultPort() const;
 
 private:

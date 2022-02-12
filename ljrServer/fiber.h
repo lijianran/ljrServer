@@ -24,6 +24,7 @@ class Fiber : public std::enable_shared_from_this<Fiber> {
     friend class Scheduler;
 
 public:
+    // 智能指针
     typedef std::shared_ptr<Fiber> ptr;
 
     /**

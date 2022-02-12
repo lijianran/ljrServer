@@ -202,6 +202,13 @@ HttpRequestParser::HttpRequestParser() : m_error(0) {
     m_parser.data = this;
 }
 
+/**
+ * @brief 解析 http 请求
+ *
+ * @param data
+ * @param len
+ * @return size_t
+ */
 size_t HttpRequestParser::execute(char *data, size_t len) {
     // 1  成功
     // -1 有错误
