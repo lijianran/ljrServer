@@ -51,13 +51,13 @@ void HttpServer::handleClient(Socket::ptr client) {
         HttpResponse::ptr rsp(new HttpResponse(
             req->getVersion(), req->isCose() || !m_isKeepalive));
 
-        rsp->setBody("hello lijianran");
+        // rsp->setBody("hello lijianran");
 
         // LJRSERVER_LOG_INFO(g_logger) << "request: " << std::endl << *req;
         // LJRSERVER_LOG_INFO(g_logger) << "response: " << std::endl << *rsp;
 
         // Servlet
-        // m_dispatch->handle(req, rsp, session);
+        m_dispatch->handle(req, rsp, session);
 
         // 服务端通过 socket stream 发送响应
         session->sendResponse(rsp);

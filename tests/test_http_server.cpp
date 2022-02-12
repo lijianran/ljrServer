@@ -2,6 +2,7 @@
 #include "../ljrServer/http/http_server.h"
 #include "../ljrServer/log.h"
 
+// 日志
 static ljrserver::Logger::ptr g_logger = LJRSERVER_LOG_ROOT();
 
 /**
@@ -22,54 +23,58 @@ void run() {
         sleep(2);
     }
 
-    // auto sd = server->getServletDispatch();
-    // sd->addServlet("/lijianran/xx",
-    //                [](ljrserver::http::HttpRequest::ptr req,
-    //                   ljrserver::http::HttpResponse::ptr rsp,
-    //                   ljrserver::http::HttpSession::ptr session) {
-    //                    rsp->setBody(req->toString());
-    //                    return 0;
-    //                });
+    // 获取 Servlet 派遣器
+    auto sd = server->getServletDispatch();
 
-    // sd->addGlobServlet("/lijianran/*",
-    //                    [](ljrserver::http::HttpRequest::ptr req,
-    //                       ljrserver::http::HttpResponse::ptr rsp,
-    //                       ljrserver::http::HttpSession::ptr session) {
-    //                        rsp->setBody("Glob:\r\n" + req->toString());
-    //                        return 0;
-    //                    });
+    // 增加精准命中的 Servlet
+    sd->addServlet("/lijianran/xx",
+                   [](ljrserver::http::HttpRequest::ptr req,
+                      ljrserver::http::HttpResponse::ptr rsp,
+                      ljrserver::http::HttpSession::ptr session) {
+                       rsp->setBody(req->toString());
+                       return 0;
+                   });
 
-    // sd->addGlobServlet("/liyaopeng/*",
-    //                    [](ljrserver::http::HttpRequest::ptr req,
-    //                       ljrserver::http::HttpResponse::ptr rsp,
-    //                       ljrserver::http::HttpSession::ptr session) {
-    //                        rsp->setBody("<h1>welcome, liyaopeng!</h1>");
-    //                        return 0;
-    //                    });
+    // 增加模糊命中的 Servlet
+    sd->addGlobServlet("/lijianran/*",
+                       [](ljrserver::http::HttpRequest::ptr req,
+                          ljrserver::http::HttpResponse::ptr rsp,
+                          ljrserver::http::HttpSession::ptr session) {
+                           rsp->setBody("Glob:\r\n" + req->toString());
+                           return 0;
+                       });
 
-    // sd->addGlobServlet("/lijing/*",
-    //                    [](ljrserver::http::HttpRequest::ptr req,
-    //                       ljrserver::http::HttpResponse::ptr rsp,
-    //                       ljrserver::http::HttpSession::ptr session) {
-    //                        rsp->setBody("<h1>welcome, lijing!</h1>");
-    //                        return 0;
-    //                    });
+    sd->addGlobServlet("/liyaopeng/*",
+                       [](ljrserver::http::HttpRequest::ptr req,
+                          ljrserver::http::HttpResponse::ptr rsp,
+                          ljrserver::http::HttpSession::ptr session) {
+                           rsp->setBody("<h1>welcome, liyaopeng!</h1>");
+                           return 0;
+                       });
 
-    // sd->addGlobServlet("/jianhong/*",
-    //                    [](ljrserver::http::HttpRequest::ptr req,
-    //                       ljrserver::http::HttpResponse::ptr rsp,
-    //                       ljrserver::http::HttpSession::ptr session) {
-    //                        rsp->setBody("<h1>welcome, jianhong!</h1>");
-    //                        return 0;
-    //                    });
+    sd->addGlobServlet("/lijing/*",
+                       [](ljrserver::http::HttpRequest::ptr req,
+                          ljrserver::http::HttpResponse::ptr rsp,
+                          ljrserver::http::HttpSession::ptr session) {
+                           rsp->setBody("<h1>welcome, lijing!</h1>");
+                           return 0;
+                       });
 
-    // sd->addGlobServlet("/liqian/*",
-    //                    [](ljrserver::http::HttpRequest::ptr req,
-    //                       ljrserver::http::HttpResponse::ptr rsp,
-    //                       ljrserver::http::HttpSession::ptr session) {
-    //                        rsp->setBody("<h1>welcome, liqian!</h1>");
-    //                        return 0;
-    //                    });
+    sd->addGlobServlet("/jianhong/*",
+                       [](ljrserver::http::HttpRequest::ptr req,
+                          ljrserver::http::HttpResponse::ptr rsp,
+                          ljrserver::http::HttpSession::ptr session) {
+                           rsp->setBody("<h1>welcome, jianhong!</h1>");
+                           return 0;
+                       });
+
+    sd->addGlobServlet("/liqian/*",
+                       [](ljrserver::http::HttpRequest::ptr req,
+                          ljrserver::http::HttpResponse::ptr rsp,
+                          ljrserver::http::HttpSession::ptr session) {
+                           rsp->setBody("<h1>welcome, liqian!</h1>");
+                           return 0;
+                       });
 
     // 启动服务器
     server->start();

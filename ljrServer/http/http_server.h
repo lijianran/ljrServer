@@ -37,15 +37,16 @@ public:
         ljrserver::IOManager *worker = ljrserver::IOManager::GetThis(),
         ljrserver::IOManager *accept_worker = ljrserver::IOManager::GetThis());
 
+public:  /// Servlet
     /**
-     * @brief 获取 Servlet
+     * @brief 获取 Servlet 派遣器
      *
      * @return ServletDispatch::ptr
      */
     ServletDispatch::ptr getServletDispatch() const { return m_dispatch; }
 
     /**
-     * @brief 设置 Servlet
+     * @brief 设置 Servlet 派遣器
      *
      * @param v
      */
@@ -63,7 +64,7 @@ private:
     // 是否长连接
     bool m_isKeepalive;
 
-    // Servlet
+    // Servlet 派遣器
     ServletDispatch::ptr m_dispatch;
 };
 

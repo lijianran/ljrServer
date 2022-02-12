@@ -71,7 +71,7 @@ lijianran's Internet Server
 -   2021.05.02
 
 1. 封装 socket，包括 connect、accept、read、write、close
-2. 封装字节序列化类 ByteArray，方便序列化和反序列化
+2. 封装字节序列化类 ByteArray 方便序列化和反序列化
 
 -   2021.05.03
 
@@ -81,7 +81,7 @@ lijianran's Internet Server
 -   2021.05.04
 
 1. 封装 TcpServer，基于 TcpServer 实现一个 EchoServer 服务器
-2. 针对文件/Socket，封装 Stream
+2. 针对文件及Socket，封装 Stream
 3. 封装 HttpSession
 4. 基于 TcpServer 封装 HttpServer，结合 HttpSession 接收 Client 的请求数据
 5. 封装 HttpServlet

@@ -3,6 +3,7 @@
 #include "../ljrServer/log.h"
 #include "../ljrServer/config.h"
 
+// 日志
 ljrserver::Logger::ptr g_logger = LJRSERVER_LOG_ROOT();
 
 int count = 0;
