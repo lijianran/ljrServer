@@ -424,7 +424,9 @@ public:
             // 局部上读锁
             RWMutexType::ReadLock lock(m_mutex);
 
+            // 要判断相等 需要重载操作符 ==
             if (v == m_val) {
+                // 相等则不通知
                 return;
             }
             for (auto &i : m_cbs) {
@@ -546,7 +548,7 @@ public:
             if (tmp) {
                 // 找到了配置项
                 LJRSERVER_LOG_INFO(LJRSERVER_LOG_ROOT())
-                    << "Lookup name = " << name << " exists.";
+                    << "Lookup name=" << name << " exists.";
                 return tmp;
             } else {
                 // 找到配置项但类型不对 转换失败
@@ -615,6 +617,13 @@ public:
      * @param root
      */
     static void LoadFromYaml(const YAML::Node &root);
+
+    /**
+     * @brief 从配置文件夹路径加载配置文件
+     *
+     * @param path
+     */
+    static void LoadFromConfDir(const std::string &path);
 
     /**
      * @brief 查找配置参数，返回配置参数的基类

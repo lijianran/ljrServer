@@ -1,7 +1,18 @@
 
 #include "config.h"
 
+#include "env.h"
+#include "util.h"
+
+// lstat
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
 namespace ljrserver {
+
+// system 日志
+static ljrserver::Logger::ptr g_logger = LJRSERVER_LOG_NAME("system");
 
 // static 静态变量需要声明定义
 // Config::ConfigVarMap Config::s_datas;
@@ -34,7 +45,7 @@ static void ListAllMember(
     if (prefix.find_first_not_of("abcdefghijklmnopqrstuvwxyz._012345678") !=
         std::string::npos) {
         // 名称错误
-        LJRSERVER_LOG_ERROR(LJRSERVER_LOG_ROOT())
+        LJRSERVER_LOG_ERROR(g_logger)
             << "Config invalid name: " << prefix << " : " << node;
         return;
     }
@@ -55,9 +66,9 @@ static void ListAllMember(
 /**
  * @brief 使用 YAML::Node 初始化配置模块
  *
- *  YAML::Node root = YAML::LoadFile("/ljrServer/bin/conf/test.yml");
-    ljrserver::Config::LoadFromYaml(root);
-    
+ * YAML::Node root = YAML::LoadFile("/ljrServer/bin/conf/test.yml");
+ * ljrserver::Config::LoadFromYaml(root);
+ *
  * @param root
  */
 void Config::LoadFromYaml(const YAML::Node &root) {
@@ -89,6 +100,56 @@ void Config::LoadFromYaml(const YAML::Node &root) {
                 ss << i.second;
                 var->fromString(ss.str());
             }
+        }
+    }
+}
+
+// 文件更新时间
+static std::map<std::string, uint64_t> s_file2modifytime;
+// 互斥锁
+static ljrserver::Mutex s_mutex;
+
+/**
+ * @brief 从配置文件夹路径加载配置文件
+ *
+ * @param path
+ */
+void Config::LoadFromConfDir(const std::string &path) {
+    // 获取绝对路径
+    std::string absolute_path =
+        ljrserver::EnvMgr::GetInstance()->getAbsolutePath(path);
+
+    // 获取所有配置文件
+    std::vector<std::string> files;
+    FSUtil::ListAllFile(files, absolute_path, ".yml");
+
+    // 遍历访问所有配置文件
+    for (auto &i : files) {
+        {
+            // 检测是否修改了文件
+            struct stat st;
+            // 获取文件最近 modify 时间
+            lstat(i.c_str(), &st);
+            // 加锁
+            ljrserver::Mutex::Lock lock(s_mutex);
+            if (s_file2modifytime[i] == (uint64_t)st.st_mtime) {
+                // 没有修改 不加载该文件
+                continue;
+            }
+            // 更新时间
+            s_file2modifytime[i] = st.st_mtime;
+        }
+
+        try {
+            // 加载配置
+            YAML::Node root = YAML::LoadFile(i);
+            LoadFromYaml(root);
+            LJRSERVER_LOG_INFO(g_logger)
+                << "LoadConfigFile file=" << i << " success";
+        } catch (...) {
+            // 异常
+            LJRSERVER_LOG_ERROR(g_logger)
+                << "LoadConfigFile file=" << i << " failed";
         }
     }
 }

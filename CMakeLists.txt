@@ -18,8 +18,11 @@ set(CMAKE_CXX_FLAGS "$ENV{CXXFLAGS} -rdynamic -O0 -ggdb -std=c++11 -Wall -Wno-de
 
 set(LIB_SRC
     ljrServer/address.cpp
+    ljrServer/application.cpp
     ljrServer/bytearray.cpp
     ljrServer/config.cpp
+    ljrServer/daemon.cpp
+    ljrServer/env.cpp
     ljrServer/fiber.cpp
     ljrServer/fd_manager.cpp
     ljrServer/hook.cpp
@@ -176,6 +179,16 @@ ljrserver_add_executable(test_http_connection "tests/test_http_connection.cpp" l
 
 # 测试 uri
 ljrserver_add_executable(test_uri "tests/test_uri.cpp" ljrServer "${LIBS}")
+
+# 测试 daemon
+ljrserver_add_executable(test_daemon "tests/test_daemon.cpp" ljrServer "${LIBS}")
+
+# 测试 env
+ljrserver_add_executable(test_env "tests/test_env.cpp" ljrServer "${LIBS}")
+
+# 测试 application
+ljrserver_add_executable(test_application "tests/test_application.cpp" ljrServer "${LIBS}")
+
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)

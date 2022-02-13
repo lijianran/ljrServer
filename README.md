@@ -13,7 +13,15 @@ lijianran's Internet Server
 -   ragel 6.10
 -   http-parser
 
-## 开发日志
+## 系统开发日志
+
+-   2022.02.13
+
+1. 增加守护进程功能
+2. 增加启动参数及环境变量解析模块
+3. 增加应用模块，实现一个 http 服务器应用程序，支持通过配置文件启动服务器，支持通过启动参数守护进程等
+
+## 模块开发日志
 
 -   2021.04.23
 
@@ -81,7 +89,7 @@ lijianran's Internet Server
 -   2021.05.04
 
 1. 封装 TcpServer，基于 TcpServer 实现一个 EchoServer 服务器
-2. 针对文件及Socket，封装 Stream
+2. 针对文件及 Socket，封装 Stream
 3. 封装 HttpSession
 4. 基于 TcpServer 封装 HttpServer，结合 HttpSession 接收 Client 的请求数据
 5. 封装 HttpServlet

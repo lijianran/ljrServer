@@ -1,0 +1,11 @@
+# 2022.02.13
+# 测试 http 服务器应用 test_application
+http_servers:
+    - address: ["0.0.0.0:8080"]
+      keepalive: 1
+      timeout: 1000
+      name: ljrserver/1.1
+    - address: ["0.0.0.0:8090"]
+      keepalive: 1
+      timeout: 1000
+      name: ljrserver/1.2

@@ -38,7 +38,7 @@ uint32_t GetFiberId();
  * @param size
  * @param skip
  */
-void Backtrace(std::vector<std::string> &bt, int size = 64, int skip = 1);
+void Backtrace(std::vector<std::string>& bt, int size = 64, int skip = 1);
 
 /**
  * @brief 函数调用栈 string
@@ -49,7 +49,7 @@ void Backtrace(std::vector<std::string> &bt, int size = 64, int skip = 1);
  * @return std::string
  */
 std::string BacktraceToString(int size = 64, int skip = 2,
-                              const std::string &prefix = "");
+                              const std::string& prefix = "");
 
 /**
  * @brief 获取时间 ms
@@ -64,6 +64,50 @@ uint64_t GetCurrentMS();
  * @return uint64_t
  */
 uint64_t GetCurrentUS();
+
+/**
+ * @brief 时间字符串
+ *
+ * @param ts
+ * @return std::string
+ */
+std::string Time2Str(time_t ts = time(0),
+                     const std::string& format = "%Y-%m-%d %H:%M:%s");
+
+/**
+ * @brief Class 文件相关工具类
+ *
+ */
+class FSUtil {
+public:
+    /**
+     * @brief 列出文件夹下所有文件
+     *
+     * @param files
+     * @param path
+     * @param subfix
+     */
+    static void ListAllFile(std::vector<std::string>& files,
+                            const std::string& path, const std::string& subfix);
+
+    /**
+     * @brief mkdir
+     *
+     * @param dirname
+     * @return true
+     * @return false
+     */
+    static bool Mkdir(const std::string& dirname);
+
+    /**
+     * @brief 通过 pid file 来判断程序是否已经启动
+     * 
+     * @param pidfile 
+     * @return true 
+     * @return false 
+     */
+    static bool IsRunningPidfile(const std::string& pidfile);
+};
 
 }  // namespace ljrserver
 
