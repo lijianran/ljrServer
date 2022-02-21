@@ -106,6 +106,16 @@ HttpRequest::ptr HttpSession::recvRequest() {
         parser->getData()->setBody(body);
     }
 
+    // 判断是否长连接
+    std::string conn = parser->getData()->getHeader("connection");
+    if (!conn.empty()) {
+        if (strcasecmp(conn.c_str(), "keep-alive") == 0) {
+            parser->getData()->setClose(false);
+        } else {
+            parser->getData()->setClose(true);
+        }
+    }
+
     // 返回 http 请求对象
     return parser->getData();
 }

@@ -189,6 +189,9 @@ ljrserver_add_executable(test_env "tests/test_env.cpp" ljrServer "${LIBS}")
 # 测试 application
 ljrserver_add_executable(test_application "tests/test_application.cpp" ljrServer "${LIBS}")
 
+# ab 测试 http_server
+ljrserver_add_executable(my_http_server "examples/ab_http_server.cpp" ljrServer "${LIBS}")
+
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)

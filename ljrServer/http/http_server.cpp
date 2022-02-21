@@ -40,10 +40,13 @@ void HttpServer::handleClient(Socket::ptr client) {
         auto req = session->recvRequest();
         if (!req) {
             // 接收失败
-            LJRSERVER_LOG_WARN(g_logger)
-                << "recv http request fail, errno = " << errno
-                << " errno-string = " << strerror(errno)
-                << " client:" << *client;
+            // LJRSERVER_LOG_WARN(g_logger)
+            //     << "recv http request fail, errno=" << errno
+            //     << " errno-string=" << strerror(errno) << " client:" <<
+            //     *client;
+            LJRSERVER_LOG_DEBUG(g_logger)
+                << "recv http request fail, errno=" << errno
+                << " errno-string=" << strerror(errno) << " client:" << *client;
             break;
         }
 
@@ -61,6 +64,10 @@ void HttpServer::handleClient(Socket::ptr client) {
 
         // 服务端通过 socket stream 发送响应
         session->sendResponse(rsp);
+
+        if (!m_isKeepalive || req->isCose()) {
+            break;
+        }
 
     } while (m_isKeepalive);
     // 长连接

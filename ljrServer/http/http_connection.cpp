@@ -127,16 +127,19 @@ HttpResponse::ptr HttpConnection::recvResponse() {
         // 如果分块了
         int len = offset;
         do {
+            bool begin = true;
             // 循环接收数据
             do {
-                int rt = read(data + len, buff_size - len);
-                if (rt <= 0) {
-                    // 接收失败
-                    close();
-                    return nullptr;
+                if (!begin || len == 0) {
+                    int rt = read(data + len, buff_size - len);
+                    if (rt <= 0) {
+                        // 接收失败
+                        close();
+                        return nullptr;
+                    }
+                    len += rt;
                 }
 
-                len += rt;
                 data[len] = '\0';
                 // 解析内容
                 size_t nparse = parser->execute(data, len, true);
@@ -154,25 +157,26 @@ HttpResponse::ptr HttpConnection::recvResponse() {
                     return nullptr;
                 }
 
+                begin = false;
             } while (!parser->isFinished());
             // 解析完毕
 
-            len -= 2;
+            // len -= 2;
 
-            LJRSERVER_LOG_INFO(g_logger)
+            LJRSERVER_LOG_DEBUG(g_logger)
                 << "content_len=" << client_parser.content_len;
 
-            if (client_parser.content_len <= len) {
+            if (client_parser.content_len + 2 <= len) {
                 body.append(data, client_parser.content_len);
 
-                memmove(data, data + client_parser.content_len,
-                        len - client_parser.content_len);
+                memmove(data, data + client_parser.content_len + 2,
+                        len - client_parser.content_len - 2);
 
-                len -= client_parser.content_len;
+                len -= client_parser.content_len + 2;
 
             } else {
                 body.append(data, len);
-                int left = client_parser.content_len - len;
+                int left = client_parser.content_len - len + 2;
 
                 while (left > 0) {
                     int rt = read(
@@ -186,6 +190,7 @@ HttpResponse::ptr HttpConnection::recvResponse() {
                     left -= rt;
                 }
 
+                body.resize(body.size() - 2);
                 len = 0;
             }
         } while (!client_parser.chunks_done);
@@ -199,7 +204,7 @@ HttpResponse::ptr HttpConnection::recvResponse() {
         int64_t length = parser->getContentLength();
         if (length > 0) {
             // 缓存
-            std::string body;
+            // std::string body;
             body.resize(length);
 
             int len = 0;
@@ -224,7 +229,7 @@ HttpResponse::ptr HttpConnection::recvResponse() {
             }
 
             // 设置 http 响应对象的内容体
-            parser->getData()->setBody(body);
+            // parser->getData()->setBody(body);
         }
     }
 

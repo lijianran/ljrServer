@@ -416,7 +416,7 @@ int connect_with_timeout(int fd, const struct sockaddr *addr, socklen_t addrlen,
         return connect_f(fd, addr, addrlen);
     }
 
-    // 阻塞模式
+    // 用户设置了阻塞模式 则需要进行 hook
     int n = connect_f(fd, addr, addrlen);
     if (n == 0) {
         // 连接成功

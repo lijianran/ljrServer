@@ -141,10 +141,10 @@ void test_timer() {
  */
 int main(int argc, char const *argv[]) {
     // 测试 iomanager
-    // test_iomanager();
+    test_iomanager();
 
     // 测试定时器
-    test_timer();
+    // test_timer();
 
     return 0;
 }

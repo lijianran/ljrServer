@@ -585,7 +585,8 @@ void IOManager::idle() {
             // 有错误
             if (event.events & (EPOLLERR | EPOLLHUP)) {
                 // 读写全部开启
-                event.events |= EPOLLIN | EPOLLOUT;
+                // event.events |= EPOLLIN | EPOLLOUT;
+                event.events |= (EPOLLIN | EPOLLOUT) & fd_ctx->events;
             }
 
             // 判断事件

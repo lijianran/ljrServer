@@ -72,14 +72,14 @@ public:
     // bool close();
 
     /**
-     * @brief 设置用户是否非阻塞
+     * @brief 用户设置非阻塞 fnctl
      *
      * @param v
      */
     void setUserNonblock(bool v) { m_userNonblock = v; }
 
     /**
-     * @brief 用户是否设置阻塞
+     * @brief 用户是否通过 fnctl 主动设置了非阻塞
      *
      * @return true
      * @return false
@@ -89,12 +89,16 @@ public:
     /**
      * @brief 设置系统是否非阻塞
      *
+     * 默认 socket 句柄非阻塞 其他句柄设置阻塞
+     * 
      * @param v
      */
     void setSysNonblock(bool v) { m_sysNonblock = v; }
 
     /**
      * @brief 系统是否阻塞
+     * 
+     * 默认 socket 句柄非阻塞 其他句柄设置阻塞
      * 
      * @return true 
      * @return false 
